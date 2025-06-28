@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::contenido})">
+<div th:fragment="contenido">
+	<div class="card shadow-lg">
+		<div class="card-body">
+			<h1 class="text-center">Nuevo Horario</h1>
+			<div class="row justify-content-center">
+				<div class="col-md-6">
+					<form novalidate th:action="@{/horarios/registrar}" method="post" th:object="${horario}" class="needs-validation">
+
+						<!-- Curso -->
+						<div class="mb-3">
+							<label for="curso">Curso</label>
+							<select class="form-select" required th:field="*{curso}" th:classappend="${#fields.hasErrors('curso')} ? 'is-invalid' : ''">
+								<option value="">--Seleccione--</option>
+								<option th:each="c : ${cursos}" th:value="${c.idCurso}" th:text="${c.nombreCurso}"></option>
+							</select>
+							<div class="invalid-feedback" th:errors="*{curso}"></div>
+						</div>
+
+						<!-- Día de la semana -->
+						<div class="mb-3">
+							<label for="Dia">Día de la Semana</label>
+							<select class="form-select" required th:field="*{Dia}" th:classappend="${#fields.hasErrors('Dia')} ? 'is-invalid' : ''">
+								<option value="">--Seleccione--</option>
+								<option value="Lunes">Lunes</option>
+								<option value="Martes">Martes</option>
+								<option value="Miércoles">Miércoles</option>
+								<option value="Jueves">Jueves</option>
+								<option value="Viernes">Viernes</option>
+								<option value="Sábado">Sábado</option>
+							</select>
+							<div class="invalid-feedback" th:errors="*{Dia}"></div>
+						</div>
+
+						<!-- Hora inicio -->
+						<div class="mb-3">
+							<label for="inicio">Hora de Inicio</label>
+							<input type="time" class="form-control" required th:field="*{inicio}" th:classappend="${#fields.hasErrors('inicio')} ? 'is-invalid' : ''">
+							<div class="invalid-feedback" th:errors="*{inicio}"></div>
+						</div>
+
+						<!-- Hora fin -->
+						<div class="mb-3">
+							<label for="fin">Hora de Fin</label>
+							<input type="time" class="form-control" required th:field="*{fin}" th:classappend="${#fields.hasErrors('fin')} ? 'is-invalid' : ''">
+							<div class="invalid-feedback" th:errors="*{fin}"></div>
+						</div>
+
+						<!-- Aula -->
+						<div class="mb-3">
+							<label for="aula">Aula</label>
+							<select class="form-select" required th:field="*{aula}" th:classappend="${#fields.hasErrors('aula')} ? 'is-invalid' : ''">
+								<option value="">--Seleccione--</option>
+								<option th:each="a : ${aulas}" th:value="${a.idAula}" th:text="${a.descripcion}"></option>
+							</select>
+							<div class="invalid-feedback" th:errors="*{aula}"></div>
+						</div>
+
+						<!-- Modalidad -->
+						<div class="mb-3">
+							<label for="modalidad">Modalidad</label>
+							<select class="form-select" required th:field="*{modalidad}" th:classappend="${#fields.hasErrors('modalidad')} ? 'is-invalid' : ''">
+								<option value="">--Seleccione--</option>
+								<option th:each="m : ${modalidades}" th:value="${m.idModalidad}" th:text="${m.descripcion}"></option>
+							</select>
+							<div class="invalid-feedback" th:errors="*{modalidad}"></div>
+						</div>
+
+
+						<!-- Botones -->
+						<div class="d-flex justify-content-between">
+							<button type="reset" class="btn btn-outline-secondary">
+								Limpiar <i class="fa-solid fa-eraser"></i>
+							</button>
+							<button type="submit" class="btn btn-primary">
+								Guardar <i class="fa-solid fa-floppy-disk"></i>
+							</button>
+							<a th:href="@{/horarios/listado}" class="btn btn-dark">
+								Regresar <i class="fa-solid fa-circle-left"></i>
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<th:block th:utext="${alert}"></th:block>
+</div>
+</html>

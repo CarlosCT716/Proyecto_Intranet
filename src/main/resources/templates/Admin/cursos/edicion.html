@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::contenido})">
+
+<div th:fragment="contenido">
+	<div class="card shadow-lg">
+		<div class="card-body">
+			<h1 class="text-center" th:utext="|Curso - Edición<br>ID ${curso.idCurso}|"></h1>
+			<div class="row d-flex justify-content-center">
+				<div class="col-md-6">
+					<form novalidate th:action="@{/cursos/guardar}" method="post" th:object="${curso}"
+						class="needs-validation">
+
+						<div class="mb-3">
+							<label for="nombre_curso">Nombre del Curso</label>
+							<input type="text" class="form-control" placeholder="Ej. Matemáticas Básicas" required
+								th:field="*{nombreCurso}"
+								th:classappend="${#fields.hasErrors('nombreCurso')} ? 'is-invalid' : ''">
+							<div class="invalid-feedback" th:errors="*{nombreCurso}"></div>
+						</div>
+
+						<div class="mb-3">
+							<label for="ciclo">Ciclo</label>
+							<input type="number" class="form-control" placeholder="Ej. 1" required th:field="*{ciclo}"
+								th:classappend="${#fields.hasErrors('ciclo')} ? 'is-invalid' : ''">
+							<div class="invalid-feedback" th:errors="*{ciclo}"></div>
+						</div>
+
+						<div class="mb-3">
+							<label for="creditos">Créditos</label>
+							<input type="number" class="form-control" placeholder="Ej. 3" required th:field="*{creditos}"
+								th:classappend="${#fields.hasErrors('creditos')} ? 'is-invalid' : ''">
+							<div class="invalid-feedback" th:errors="*{creditos}"></div>
+						</div>
+
+						<div class="mb-3">
+							<label for="carrera">Carrera</label>
+							<select class="form-select" required th:field="*{carrera}"
+								th:classappend="${#fields.hasErrors('carrera')} ? 'is-invalid' : ''">
+								<option value="">--Seleccione--</option>
+								<option th:each="item : ${carreras}" th:value="${item.idCarrera}" th:text="${item.descripcion}">
+								</option>
+							</select>
+							<div class="invalid-feedback" th:errors="*{carrera}"></div>
+						</div>
+
+						<div class="mb-3">
+							<label for="usuario">Profesor</label>
+							<select class="form-select" required th:field="*{usuario}"
+								th:classappend="${#fields.hasErrors('usuario')} ? 'is-invalid' : ''">
+								<option value="">--Seleccione--</option>
+								<option th:each="item : ${usuarios}" th:value="${item.idUsuario}" th:text="${item.nombres + item.apellidos}">
+								</option>
+							</select>
+							<div class="invalid-feedback" th:errors="*{usuario}"></div>
+						</div>
+
+						<input type="hidden" th:field="*{estado}">
+
+						<div class="d-flex justify-content-between">
+							<button type="reset" class="btn btn-outline-secondary">
+								Limpiar <i class="fa-solid fa-eraser"></i>
+							</button>
+							<button type="submit" class="btn btn-primary">
+								Guardar <i class="fa-solid fa-floppy-disk"></i>
+							</button>
+							<a th:href="@{/cursos/filtrado}" class="btn btn-dark">
+								Regresar <i class="fa-solid fa-circle-left"></i>
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<th:block th:utext="${alert}"></th:block>
+</div>
+
+</html>

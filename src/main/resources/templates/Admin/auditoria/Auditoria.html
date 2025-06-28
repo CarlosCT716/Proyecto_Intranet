@@ -1,0 +1,58 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::contenido})">
+	<div th:fragment="contenido">
+		<body>
+			<div class="container">
+				<div class="row mb-3 mt-5 align-items-center">
+					<div class="col-md-10">
+						<h1 class="texto">Historial de Auditoría</h1>
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<div class="col-md-12">
+						<table id="tblAuditoria" class="table table-hover table-striped table-borderless align-middle">
+							<thead class="table-dark text-center">
+								<tr>
+									<th>Nro.</th>
+									<th>Fecha</th>
+									<th>Usuario</th>
+									<th>Acción</th>
+									<th>Entidad</th>
+									<th>ID Entidad</th>
+									<th>Descripción</th>
+								</tr>
+							</thead>
+							<tbody class="table-secondary">
+								<tr th:each="log, stat : ${logs}">
+									<td th:text="${stat.count}" class="text-center"></td>
+									<td th:text="${#temporals.format(log.fecha, 'dd/MM/yyyy HH:mm:ss')}" class="text-center"></td>
+
+									<td th:text="${log.username}"></td>
+									<td th:text="${log.accion}"></td>
+									<td th:text="${log.entityName}"></td>
+									<td th:text="${log.entityId}"></td>
+									<td th:text="${log.descripcion}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<th:block th:utext="${toast}"></th:block>
+
+			<script>
+				$(document).ready(function () {
+					$('#tblAuditoria').DataTable({
+						language: {
+							url: 'https://cdn.datatables.net/plug-ins/2.0.3/i18n/es-ES.json',
+							search: "Filtro general :",
+						}
+					});
+				});
+			</script>
+		</body>
+
+	</div>
+
+</html>

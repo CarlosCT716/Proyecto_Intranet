@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::contenido})">
+
+<div th:fragment="contenido">
+
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-10">
+      <h1 class="texto">Listado de cursos con filtros</h1>
+    </div>
+    <div class="col-md-2">
+      <a th:href="@{/cursos/nuevo}" class="btn btn-success w-100">
+        <i class="fa-solid fa-plus"></i> Nuevo
+      </a>
+    </div>
+  </div>
+
+  <!-- Formulario de filtro -->
+  <form method="get" th:action="@{/cursos/filtrado}" th:object="${filtro}">
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <label class="texto" for="carrera">Carrera</label>
+        <select class="form-select" th:field="*{idCarrera}" onchange="this.form.submit()">
+          <option value="">-- Todas --</option>
+          <option th:each="item : ${carreras}" th:value="${item.idCarrera}" th:text="${item.descripcion}"></option>
+        </select>
+		<a th:href="@{/cursos/filtrado}" class="btn btn-success">
+		     <i class="fa-solid fa-arrows-rotate"></i> Limpiar
+		   </a>
+      </div>
+
+      <div class="col-md-3">
+        <label class="texto" for="usuario">Profesor</label>
+        <select class="form-select" th:field="*{idUsuario}" onchange="this.form.submit()">
+          <option value="">-- Todos --</option>
+          <option th:each="item : ${usuarios}" th:value="${item.idUsuario}" th:text="${item.nombres + ' ' + item.apellidos}"></option>
+        </select>
+      </div>
+
+    </div>
+  </form>
+
+  <div class="row mb-3">
+    <div class="col-md-12">
+      <table id="tblCursos" class="table table-hover table-striped table-borderless align-middle">
+        <thead class="table-dark text-center">
+          <tr>
+			<th>Nro.</th>
+            <th>ID Curso</th>
+            <th>Nombre</th>
+            <th>Carrera</th>
+            <th>Docente</th>
+            <th>Ciclo</th>
+            <th>Créditos</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="table-secondary">
+          <tr th:each="c, stat : ${lstCurso}">
+			<td th:text="${stat.count}" class="text-center"></td>
+            <td th:text="${c.idCurso}" class="text-center"></td>
+            <td th:text="${c.nombreCurso}"></td>
+            <td th:text="${c.carrera.descripcion}"></td>
+            <td th:text="${c.usuario.nombres + ' ' + c.usuario.apellidos}"></td>
+            <td th:text="${c.ciclo}" class="text-center"></td>
+            <td th:text="${c.creditos}" class="text-center"></td>
+            <td th:text="${c.estado ? 'Activo' : 'Inactivo'}" class="text-center"></td>
+            <td class="d-flex justify-content-around align-items-center">
+              <a th:href="@{/cursos/edicion/{id}(id=${c.idCurso})}" class="btn btn-outline-secondary" title="Editar">
+                <i class="fa-regular fa-pen-to-square"></i>
+              </a>
+              <form method="post" th:action="@{/cursos/cambiar-estado/{id}(id=${c.idCurso})}">
+                <div class="form-switch">
+                  <input class="form-check-input" type="checkbox" th:checked="${c.estado}" onchange="this.form.submit()">
+                </div>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <th:block th:utext="${toast}"></th:block>
+
+  <script>
+    $(document).ready(function () {
+      $('#tblCursos').DataTable({
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/2.0.3/i18n/es-ES.json',
+          search: "Filtro general :",
+        }
+		
+      });
+    });
+  </script>
+
+</div>
+
+</html>

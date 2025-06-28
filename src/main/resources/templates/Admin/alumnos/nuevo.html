@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::contenido})">
+<div th:fragment="contenido">
+	<div class="card shadow-lg">
+		<div class="card-body">
+			<h1 class="text-center">Nuevo Alumno</h1>
+			<div class="row justify-content-center">
+				<div class="col-md-6">
+					<form novalidate th:action="@{/alumnos/registrar}" method="post" th:object="${alumno}"
+						class="needs-validation">
+
+						<!-- Nombres -->
+						<div class="mb-3">
+							<label for="nombres">Nombres</label>
+							<input type="text" class="form-control" placeholder="Ej. Juan Carlos" required
+								th:field="*{nombres}"
+								th:classappend="${#fields.hasErrors('nombres')} ? 'is-invalid' : ''">
+							<div class="invalid-feedback" th:errors="*{nombres}"></div>
+						</div>
+
+						<!-- Apellidos -->
+						<div class="mb-3">
+							<label for="apellidos">Apellidos</label>
+							<input type="text" class="form-control" placeholder="Ej. Pérez Gómez" required
+								th:field="*{apellidos}"
+								th:classappend="${#fields.hasErrors('apellidos')} ? 'is-invalid' : ''">
+							<div class="invalid-feedback" th:errors="*{apellidos}"></div>
+						</div>
+
+						<!-- Usuario -->
+						<div class="mb-3">
+							<label for="usuario">Usuario</label>
+							<input type="text" class="form-control" placeholder="Ej. jperez" required
+								th:field="*{usuario}"
+								th:classappend="${#fields.hasErrors('usuario')} ? 'is-invalid' : ''">
+							<div class="invalid-feedback" th:errors="*{usuario}"></div>
+						</div>
+
+						<!-- Correo -->
+						<div class="mb-3">
+							<label for="correo">Correo Electrónico</label>
+							<input type="email" class="form-control" placeholder="Ej. jperez@correo.com" required
+								th:field="*{correo}"
+								th:classappend="${#fields.hasErrors('correo')} ? 'is-invalid' : ''">
+							<div class="invalid-feedback" th:errors="*{correo}"></div>
+						</div>
+
+						<!-- Contraseña -->
+						<div class="mb-3">
+							<label for="password">Contraseña</label>
+							<input type="password" class="form-control" placeholder="******" required
+								th:field="*{password}"
+								th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''">
+							<div class="invalid-feedback" th:errors="*{password}"></div>
+						</div>
+
+
+						<!-- Carrera -->
+						<div class="mb-3">
+							<label for="carrera">Carrera</label>
+							<select class="form-select" required th:field="*{carrera}"
+								th:classappend="${#fields.hasErrors('carrera')} ? 'is-invalid' : ''">
+								<option value="">--Seleccione--</option>
+								<option th:each="item : ${carreras}" th:value="${item.idCarrera}"
+									th:text="${item.descripcion}"></option>
+							</select>
+							<div class="invalid-feedback" th:errors="*{carrera}"></div>
+						</div>
+						<!-- ciclo -->
+						<div class="mb-3">
+							<label for="carrera">Ciclo</label>
+							<select class="form-select" required th:field="*{ciclo}"
+								th:classappend="${#fields.hasErrors('ciclo')} ? 'is-invalid' : ''">
+								<option value="">--Seleccione--</option>
+								<option th:each="item : ${ciclos}" th:value="${item.idCiclo}"
+									th:text="${item.descripcion}"></option>
+							</select>
+							<div class="invalid-feedback" th:errors="*{ciclo}"></div>
+						</div>
+
+
+						<!-- Botones -->
+						<div class="d-flex justify-content-between">
+							<button type="reset" class="btn btn-outline-secondary">
+								Limpiar <i class="fa-solid fa-eraser"></i>
+							</button>
+							<button type="submit" class="btn btn-primary">
+								Guardar <i class="fa-solid fa-floppy-disk"></i>
+							</button>
+							<a th:href="@{/alumnos/filtrado}" class="btn btn-dark">
+								Regresar <i class="fa-solid fa-circle-left"></i>
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<th:block th:utext="${alert}"></th:block>
+</div>
+
+</html>

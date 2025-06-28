@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::content})">
+<div th:fragment="content">
+
+<div class="container mt-5">
+    <h3><strong>Registro de Notas</strong></h3>
+
+    <div class="row mb-4">
+        <jsp:include page="DatosAlumno.jsp"></jsp:include>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Curso</th>
+                <th>Nota 1</th>
+                <th>Nota 2</th>
+                <th>Nota 3</th>
+                <th>Nota Final</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="nota" items="${notas}">
+                <tr>
+                    <td>${nota.nombreCurso}</td>
+                    <td>${nota.nota1}</td>
+                    <td>${nota.nota2}</td>
+                    <td>${nota.nota3}</td>
+                    <td>${nota.promedio}</td>
+                </tr>
+            </c:forEach>
+            <c:if test="${empty notas}">
+                <tr>
+                    <td colspan="5" class="text-center">No hay notas disponibles.</td>
+                </tr>
+            </c:if>
+        </tbody>
+    </table>
+</div>
+
+</div>
+</html>
