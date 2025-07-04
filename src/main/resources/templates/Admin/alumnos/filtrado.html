@@ -31,8 +31,8 @@
           <tr th:each="p, stat : ${lstAlumnos}">
             <td th:text="${stat.count}" class="text-center"></td>
             <td th:text="${p.idUsuario}" class="text-center"></td>
-            <td th:text="${p.nombres + ' ' + p.apellidos}"></td>
-            <td th:text="${p.correo}"></td>
+            <td th:text="${p.nombres + ' ' + p.apellidos}" class="text-center"></td>
+            <td th:text="${p.correo}" class="text-center"></td>
             <td th:text="${p.estado ? 'Activo' : 'Inactivo'}" class="text-center"></td>
             <td class="d-flex justify-content-around align-items-center">
               <a th:href="@{/alumnos/edicion/{id}(id=${p.idUsuario})}" class="btn btn-outline-secondary" title="Editar">

@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class HorarioFilter {
-	private Integer idModalidad;
-	private Integer idCarrera;
-	private Integer idCiclo;
+public class HorarioAlumnoFilter {
+	private Integer idAlumno;
+	private Integer idHorario;
 }

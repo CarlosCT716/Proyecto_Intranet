@@ -35,7 +35,6 @@ public class AlumnoService {
 		try {
 			alumno.setTipo(repoTipo.findById(2).orElseThrow());
 			alumno.setEstado(true);
-			alumno.setCiclo(null);
 			Usuario saved = repo.save(alumno);
 			auService.log("CREATE", "Alumno", alumno.getIdUsuario().toString(), alumno.getUsuario().toString()) ;
 			return new ResultadoResponse(true, "Alumno registrado con ID " + saved.getIdUsuario());

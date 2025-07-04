@@ -12,23 +12,27 @@ import com.intranet.repo.IRepoHorario;
 
 @Service
 public class HorarioService {
-    @Autowired private IRepoHorario repo;
+    @Autowired private IRepoHorario _horario;
     
     @Autowired
 	private AuditoriaService auService;
 
 
     public List<Horario> getAll() {
-        return repo.findAllByOrderByIdHorarioDesc();
+        return _horario.findAllByOrderByIdHorarioDesc();
     }
 
     public List<Horario> search(HorarioFilter filtro) {
-        return repo.findAllWithFilters(filtro.getIdModalidad(), filtro.getIdAula());
+        return _horario.findAllWithFilters(filtro.getIdModalidad(), filtro.getIdCarrera());
     }
+    public List<Horario> getbyFilters(HorarioFilter filtro){
+    	return _horario.findByHorario(filtro.getIdCiclo(),filtro.getIdCarrera());
+    }
+
 
     public ResultadoResponse create(Horario horario) {
         try {
-        	Horario reg = repo.save(horario);
+        	Horario reg = _horario.save(horario);
           auService.log("CREATE", "Horario", reg.getIdHorario().toString(), "Creacion de horario");
             return new ResultadoResponse(true, "Horario registrado con ID " + reg.getIdHorario());
         } catch (Exception e) {
@@ -38,12 +42,12 @@ public class HorarioService {
     }
 
     public Horario getOne(Integer id) {
-        return repo.findById(id).orElseThrow();
+        return _horario.findById(id).orElseThrow();
     }
 
     public ResultadoResponse update(Horario horario) {
         try {
-        	Horario reg = repo.save(horario);
+        	Horario reg = _horario.save(horario);
         	auService.log("UPDATE", "Horario", reg.getIdHorario().toString(), "Cambios en horario");
             return new ResultadoResponse(true, "Horario ID " + reg.getIdHorario() + " actualizado");
         } catch(Exception e) {
@@ -56,7 +60,7 @@ public class HorarioService {
     	Horario h = getOne(id);
         h.setEstado(!h.getEstado());
         try {
-            repo.save(h);
+        	_horario.save(h);
             String accion = h.getEstado() ? "activado" : "desactivado";
             auService.log("ESTADO", "Horario", h.getIdHorario().toString(), "Estado: " + accion);
             return new ResultadoResponse(true, "Horario ID " + id + " " + accion);
@@ -65,4 +69,7 @@ public class HorarioService {
             return new ResultadoResponse(false, "Error al cambiar estado: " + e.getMessage());
         }
     }
+	public List<Horario> getActivos() {
+		return _horario.findAllByEstado(true);
+	}
 }

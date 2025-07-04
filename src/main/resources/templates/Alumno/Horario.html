@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::content})">
+<div th:fragment="content">
+    <div class="container py-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h3 class="mb-4 text-primary text-center">
+                    <i class="bi bi-calendar-week me-2"></i>Mi Horario de Clases
+                </h3>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Alumno:</label>
+                        <input type="text" class="form-control bg-light" th:value="${usuario}" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Carrera:</label>
+                        <input type="text" class="form-control bg-light" th:value="${carrera}" readonly>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th>Día</th>
+                                <th>Curso</th>
+                                <th>Inicio</th>
+                                <th>Fin</th>
+                                <th>Aula</th>
+                                <th>Modalidad</th>
+                                <th>Profesor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="h : ${lstHorarios}" class="text-center">
+                                <td th:text="${h.horario.Dia}"></td>
+                                <td th:text="${h.horario.curso.nombreCurso}"></td>
+                                <td th:text="${h.horario.inicio}"></td>
+                                <td th:text="${h.horario.fin}"></td>
+                                <td th:text="${h.horario.aula.descripcion}"></td>
+                                <td th:text="${h.horario.modalidad.descripcion}"></td>
+								<td th:text="${h.horario.curso.usuario.nombres + ' ' + h.horario.curso.usuario.apellidos}">Profesor</td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(lstHorarios)}">
+                                <td colspan="7" class="text-center text-muted">No hay horarios registrados.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-end mt-4">
+                    <a th:href="@{/inicio}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Volver al inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

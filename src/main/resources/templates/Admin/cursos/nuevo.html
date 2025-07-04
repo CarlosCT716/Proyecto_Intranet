@@ -17,10 +17,15 @@
 						</div>
 
 						<div class="mb-3">
-							<label for="ciclo">Ciclo</label>
-							<input type="number" class="form-control" placeholder="Ej. 1" required th:field="*{ciclo}"
+							<label for="carrera">Ciclos</label>
+							<select class="form-select" required th:field="*{ciclo}"
 								th:classappend="${#fields.hasErrors('ciclo')} ? 'is-invalid' : ''">
-							<div class="invalid-feedback" th:errors="*{ciclo}"></div>
+								<option value="">--Seleccione--</option>
+								<option th:each="item : ${ciclos}" th:value="${item.idCiclo}"
+									th:text="${item.descripcion}">
+								</option>
+							</select>
+							<div class="invalid-feedback" th:errors="*{carrera}"></div>
 						</div>
 
 						<div class="mb-3">

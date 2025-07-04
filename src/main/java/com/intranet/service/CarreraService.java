@@ -16,4 +16,9 @@ public class CarreraService {
 	public List<Carrera> getAll() {
 		return _carrera.findAll();
 	}
+
+	public Carrera getOne(Integer id) {
+		return _carrera.findById(id).orElseThrow();
+	}
+
 }

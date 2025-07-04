@@ -20,15 +20,19 @@ public class UsuarioService {
 	public List<Usuario> getAll() {
 		return _usuario.findAll();
 	}
-	
-	public List<Usuario> getProfesores() {
-		  Tipo profesor = _tipo.findById(1).orElseThrow(); 
-		    return _usuario.findByTipo(profesor);
-	}
-	public List<Usuario> getAlumnos() {
-		  Tipo alumnos = _tipo.findById(2).orElseThrow(); 
-		    return _usuario.findByTipo(alumnos);
+
+	public Usuario getbyID(Integer id) {
+		return _usuario.findById(id).orElseThrow();
 	}
 
+	public List<Usuario> getProfesores() {
+		Tipo profesor = _tipo.findById(1).orElseThrow();
+		return _usuario.findByTipo(profesor);
+	}
+
+	public List<Usuario> getAlumnos() {
+		Tipo alumnos = _tipo.findById(2).orElseThrow();
+		return _usuario.findByTipo(alumnos);
+	}
 
 }

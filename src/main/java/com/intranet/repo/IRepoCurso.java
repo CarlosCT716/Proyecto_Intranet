@@ -9,14 +9,15 @@ import org.springframework.data.repository.query.Param;
 import com.intranet.models.Curso;
 
 public interface IRepoCurso extends JpaRepository<Curso, Integer> {
-	  List<Curso> findAllByOrderByIdCursoDesc();
+	List<Curso> findAllByOrderByIdCursoDesc();
 
-	    @Query("""
-	        select c from Curso c
-	         where (:idCarrera is null or c.carrera.idCarrera = :idCarrera)
-	           and (:idProfesor is null or c.usuario.idUsuario = :idProfesor)
-	        order by c.idCurso desc
-	    """)
-	    List<Curso> findAllWithFilters(@Param("idCarrera") Integer idCarrera,
-	                                   @Param("idProfesor") Integer idProfesor);
+	@Query("""
+			    select c from Curso c
+			     where (:idCarrera is null or c.carrera.idCarrera = :idCarrera)
+				   and (:idCiclo is null or c.ciclo.idCiclo = :idCiclo)
+
+			    order by c.idCurso desc
+			""")
+	List<Curso> findAllWithFilters(@Param("idCarrera") Integer idCarrera, 
+									@Param("idCiclo") Integer idCiclo);
 }

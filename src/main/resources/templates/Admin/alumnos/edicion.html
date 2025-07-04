@@ -37,17 +37,10 @@
 								th:classappend="${#fields.hasErrors('usuario')} ? 'is-invalid' : ''">
 							<div class="invalid-feedback" th:errors="*{usuario}"></div>
 						</div>
+						
+						<input type="hidden" th:field="*{password}">
 
 						<input type="hidden" th:field="*{correo}">
-						
-						<!-- Contraseña -->
-						<div class="mb-3">
-							<label for="password">Contraseña</label>
-							<input type="text" class="form-control" placeholder="******" required
-								th:field="*{password}"
-								th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''">
-							<div class="invalid-feedback" th:errors="*{password}"></div>
-						</div>
 
 
 						<!-- Carrera -->

@@ -18,10 +18,14 @@ public class CursoService {
     public List<Curso> getAll() {
         return repo.findAllByOrderByIdCursoDesc();
     }
+    public Curso getbyID(Integer id) {
+        return repo.findById(id).orElseThrow();
+    }
 
     public List<Curso> search(CursoFilter filtro) {
-        return repo.findAllWithFilters(filtro.getIdCarrera(), filtro.getIdUsuario());
+        return repo.findAllWithFilters(filtro.getIdCiclo(),filtro.getIdCarrera());
     }
+    
 
     public ResultadoResponse create(Curso curso) {
         try {

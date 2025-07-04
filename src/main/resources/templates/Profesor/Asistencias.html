@@ -1,83 +1,80 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::contenido})}">
-
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::contenido})">
 
 <div th:fragment="contenido">
 
 	<div class="row mb-3 align-items-center">
 		<div class="col-md-10">
-			<h1 class="texto">Notas</h1>
+			<h1 class="texto">Asistencia</h1>
 		</div>
 		<div class="row mb-3">
 
-			<form th:action="@{/nota/filtrado}" method="get" th:object="${filtro}">
+			<form th:action="@{/asistencia/filtrado}" method="get" th:object="${filtro}">
 				<div class="row mb-3">
 					<div class="col-md-3">
 						<label class="texto">Carrera</label>
 						<select class="form-select" name="idCarrera" th:field="*{idCarrera}"
 							onchange="this.form.submit()">
-						<option value="">-- Todas --</option>
-						<option th:each="item : ${carreras}" th:value="${item.idCarrera}"
-							th:text="${item.descripcion}"></option>
+							<option value="">-- Todas --</option>
+							<option th:each="item : ${carreras}" th:value="${item.idCarrera}"
+								th:text="${item.descripcion}"></option>
 						</select>
 					</div>
 
 					<div class="col-md-3">
 						<label class="texto">Ciclo</label>
 						<select class="form-select" name="idCiclo" th:field="*{idCiclo}" onchange="this.form.submit()">
-						<option value="">-- Todas --</option>
-						<option th:each="item : ${ciclos}" th:value="${item.idCiclo}" th:text="${item.descripcion}">
-						</option>
+							<option value="">-- Todas --</option>
+							<option th:each="item : ${ciclos}" th:value="${item.idCiclo}" th:text="${item.descripcion}">
+							</option>
 						</select>
 					</div>
 
 					<div class="col-md-3">
 						<label class="texto">Curso</label>
 						<select class="form-select" name="idCurso" th:field="*{idCurso}" onchange="this.form.submit()">
-						<option value="">-- Todos --</option>
-						<option th:each="item : ${cursos}" th:value="${item.idCurso}" th:text="${item.nombreCurso}">
-						</option>
+							<option value="">-- Todos --</option>
+							<option th:each="item : ${cursos}" th:value="${item.idCurso}" th:text="${item.nombreCurso}">
+							</option>
 						</select>
 					</div>
+
 					<div class="col-md-3 d-flex align-items-end">
-						<a th:href="@{/nota/filtrado}" class="btn btn-success w-100">
+						<a th:href="@{/asistencia/filtrado}" class="btn btn-success w-100">
 							<i class="fa-solid fa-arrows-rotate"></i> Limpiar
 						</a>
 					</div>
 				</div>
 			</form>
 
+
 		</div>
 	</div>
 
 	<div class="row mb-3">
 		<div class="col-md-12">
-			<table id="tblNotas" class="table table-hover table-striped table-borderless align-middle">
+			<table id="tblAsistencias" class="table table-hover table-striped table-borderless align-middle">
 				<thead class="table-dark text-center">
 					<tr>
 						<th>Nro.</th>
 						<th>Alumno</th>
 						<th>Curso</th>
-						<th>Nota 1</th>
-						<th>Nota 2</th>
-						<th>Nota 3</th>
-						<th>Promedio</th>
+						<th>Inasistencias</th>
 						<th>Editar</th>
 					</tr>
 				</thead>
 				<tbody class="table-secondary">
-					<tr th:each="n, stat : ${lstNotas}">
+					<tr th:each="a, stat : ${lstAsistencias}">
 						<td th:text="${stat.count}" class="text-center"></td>
-						<td th:text="${n.usuario.nombres + ' ' + n.usuario.apellidos}" class="text-center"></td>
-						<td th:text="${n.curso.nombreCurso}" class="text-center"></td>
-						<td th:text="${n.nota1}" class="text-center"></td>
-						<td th:text="${n.nota2}" class="text-center"></td>
-						<td th:text="${n.nota3}" class="text-center"></td>
-						<td th:text="${n.promedio}" class="text-center"></td>
+						<td th:text="${a.usuario.nombres + ' ' + a.usuario.apellidos}" class="text-center"></td>
+						<td th:text="${a.curso.nombreCurso}" class="text-center"></td>
+						<td th:text="${a.inasistencias}" class="text-center"></td>
 						<td class="d-flex justify-content-around align-items-center">
-							<a th:href="@{/nota/editarNota/{id}(id=${n.idNota})}" class="btn btn-outline-secondary" title="Editar">
+							<a th:href="@{/asistencia/editar/{id}(id=${a.idAsistencia})}"
+								class="btn btn-outline-secondary" title="Editar">
 								<i class="fa-regular fa-pen-to-square"></i>
 							</a>
+
 						</td>
 					</tr>
 				</tbody>
@@ -86,6 +83,8 @@
 	</div>
 
 	<th:block th:utext="${toast}"></th:block>
+
+
 
 </div>
 

@@ -1,7 +1,5 @@
 package com.intranet.models;
 
-import org.hibernate.annotations.DynamicInsert;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,35 +15,32 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "tb_curso")
+@Table(name = "tb_asistencias")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert
-public class Curso {
+public class Asistencia {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_curso")
-	private Integer idCurso;
-	
-	@Column(name = "nombre_curso")
-	private String nombreCurso;
-	
+	@Column(name = "id_asistencia")
+	private Integer idAsistencia;
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="id_carrera")
-	private Carrera carrera;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="ciclo")
-	private Ciclo ciclo;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="id_profesor")
+	@JoinColumn(name = "id_alumno")
 	private Usuario usuario;
-	
-	@Column(name = "estado", columnDefinition = "BIT NOT NULL DEFAULT 1")
-	private Boolean estado = true;
-	
-	private Integer creditos;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_curso")
+	private Curso curso;
+
+	@Column(name = "inasistencias")
+	private Integer inasistencias;
+
+	public Asistencia(Usuario usuario, Curso curso) {
+		this.usuario = usuario;
+		this.curso = curso;
+		this.inasistencias = 0;
+	}
+
 }

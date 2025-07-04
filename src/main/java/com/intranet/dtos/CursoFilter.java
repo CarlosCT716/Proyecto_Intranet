@@ -11,5 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CursoFilter {
 	private Integer idCarrera;
+	private Integer idCiclo;
+	private Integer idCurso;
 	private Integer idUsuario;
 }

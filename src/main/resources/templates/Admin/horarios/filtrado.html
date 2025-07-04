@@ -32,13 +32,13 @@
 				</a>
 			</div>
 
-			<!-- Filtro por Aula -->
+			<!-- Filtro por Carrera -->
 			<div class="col-md-3">
-				<label class="texto" for="aula">Aula</label>
-				<select class="form-select" th:field="*{idAula}" onchange="this.form.submit()">
-					<option value="">-- Todas --</option>
-					<option th:each="item : ${aulas}" th:value="${item.idAula}" th:text="${item.descripcion}"></option>
-				</select>
+			    <label class="texto" for="carrera">Carrera</label>
+			    <select class="form-select" th:field="*{idCarrera}" onchange="this.form.submit()">
+			        <option value="">-- Todas --</option>
+			        <option th:each="item : ${carreras}" th:value="${item.idCarrera}" th:text="${item.descripcion}"></option>
+			    </select>
 			</div>
 
 		</div>

@@ -1,7 +1,5 @@
 package com.intranet.models;
 
-import org.hibernate.annotations.DynamicInsert;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,35 +15,43 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "tb_curso")
+@Table(name = "tb_notas")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert
-public class Curso {
+public class Notas {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_curso")
-	private Integer idCurso;
-	
-	@Column(name = "nombre_curso")
-	private String nombreCurso;
-	
+	@Column(name = "id_nota")
+	private Integer idNota;
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="id_carrera")
-	private Carrera carrera;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="ciclo")
-	private Ciclo ciclo;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="id_profesor")
+	@JoinColumn(name = "id_alumno")
 	private Usuario usuario;
-	
-	@Column(name = "estado", columnDefinition = "BIT NOT NULL DEFAULT 1")
-	private Boolean estado = true;
-	
-	private Integer creditos;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_curso")
+	private Curso curso;
+
+	@Column(name = "nota1")
+	private Double nota1;
+
+	@Column(name = "nota2")
+	private Double nota2;
+
+	@Column(name = "nota3")
+	private Double nota3;
+
+	@Column(name = "promedio", insertable = false, updatable = false)
+	private Double promedio;
+
+	public Notas(Usuario usuario, Curso curso) {
+		this.usuario = usuario;
+		this.curso = curso;
+		this.nota1 = 0.0;
+		this.nota2 = 0.0;
+		this.nota3 = 0.0;
+	}
+
 }

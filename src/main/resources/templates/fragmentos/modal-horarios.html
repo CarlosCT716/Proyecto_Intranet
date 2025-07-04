@@ -1,0 +1,77 @@
+<div th:fragment="modal-horarios(carreras, ciclos, horarios,filtro)">
+  <div class="modal fade" id="modalHorarios" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+        <!-- Header del modal -->
+        <div class="modal-header">
+          <h5 class="modal-title">Selección de Horarios</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <!-- FORMULARIO DE FILTRO (GET) -->
+          <form method="get" th:action="@{seleccionFiltro}" th:object="${filtro}">
+            <div class="row mb-3">
+
+              <!-- Filtro Ciclos -->
+              <div class="col-md-6">
+                <label class="texto" for="modalidad">Ciclos</label>
+                <select class="form-select" th:field="*{idCiclo}" onchange="this.form.submit()">
+                  <option value="">-- Todas --</option>
+                  <option th:each="item : ${ciclos}" th:value="${item.idCiclo}" th:text="${item.descripcion}"></option>
+                </select>
+              </div>
+
+              <!-- Filtro Carreras -->
+              <div class="col-md-6">
+                <label class="texto" for="carrera">Carrera</label>
+                <select class="form-select" th:field="*{idCarrera}" onchange="this.form.submit()">
+                  <option value="">-- Todas --</option>
+                  <option th:each="item : ${carreras}" th:value="${item.idCarrera}" th:text="${item.descripcion}"></option>
+                </select>
+              </div>
+
+            </div>
+          </form>
+
+		  <form th:action="@{agregar}" method="post">
+		    <div th:if="${horarios != null}">
+		      <h6>Horarios encontrados</h6>
+		      <table class="table table-sm table-bordered">
+		        <thead>
+		          <tr>
+		            <th>Curso</th>
+		            <th>Día</th>
+		            <th>Inicio</th>
+		            <th>Fin</th>
+		            <th>Aula</th>
+		          </tr>
+		        </thead>
+		        <tbody>
+		          <tr th:each="h : ${horarios}">
+		            <td>
+		              <input type="hidden" name="idsSeleccion" th:value="${h.idHorario}" />
+		              <span th:text="${h.curso.nombreCurso}"></span>
+		            </td>
+		            <td th:text="${h.Dia}"></td>
+		            <td th:text="${h.inicio}"></td>
+		            <td th:text="${h.fin}"></td>
+		            <td th:text="${h.aula.descripcion}"></td>
+		          </tr>
+		        </tbody>
+		      </table>
+		    </div>
+		    <div class="modal-footer">
+		      <button type="submit" class="btn btn-success">Agregar a Matrícula</button>
+		      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+		    </div>
+		  </form>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

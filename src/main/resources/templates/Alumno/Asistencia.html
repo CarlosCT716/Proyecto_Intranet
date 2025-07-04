@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::content})">
+<div th:fragment="content">
+	<div class="container py-5">
+		<div class="card shadow-sm border-0">
+			<div class="card-body">
+				<h3 class="mb-4 text-primary text-center">
+					<i class="bi bi-clipboard-check me-2"></i> Registro de Asistencias
+				</h3>
+
+				<div class="row mb-4">
+					<div class="col-md-6">
+						<label class="form-label fw-bold">Alumno:</label>
+						<input type="text" class="form-control bg-light" th:value="${usuario}" readonly>
+					</div>
+					<div class="col-md-6">
+						<label class="form-label fw-bold">Carrera:</label>
+						<input type="text" class="form-control bg-light" th:value="${carrera}" readonly>
+					</div>
+				</div>
+
+				<div class="table-responsive">
+					<table class="table table-striped table-hover align-middle">
+						<thead class="table-dark text-center">
+							<tr>
+								<th>Curso</th>
+								<th>Profesor</th>
+								<th>Inasistencias</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="a : ${lstAsistencias}" class="text-center">
+								<td th:text="${a.curso.nombreCurso}">Curso</td>
+								<td th:text="${a.curso.usuario.nombres + ' ' + a.curso.usuario.apellidos}">Profesor</td>
+								<td th:text="${a.inasistencias}">0</td>
+							</tr>
+							<tr th:if="${#lists.isEmpty(lstAsistencias)}">
+								<td colspan="3" class="text-center text-muted">No hay registros de asistencia.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="text-end mt-4">
+					<a th:href="@{/inicio}" class="btn btn-outline-secondary">
+						<i class="bi bi-arrow-left-circle"></i> Volver al inicio
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</html>

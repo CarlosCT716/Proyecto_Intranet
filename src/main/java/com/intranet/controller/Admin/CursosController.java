@@ -16,6 +16,7 @@ import com.intranet.dtos.CursoFilter;
 import com.intranet.dtos.ResultadoResponse;
 import com.intranet.models.Curso;
 import com.intranet.service.CarreraService;
+import com.intranet.service.CicloService;
 import com.intranet.service.CursoService;
 import com.intranet.service.UsuarioService;
 import com.intranet.utils.Alert;
@@ -31,28 +32,25 @@ public class CursosController {
 	private CarreraService carreraService;
 	@Autowired
 	private UsuarioService usuarioService;
+	@Autowired
+	private CicloService cicloService;
 
 	@GetMapping("/filtrado")
 	public String filtrado(@ModelAttribute CursoFilter filtro, Model m, HttpSession session) {
-		if (session.getAttribute("cuenta") == null )
+		if (session.getAttribute("cuenta") == null)
 			return "redirect:/login";
-		m.addAttribute("cuenta", session.getAttribute("cuenta"));
-		m.addAttribute("usuario", session.getAttribute("usuario"));
-		m.addAttribute("tipo", session.getAttribute("tipo"));
-		
+		m.addAttribute("ciclos", cicloService.getAll());
 		m.addAttribute("carreras", carreraService.getAll());
-		m.addAttribute("usuarios", usuarioService.getProfesores());
 		m.addAttribute("filtro", filtro);
 		m.addAttribute("lstCurso", cursoService.search(filtro));
 		return "Admin/cursos/filtrado";
 	}
 
 	@GetMapping("/nuevo")
-	public String nuevo(Model m,HttpSession session) {
+	public String nuevo(Model m, HttpSession session) {
 		m.addAttribute("curso", new Curso());
-        m.addAttribute("cuenta", session.getAttribute("cuenta"));
-        m.addAttribute("usuario", session.getAttribute("usuario"));
-        m.addAttribute("tipo", session.getAttribute("tipo"));
+
+		m.addAttribute("ciclos", cicloService.getAll());
 		m.addAttribute("carreras", carreraService.getAll());
 		m.addAttribute("usuarios", usuarioService.getProfesores());
 		return "Admin/cursos/nuevo";
@@ -62,6 +60,7 @@ public class CursosController {
 	public String registrar(@Validated @ModelAttribute Curso curso, BindingResult br, Model m,
 			RedirectAttributes flash) {
 		if (br.hasErrors()) {
+			m.addAttribute("ciclos", cicloService.getAll());
 			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("usuarios", usuarioService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertInfo("Falta completar información"));
@@ -69,6 +68,7 @@ public class CursosController {
 		}
 		ResultadoResponse res = cursoService.create(curso);
 		if (!res.success) {
+			m.addAttribute("ciclos", cicloService.getAll());
 			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("usuarios", usuarioService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertError(res.mensaje));
@@ -79,11 +79,10 @@ public class CursosController {
 	}
 
 	@GetMapping("/edicion/{id}")
-	public String edicion(@PathVariable Integer id, Model m,HttpSession session) {
+	public String edicion(@PathVariable Integer id, Model m, HttpSession session) {
 		m.addAttribute("curso", cursoService.getOne(id));
-        m.addAttribute("cuenta", session.getAttribute("cuenta"));
-        m.addAttribute("usuario", session.getAttribute("usuario"));
-        m.addAttribute("tipo", session.getAttribute("tipo"));
+
+		m.addAttribute("ciclos", cicloService.getAll());
 		m.addAttribute("carreras", carreraService.getAll());
 		m.addAttribute("usuarios", usuarioService.getProfesores());
 		return "Admin/cursos/edicion";
@@ -92,6 +91,7 @@ public class CursosController {
 	@PostMapping("/guardar")
 	public String guardar(@Validated @ModelAttribute Curso curso, BindingResult br, Model m, RedirectAttributes flash) {
 		if (br.hasErrors()) {
+			m.addAttribute("ciclos", cicloService.getAll());
 			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("usuarios", usuarioService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertInfo("Falta completar información"));
@@ -99,6 +99,7 @@ public class CursosController {
 		}
 		ResultadoResponse res = cursoService.update(curso);
 		if (!res.success) {
+			m.addAttribute("ciclos", cicloService.getAll());
 			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("usuarios", usuarioService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertError(res.mensaje));

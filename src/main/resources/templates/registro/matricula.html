@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Proceso de Matrícula</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" th:href="@{/css/eIndex.css}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<!-- para el datatable -->
+	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+	<script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+</head>
+
+<body>
+	<div class="container my-5">
+
+		<!-- Encabezado -->
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h1 class="texto">Proceso de Matrícula</h1>
+			<form th:action="@{confirmar}" method="post">
+				<th:block th:each="h : ${lstHorarios}">
+					<input type="hidden" name="idsHorarios" th:value="${h.idHorario}" />
+				</th:block>
+				<button type="submit" class="btn btn-primary">
+					<i class="fa-solid fa-floppy-disk me-2"></i>Matricularse
+				</button>
+			</form>
+		</div>
+
+		<!-- Filtros -->
+		<div class="card shadow-sm mb-4">
+			<div class="card-header bg-light">
+				<strong>Filtrar Horarios</strong>
+			</div>
+			<div class="card-body">
+				<form method="get" th:action="@{seleccionFiltro}" th:object="${filtro}">
+					<div class="row g-3">
+
+						<!-- Filtro Ciclo -->
+						<div class="col-md-6">
+							<label for="idCiclo" class="form-label">Ciclo</label>
+							<select class="form-select" th:field="*{idCiclo}" onchange="this.form.submit()">
+								<option value="">-- Todos --</option>
+								<option th:each="item : ${ciclos}" th:value="${item.idCiclo}"
+									th:text="${item.descripcion}"></option>
+							</select>
+						</div>
+
+						<!-- Filtro Carrera -->
+						<div class="col-md-6">
+							<label for="idCarrera" class="form-label">Carrera</label>
+							<select class="form-select" th:field="*{idCarrera}" onchange="this.form.submit()">
+								<option value="">-- Todas --</option>
+								<option th:each="item : ${carreras}" th:value="${item.idCarrera}"
+									th:text="${item.descripcion}"></option>
+							</select>
+						</div>
+
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- Horarios seleccionados -->
+		<div class="card shadow-sm mb-4">
+			<div class="card-header bg-secondary text-white">
+				<strong>Horarios Seleccionados</strong>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-bordered table-hover align-middle text-center">
+						<thead class="table-dark">
+							<tr>
+								<th>Curso</th>
+								<th>Día</th>
+								<th>Inicio</th>
+								<th>Fin</th>
+								<th>Aula</th>
+								<th>Créditos</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="h : ${lstHorarios}">
+								<td th:text="${h.curso.nombreCurso}"></td>
+								<td th:text="${h.dia}"></td>
+								<td th:text="${#temporals.format(h.inicio, 'HH:mm')}"></td>
+								<td th:text="${#temporals.format(h.fin, 'HH:mm')}"></td>
+								<td th:text="${h.aula.descripcion}"></td>
+								<td th:text="${h.curso.creditos}"></td>
+							</tr>
+							<tr th:if="${#lists.isEmpty(lstHorarios)}">
+								<td colspan="6" class="text-muted">No hay horarios seleccionados.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Resumen -->
+		<div class="card border-success shadow-sm mb-4" th:if="${lstHorarios != null and !#lists.isEmpty(lstHorarios)}">
+			<div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+				<h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Resumen de Matrícula</h5>
+				<span class="badge bg-light text-success fs-6">
+					[[${lstHorarios.size()}]] cursos
+				</span>
+			</div>
+			<div class="card-body text-center">
+				<div class="row g-4">
+					<div class="col-md-4">
+						<h6 class="text-muted">Estudiante</h6>
+						<p class="fs-5 fw-bold text-primary" th:text="${Nombres}"></p>
+					</div>
+					<div class="col-md-4">
+						<h6 class="text-muted">Correo</h6>
+						<p class="fs-5 fw-bold text-primary" th:text="${Correo}"></p>
+					</div>
+					<div class="col-md-4">
+						<h6 class="text-muted">Carrera</h6>
+						<p class="fs-5 fw-bold text-primary" th:each="c : ${carreras}"
+							th:if="${c.idCarrera == filtro.idCarrera}" th:text="${c.descripcion}"></p>
+					</div>
+					<div class="col-md-4">
+						<h6 class="text-muted">Créditos Totales</h6>
+						<p class="fs-5 fw-bold text-primary" th:text="${totalCreditos}"></p>
+					</div>
+					<div class="col-md-4">
+						<h6 class="text-muted">Monto Total</h6>
+						<p class="fs-5 fw-bold text-success">S/. <span th:text="${totalMatricula}"></span></p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Botón volver -->
+		<div class="text-end">
+			<a class="btn btn-danger" th:href="@{/login}">
+				<i class="fa-solid fa-arrow-left me-2"></i>Volver
+			</a>
+		</div>
+
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

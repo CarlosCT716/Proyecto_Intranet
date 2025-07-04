@@ -37,9 +37,6 @@ public class ProfesorController {
 		if (session.getAttribute("cuenta") == null)
 			return "redirect:/login";
 
-		m.addAttribute("cuenta", session.getAttribute("cuenta"));
-		m.addAttribute("usuario", session.getAttribute("usuario"));
-		m.addAttribute("tipo", session.getAttribute("tipo"));
 
 		m.addAttribute("lstProfesores", profesorService.getAll());
 		return "Admin/profesores/filtrado";
@@ -48,9 +45,6 @@ public class ProfesorController {
 	@GetMapping("/nuevo")
 	public String nuevo(Model m, HttpSession session) {
 		m.addAttribute("profesor", new Usuario());
-		m.addAttribute("cuenta", session.getAttribute("cuenta"));
-		m.addAttribute("usuario", session.getAttribute("usuario"));
-		m.addAttribute("tipo", session.getAttribute("tipo"));
 		m.addAttribute("carreras", carreraService.getAll());
 		return "Admin/profesores/nuevo";
 	}
@@ -83,9 +77,6 @@ public class ProfesorController {
 	public String edicion(@PathVariable Integer id, Model m, HttpSession session) {
 		Usuario profesor = profesorService.getOne(id);
 		m.addAttribute("profesor", profesor);
-		m.addAttribute("cuenta", session.getAttribute("cuenta"));
-		m.addAttribute("usuario", session.getAttribute("usuario"));
-		m.addAttribute("tipo", session.getAttribute("tipo"));
 		m.addAttribute("carreras",carreraService.getAll());
 		return "Admin/profesores/edicion";
 	}
@@ -94,9 +85,6 @@ public class ProfesorController {
 	public String guardar(@Validated @ModelAttribute("profesor") Usuario profesor, BindingResult br, Model m,
 			RedirectAttributes flash, HttpSession session) {
 		if (br.hasErrors()) {
-			m.addAttribute("cuenta", session.getAttribute("cuenta"));
-			m.addAttribute("usuario", session.getAttribute("usuario"));
-			m.addAttribute("tipo", session.getAttribute("tipo"));
 			
 			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("usuarios", usuarioService.getAll());
@@ -106,9 +94,6 @@ public class ProfesorController {
 
 		ResultadoResponse res = profesorService.update(profesor);
 		if (!res.success) {
-			m.addAttribute("cuenta", session.getAttribute("cuenta"));
-			m.addAttribute("usuario", session.getAttribute("usuario"));
-			m.addAttribute("tipo", session.getAttribute("tipo"));
 			
 			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("usuarios", usuarioService.getAll());

@@ -37,20 +37,20 @@
 					<button type="submit" id="btn_Entrar">Entrar</button>
 				</form>
 				<!--Registro-->
-				<form action="registro" method="post" id="registerForm" class="formulario__register">
-					<h2>Registrarse</h2>
-					<input type="text" id="nombre" placeholder="Nombres" required name="nombres"> 
-					<input type="text"id="apellido" placeholder="Apellidos" required name="apellidos"> 
-					<input type="text" id="usuario" placeholder="Usuario" required name="usuario"> 
-					<input type="text" id="correo"placeholder="Correo Electronico" required name="correo"> 
-					<input type="password" id="password" placeholder="Contraseña" required name="password">
-					<button type="submit" id="btn_form_registrarse">Registrarse</button>
+				<form th:action="@{matricula/seleccion}" method="post" th:object="${RegistroForm}" id="registerForm" class="formulario__register">
+				    <h2>Registrarse</h2>
+				    <input type="text" placeholder="Nombres" required th:field="*{nombres}" />
+				    <input type="text" placeholder="Apellidos" required th:field="*{apellidos}" />
+				    <input type="text" placeholder="Usuario" required th:field="*{usuario}" />
+				    <input type="text" placeholder="Correo Electronico" required th:field="*{correo}" />
+				    <input type="password" placeholder="Contraseña" required th:field="*{password}" />
+				    <button type="submit">Registrarse</button>
 				</form>
 
-
+			
 
 			</div>
-
+			
 		</div>
 	</main>
 

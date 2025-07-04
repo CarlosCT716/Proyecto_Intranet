@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.intranet.dtos.HorarioFilter;
 import com.intranet.dtos.ResultadoResponse;
 import com.intranet.models.Horario;
-import com.intranet.service.AulaService;
+import com.intranet.service.CarreraService;
 import com.intranet.service.CursoService;
 import com.intranet.service.HorarioService;
 import com.intranet.service.ModalidadService;
@@ -34,18 +34,15 @@ public class HorarioController {
 	@Autowired
 	private ModalidadService modalidadService;
 	@Autowired
-	private AulaService aulaService;
+	private CarreraService carreraService;
 
 	@GetMapping("/filtrado")
 	public String filtrado(@ModelAttribute HorarioFilter filtro, Model m, HttpSession session) {
 		if (session.getAttribute("cuenta") == null)
 			return "redirect:/login";
-		m.addAttribute("cuenta", session.getAttribute("cuenta"));
-		m.addAttribute("usuario", session.getAttribute("usuario"));
-		m.addAttribute("tipo", session.getAttribute("tipo"));
 
 		m.addAttribute("modalidades", modalidadService.getAll());
-		m.addAttribute("aulas", aulaService.getAll());
+		m.addAttribute("carreras", carreraService.getAll());
 		m.addAttribute("filtro", filtro);
 		m.addAttribute("lstHorarios", horarioService.search(filtro));
 		return "Admin/horarios/filtrado";
@@ -55,12 +52,8 @@ public class HorarioController {
 	public String nuevo(Model m, HttpSession session) {
 		m.addAttribute("horario", new Horario());
 
-		m.addAttribute("cuenta", session.getAttribute("cuenta"));
-		m.addAttribute("usuario", session.getAttribute("usuario"));
-		m.addAttribute("tipo", session.getAttribute("tipo"));
-
 		m.addAttribute("cursos", cursoService.getAll());
-		m.addAttribute("aulas", aulaService.getAll());
+		m.addAttribute("carreras", carreraService.getAll());
 		m.addAttribute("modalidades", modalidadService.getAll());
 		return "Admin/horarios/nuevo";
 	}
@@ -70,7 +63,7 @@ public class HorarioController {
 			RedirectAttributes flash) {
 		if (br.hasErrors()) {
 			m.addAttribute("cursos", cursoService.getAll());
-			m.addAttribute("aulas", aulaService.getAll());
+			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("modalidades", modalidadService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertInfo("Falta completar información"));
 			return "horarios/nuevo";
@@ -78,7 +71,7 @@ public class HorarioController {
 		ResultadoResponse res = horarioService.create(horario);
 		if (!res.success) {
 			m.addAttribute("cursos", cursoService.getAll());
-			m.addAttribute("aulas", aulaService.getAll());
+			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("modalidades", modalidadService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertError(res.mensaje));
 			return "horarios/nuevo";
@@ -90,11 +83,8 @@ public class HorarioController {
 	@GetMapping("/edicion/{id}")
 	public String edicion(@PathVariable Integer id, Model m, HttpSession session) {
 		m.addAttribute("horario", horarioService.getOne(id));
-		m.addAttribute("cuenta", session.getAttribute("cuenta"));
-		m.addAttribute("usuario", session.getAttribute("usuario"));
-		m.addAttribute("tipo", session.getAttribute("tipo"));
 		m.addAttribute("cursos", cursoService.getAll());
-		m.addAttribute("aulas", aulaService.getAll());
+		m.addAttribute("carreras", carreraService.getAll());
 		m.addAttribute("modalidades", modalidadService.getAll());
 		return "Admin/horarios/edicion";
 	}
@@ -104,7 +94,7 @@ public class HorarioController {
 			RedirectAttributes flash) {
 		if (br.hasErrors()) {
 			m.addAttribute("cursos", cursoService.getAll());
-			m.addAttribute("aulas", aulaService.getAll());
+			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("modalidades", modalidadService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertInfo("Falta completar información"));
 			return "horarios/edicion";
@@ -112,7 +102,7 @@ public class HorarioController {
 		ResultadoResponse res = horarioService.update(horario);
 		if (!res.success) {
 			m.addAttribute("cursos", cursoService.getAll());
-			m.addAttribute("aulas", aulaService.getAll());
+			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("modalidades", modalidadService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertError(res.mensaje));
 			return "horarios/edicion";

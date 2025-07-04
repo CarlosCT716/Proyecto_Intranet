@@ -25,9 +25,6 @@ public class AuditoriaController {
     public String listado(Model m,HttpSession session) {
         List<Auditoria> logs = _auditoria.findAll(Sort.by(Sort.Direction.DESC, "fecha"));
         m.addAttribute("logs", logs);
-        m.addAttribute("cuenta", session.getAttribute("cuenta"));
-		m.addAttribute("usuario", session.getAttribute("usuario"));
-		m.addAttribute("tipo", session.getAttribute("tipo"));
         return "Admin/auditoria/Auditoria"; 
     }
 }

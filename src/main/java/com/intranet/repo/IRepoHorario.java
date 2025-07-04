@@ -9,14 +9,35 @@ import org.springframework.data.repository.query.Param;
 import com.intranet.models.Horario;
 
 public interface IRepoHorario extends JpaRepository<Horario, Integer> {
-	  List<Horario> findAllByOrderByIdHorarioDesc();
+	List<Horario> findAllByOrderByIdHorarioDesc();
 
-	    @Query("""
-	        select h from Horario h
-	         where (:aula is null or h.aula.idAula = :aula)
-	           and (:modalidad is null or h.modalidad.idModalidad = :modalidad)
-	        order by h.idHorario desc
-	    """)
-	    List<Horario> findAllWithFilters(@Param("aula") Integer aula,
-	                                   @Param("modalidad") Integer modalidad);
+	@Query("""
+			  select h from Horario h
+			  join h.curso c
+			  join c.carrera cr
+			  where (:modalidad is null or h.modalidad.idModalidad = :modalidad)
+			  and (:carrera is null or cr.idCarrera = :carrera)
+			  order by h.idHorario desc
+			""")
+	List<Horario> findAllWithFilters(@Param("modalidad") Integer modalidad, @Param("carrera") Integer carrera);
+
+	@Query("""
+			  select h from Horario h
+			  join h.curso c
+			  join c.ciclo ci
+			  join c.carrera cr
+			  where ( ci.idCiclo = :ciclo)
+			  and ( cr.idCarrera = :carrera)
+			  order by h.Dia asc
+			""")
+	List<Horario> findByHorario(@Param("ciclo") Integer ciclo, @Param("carrera") Integer carrera);
+
+	@Query("""
+			  select h from Horario h
+			  where ( h.idHorario = :horario)
+			  order by h.Dia asc
+			""")
+	List<Horario> findCursosByHorarioId(@Param("horario") Integer idHorario);
+
+	List<Horario> findAllByEstado(Boolean Estado);
 }

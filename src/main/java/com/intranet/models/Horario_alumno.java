@@ -1,7 +1,5 @@
 package com.intranet.models;
 
-import org.hibernate.annotations.DynamicInsert;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,35 +15,27 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "tb_curso")
+@Table(name = "tb_horarios_alumno")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert
-public class Curso {
+public class Horario_alumno {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_curso")
-	private Integer idCurso;
-	
-	@Column(name = "nombre_curso")
-	private String nombreCurso;
-	
+	@Column(name = "id_horario_alumno")
+	private Integer idHorarioA;
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="id_carrera")
-	private Carrera carrera;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="ciclo")
-	private Ciclo ciclo;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="id_profesor")
+	@JoinColumn(name = "id_alumno")
 	private Usuario usuario;
-	
-	@Column(name = "estado", columnDefinition = "BIT NOT NULL DEFAULT 1")
-	private Boolean estado = true;
-	
-	private Integer creditos;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_horario")
+	private Horario horario;
+
+	public Horario_alumno(Usuario usuario, Horario horario) {
+		this.usuario = usuario;
+		this.horario = horario;
+	}
 }

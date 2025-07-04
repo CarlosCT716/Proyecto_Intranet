@@ -47,8 +47,13 @@
 					<li class="nav-item" th:if="${tipo == 1}"><a class="nav-link" href="https://outlook.live.com/"
 							target="_blank">Correo</a>
 					</li>
-					<li class="nav-item" th:if="${tipo == 1}"><a class="nav-link" href="#">Notas</a></li>
-					<li class="nav-item" th:if="${tipo == 1}"><a class="nav-link" href="#">Asistencias</a></li>
+					<li class="nav-item" th:if="${tipo == 1}"><a class="nav-link" th:href="@{/nota/filtrado}">Notas</a></li>
+					<li class="nav-item" th:if="${tipo == 1}"><a class="nav-link"
+							th:href="@{/asistencia/filtrado}">Asistencias</a></li>
+					<li class="nav-item" th:if="${tipo == 1}">
+						<a class="nav-link" href="https://cibertec.blackboard.com/webapps/login/"
+							target="_blank">BlackBoard</a>
+					</li>
 
 					<!-- Menú para ALUMNO -->
 					<li class="nav-item" th:if="${tipo == 2}"><a class="nav-link" href="https://outlook.live.com/"
@@ -59,6 +64,7 @@
 							href="https://www.cibertec.edu.pe/directus/b931735c-c9a8-49b5-97c8-f8778b6f31a9.pdf"
 							target="_blank">Malla Curricular</a>
 					</li>
+
 					<li class="nav-item" th:if="${tipo == 2}">
 						<a class="nav-link" href="https://cibertec.blackboard.com/webapps/login/"
 							target="_blank">BlackBoard</a>

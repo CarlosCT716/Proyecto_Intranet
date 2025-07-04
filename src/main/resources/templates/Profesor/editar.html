@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::contenido})">
+<div th:fragment="contenido">
+	<div class="card shadow-lg">
+		<div class="card-body">
+			<h1 class="text-center" th:utext="|Asistencia - Edición<br>ID ${asistencia.idAsistencia}|"></h1>
+			<div class="row justify-content-center">
+				<div class="col-md-6">
+					<form novalidate th:action="@{/asistencia/guardar}" method="post" th:object="${asistencia}"
+						class="needs-validation">
+						
+						<!-- ID (oculto) -->
+						<input type="hidden" th:field="*{idAsistencia}" />
+
+						<!-- Alumno -->
+						<div class="mb-3">
+							<label for="usuario">Alumno</label>
+							<select class="form-select" required th:field="*{usuario.idUsuario}"
+								th:classappend="${#fields.hasErrors('usuario')} ? 'is-invalid' : ''" disabled>
+								<option value="">--Seleccione--</option>
+								<option th:each="u : ${usuarios}" th:value="${u.idUsuario}" th:text="${u.nombres + ' ' + u.apellidos}"></option>
+							</select>
+							<div class="invalid-feedback" th:errors="*{usuario}"></div>
+							<input type="hidden" th:field="*{usuario.idUsuario}" />
+						</div>
+
+						<!-- Curso -->
+						<div class="mb-3">
+							<label for="curso">Curso</label>
+							<select class="form-select" required th:field="*{curso.idCurso}"
+								th:classappend="${#fields.hasErrors('curso')} ? 'is-invalid' : ''" disabled>
+								<option value="">--Seleccione--</option>
+								<option th:each="c : ${cursos}" th:value="${c.idCurso}" th:text="${c.nombreCurso}"></option>
+							</select>
+							<div class="invalid-feedback" th:errors="*{curso}"></div>
+							<input type="hidden" th:field="*{curso.idCurso}" />
+						</div>
+
+						<!-- Inasistencias -->
+						<div class="mb-3">
+							<label for="inasistencias">Inasistencias</label>
+							<input type="number" min="0" class="form-control" placeholder="Ej. 3" required
+								th:field="*{inasistencias}"
+								th:classappend="${#fields.hasErrors('inasistencias')} ? 'is-invalid' : ''">
+							<div class="invalid-feedback" th:errors="*{inasistencias}"></div>
+						</div>
+
+						<!-- Botones -->
+						<div class="d-flex justify-content-between">
+							<button type="reset" class="btn btn-outline-secondary">
+								Limpiar <i class="fa-solid fa-eraser"></i>
+							</button>
+							<button type="submit" class="btn btn-primary">
+								Guardar <i class="fa-solid fa-floppy-disk"></i>
+							</button>
+							<a th:href="@{/asistencia/filtrado}" class="btn btn-dark">
+								Regresar <i class="fa-solid fa-circle-left"></i>
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<th:block th:utext="${alert}"></th:block>
+</div>
+</html>

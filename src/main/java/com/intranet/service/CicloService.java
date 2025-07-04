@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import com.intranet.models.Ciclo;
 import com.intranet.repo.IRepoCiclo;
 
@@ -16,4 +17,8 @@ public class CicloService {
 	public List<Ciclo> getAll() {
 		return _ciclo.findAll();
 	}
+	public Ciclo getOne(Integer id) {
+		return _ciclo.findById(id).orElseThrow();
+	}
 }
+

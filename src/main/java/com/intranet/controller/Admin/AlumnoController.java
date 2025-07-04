@@ -39,11 +39,6 @@ public class AlumnoController {
     public String filtrado(Model m, HttpSession session) {
         if (session.getAttribute("cuenta") == null)
             return "redirect:/login";
-
-        m.addAttribute("cuenta", session.getAttribute("cuenta"));
-        m.addAttribute("usuario", session.getAttribute("usuario"));
-        m.addAttribute("tipo", session.getAttribute("tipo"));
-
         m.addAttribute("lstAlumnos", alumnoService.getAll());
         return "Admin/alumnos/filtrado";
     }
@@ -51,9 +46,6 @@ public class AlumnoController {
     @GetMapping("/nuevo")
     public String nuevo(Model m, HttpSession session) {
         m.addAttribute("alumno", new Usuario());
-        m.addAttribute("cuenta", session.getAttribute("cuenta"));
-        m.addAttribute("usuario", session.getAttribute("usuario"));
-        m.addAttribute("tipo", session.getAttribute("tipo"));
         m.addAttribute("carreras", carreraService.getAll());
         m.addAttribute("ciclos", cicloService.getAll());
         return "Admin/alumnos/nuevo";
@@ -83,10 +75,7 @@ public class AlumnoController {
     public String edicion(@PathVariable Integer id, Model m, HttpSession session) {
         Usuario alumno = alumnoService.getOne(id);
         m.addAttribute("alumno", alumno);
-        m.addAttribute("cuenta", session.getAttribute("cuenta"));
-        m.addAttribute("usuario", session.getAttribute("usuario"));
         m.addAttribute("carreras", carreraService.getAll());
-        m.addAttribute("tipo", session.getAttribute("tipo"));
         return "Admin/alumnos/edicion";
     }
 
