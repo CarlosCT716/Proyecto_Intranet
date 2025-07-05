@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,18 +24,23 @@ public class Usuario {
 	@Column(name="id_usuario")
 	private Integer idUsuario;
 	
+	@NotBlank(message = "El nombre es requerido")
 	@Column(name="nombres")
 	private String nombres;
 	
+	@NotBlank(message = "El apellido es requerido")
 	@Column(name="apellidos")
 	private String apellidos;
 	
+	@NotBlank(message = "El usuario es requerido")
 	@Column(name="usuario")
 	private String usuario;
 	
+	@NotBlank(message = "El nombre es requerida")
 	@Column(name="correo")
 	private String correo;
 	
+	@NotBlank(message = "La contraseña es requerida")
 	@Column(name="clave")
 	private String password;
 	
@@ -44,6 +51,7 @@ public class Usuario {
 	@Column(name = "estado", columnDefinition = "BIT NOT NULL DEFAULT 1")
 	private Boolean estado;
 	
+	@NotNull(message = "Debe asignar una carrera")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="carrera")
 	private Carrera carrera;

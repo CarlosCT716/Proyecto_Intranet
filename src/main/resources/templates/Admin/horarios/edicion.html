@@ -8,7 +8,7 @@
 				<div class="col-md-6">
 					<form novalidate th:action="@{/horarios/guardar}" method="post" th:object="${horario}"
 						class="needs-validation">
-
+						<input type="hidden" th:field="*{idHorario}" />
 						<!-- Curso -->
 						<div class="mb-3">
 							<label for="curso">Curso</label>
@@ -40,16 +40,20 @@
 						<!-- Hora inicio -->
 						<div class="mb-3">
 							<label for="inicio">Hora de Inicio</label>
-							<input type="time" class="form-control" required th:field="*{inicio}"
+							<input type="time" class="form-control" required
+								th:value="${#temporals.format(horario.inicio, 'HH:mm')}" name="inicio"
 								th:classappend="${#fields.hasErrors('inicio')} ? 'is-invalid' : ''">
+
 							<div class="invalid-feedback" th:errors="*{inicio}"></div>
 						</div>
 
 						<!-- Hora fin -->
 						<div class="mb-3">
 							<label for="fin">Hora de Fin</label>
-							<input type="time" class="form-control" required th:field="*{fin}"
+							<input type="time" class="form-control" required
+								th:value="${#temporals.format(horario.fin, 'HH:mm')}" name="fin"
 								th:classappend="${#fields.hasErrors('fin')} ? 'is-invalid' : ''">
+
 							<div class="invalid-feedback" th:errors="*{fin}"></div>
 						</div>
 

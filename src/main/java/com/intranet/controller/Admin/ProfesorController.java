@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,12 +13,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.intranet.dtos.ResultadoResponse;
 import com.intranet.models.Usuario;
+import com.intranet.service.AutenticationService;
 import com.intranet.service.CarreraService;
 import com.intranet.service.ProfesorService;
 import com.intranet.service.UsuarioService;
 import com.intranet.utils.Alert;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/profesores")
@@ -31,12 +32,14 @@ public class ProfesorController {
 	private CarreraService carreraService;
 	@Autowired
 	private UsuarioService usuarioService;
+	@Autowired
+	private AutenticationService autenticationService;
 
 	@GetMapping("/filtrado")
 	public String filtrado(Model m, HttpSession session) {
-		if (session.getAttribute("cuenta") == null)
-			return "redirect:/login";
-
+	 	if (session.getAttribute("cuenta") == null || !autenticationService.Admin(session)) {
+		    return "redirect:/login";
+		}
 
 		m.addAttribute("lstProfesores", profesorService.getAll());
 		return "Admin/profesores/filtrado";
@@ -44,13 +47,16 @@ public class ProfesorController {
 
 	@GetMapping("/nuevo")
 	public String nuevo(Model m, HttpSession session) {
+	 	if (session.getAttribute("cuenta") == null || !autenticationService.Admin(session)) {
+		    return "redirect:/login";
+		}
 		m.addAttribute("profesor", new Usuario());
 		m.addAttribute("carreras", carreraService.getAll());
 		return "Admin/profesores/nuevo";
 	}
 
 	@PostMapping("/registrar")
-	public String registrar(@Validated @ModelAttribute("profesor") Usuario profesor, BindingResult br, Model m,
+	public String registrar(@Valid @ModelAttribute("profesor") Usuario profesor, BindingResult br, Model m,
 			RedirectAttributes flash, HttpSession session) {
 		if (br.hasErrors()) {
 			m.addAttribute("alert", Alert.sweetAlertInfo("Falta completar información"));
@@ -75,17 +81,20 @@ public class ProfesorController {
 
 	@GetMapping("/edicion/{id}")
 	public String edicion(@PathVariable Integer id, Model m, HttpSession session) {
+	 	if (session.getAttribute("cuenta") == null || !autenticationService.Admin(session)) {
+		    return "redirect:/login";
+		}
 		Usuario profesor = profesorService.getOne(id);
 		m.addAttribute("profesor", profesor);
-		m.addAttribute("carreras",carreraService.getAll());
+		m.addAttribute("carreras", carreraService.getAll());
 		return "Admin/profesores/edicion";
 	}
 
 	@PostMapping("/guardar")
-	public String guardar(@Validated @ModelAttribute("profesor") Usuario profesor, BindingResult br, Model m,
+	public String guardar(@Valid @ModelAttribute("profesor") Usuario profesor, BindingResult br, Model m,
 			RedirectAttributes flash, HttpSession session) {
 		if (br.hasErrors()) {
-			
+
 			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("usuarios", usuarioService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertInfo("Falta completar información"));
@@ -94,7 +103,7 @@ public class ProfesorController {
 
 		ResultadoResponse res = profesorService.update(profesor);
 		if (!res.success) {
-			
+
 			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("usuarios", usuarioService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertError(res.mensaje));

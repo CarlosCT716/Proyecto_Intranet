@@ -44,6 +44,7 @@ public class LoginController {
 		Usuario usuarioValidado = autenticationService.autenticar(filter);
 
 		if (usuarioValidado == null) {
+			model.addAttribute("RegistroForm", new RegistroForm());
 			model.addAttribute("filter", new AutenticationFilter());
 			model.addAttribute("alert", Alert.sweetAlertError("Usuario y/o clave incorrecta"));
 			return "login";

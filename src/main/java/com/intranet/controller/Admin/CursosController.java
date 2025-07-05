@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.intranet.dtos.CursoFilter;
 import com.intranet.dtos.ResultadoResponse;
 import com.intranet.models.Curso;
+import com.intranet.service.AutenticationService;
 import com.intranet.service.CarreraService;
 import com.intranet.service.CicloService;
 import com.intranet.service.CursoService;
@@ -22,6 +22,7 @@ import com.intranet.service.UsuarioService;
 import com.intranet.utils.Alert;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/cursos")
@@ -34,11 +35,14 @@ public class CursosController {
 	private UsuarioService usuarioService;
 	@Autowired
 	private CicloService cicloService;
+	@Autowired
+	private AutenticationService autenticationService;
 
 	@GetMapping("/filtrado")
 	public String filtrado(@ModelAttribute CursoFilter filtro, Model m, HttpSession session) {
-		if (session.getAttribute("cuenta") == null)
+		if (session.getAttribute("cuenta") == null || !autenticationService.Admin(session)) {
 			return "redirect:/login";
+		}
 		m.addAttribute("ciclos", cicloService.getAll());
 		m.addAttribute("carreras", carreraService.getAll());
 		m.addAttribute("filtro", filtro);
@@ -48,8 +52,10 @@ public class CursosController {
 
 	@GetMapping("/nuevo")
 	public String nuevo(Model m, HttpSession session) {
+		if (session.getAttribute("cuenta") == null || !autenticationService.Admin(session)) {
+			return "redirect:/login";
+		}
 		m.addAttribute("curso", new Curso());
-
 		m.addAttribute("ciclos", cicloService.getAll());
 		m.addAttribute("carreras", carreraService.getAll());
 		m.addAttribute("usuarios", usuarioService.getProfesores());
@@ -57,22 +63,22 @@ public class CursosController {
 	}
 
 	@PostMapping("/registrar")
-	public String registrar(@Validated @ModelAttribute Curso curso, BindingResult br, Model m,
+	public String registrar(@Valid @ModelAttribute Curso curso, BindingResult br, Model m,
 			RedirectAttributes flash) {
 		if (br.hasErrors()) {
 			m.addAttribute("ciclos", cicloService.getAll());
 			m.addAttribute("carreras", carreraService.getAll());
-			m.addAttribute("usuarios", usuarioService.getAll());
+			m.addAttribute("usuarios", usuarioService.getProfesores());
 			m.addAttribute("alert", Alert.sweetAlertInfo("Falta completar información"));
-			return "cursos/nuevo";
+			return "Admin/cursos/nuevo";
 		}
 		ResultadoResponse res = cursoService.create(curso);
 		if (!res.success) {
 			m.addAttribute("ciclos", cicloService.getAll());
 			m.addAttribute("carreras", carreraService.getAll());
-			m.addAttribute("usuarios", usuarioService.getAll());
+			m.addAttribute("usuarios", usuarioService.getProfesores());
 			m.addAttribute("alert", Alert.sweetAlertError(res.mensaje));
-			return "cursos/nuevo";
+			return "Admin/cursos/nuevo";
 		}
 		flash.addFlashAttribute("toast", Alert.sweetToast(res.mensaje, "success", 5000));
 		return "redirect:/cursos/filtrado";
@@ -80,8 +86,10 @@ public class CursosController {
 
 	@GetMapping("/edicion/{id}")
 	public String edicion(@PathVariable Integer id, Model m, HttpSession session) {
+		if (session.getAttribute("cuenta") == null || !autenticationService.Admin(session)) {
+			return "redirect:/login";
+		}
 		m.addAttribute("curso", cursoService.getOne(id));
-
 		m.addAttribute("ciclos", cicloService.getAll());
 		m.addAttribute("carreras", carreraService.getAll());
 		m.addAttribute("usuarios", usuarioService.getProfesores());
@@ -89,13 +97,13 @@ public class CursosController {
 	}
 
 	@PostMapping("/guardar")
-	public String guardar(@Validated @ModelAttribute Curso curso, BindingResult br, Model m, RedirectAttributes flash) {
+	public String guardar(@Valid @ModelAttribute("curso") Curso curso, BindingResult br, Model m, RedirectAttributes flash) {
 		if (br.hasErrors()) {
 			m.addAttribute("ciclos", cicloService.getAll());
 			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("usuarios", usuarioService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertInfo("Falta completar información"));
-			return "cursos/edicion";
+			return "Admin/cursos/edicion";
 		}
 		ResultadoResponse res = cursoService.update(curso);
 		if (!res.success) {
@@ -103,7 +111,7 @@ public class CursosController {
 			m.addAttribute("carreras", carreraService.getAll());
 			m.addAttribute("usuarios", usuarioService.getAll());
 			m.addAttribute("alert", Alert.sweetAlertError(res.mensaje));
-			return "cursos/edicion";
+			return "Admin/cursos/edicion";
 		}
 		flash.addFlashAttribute("toast", Alert.sweetToast(res.mensaje, "success", 5000));
 		return "redirect:/cursos/filtrado";

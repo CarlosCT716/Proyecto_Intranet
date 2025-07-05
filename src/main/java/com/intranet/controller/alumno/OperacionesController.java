@@ -12,6 +12,7 @@ import com.intranet.models.Asistencia;
 import com.intranet.models.Horario_alumno;
 import com.intranet.models.Notas;
 import com.intranet.service.AsistenciaService;
+import com.intranet.service.AutenticationService;
 import com.intranet.service.CarreraService;
 import com.intranet.service.HorarioAlumnoService;
 import com.intranet.service.NotasService;
@@ -35,11 +36,15 @@ public class OperacionesController {
 	
 	@Autowired
 	private AsistenciaService asistenciaService;
+	@Autowired
+	private AutenticationService autenticationService;
+	
 
 	@GetMapping("/notas")
 	public String notas(Model m, HttpSession session, CursoFilter filtro) {
-		if (session.getAttribute("cuenta") == null)
-			return "redirect:/login";
+		if (session.getAttribute("cuenta") == null || !autenticationService.Alumno(session)) {
+		    return "redirect:/login";
+		}
 
 		Integer idUsuario = (Integer) session.getAttribute("idUsuario");
 		Integer idCarrera = (Integer) session.getAttribute("carrera");
@@ -56,8 +61,9 @@ public class OperacionesController {
 
 	@GetMapping("/horario")
 	public String verHorario(Model m, HttpSession session) {
-		if (session.getAttribute("cuenta") == null)
-			return "redirect:/login";
+		if (session.getAttribute("cuenta") == null || !autenticationService.Alumno(session)) {
+		    return "redirect:/login";
+		}
 		
 		Integer idUsuario = (Integer) session.getAttribute("idUsuario");
 		Integer idCarrera = (Integer) session.getAttribute("carrera");
@@ -70,8 +76,9 @@ public class OperacionesController {
 	
 	@GetMapping("/asistencias")
 	public String verAsistencias(Model m, HttpSession session, CursoFilter filtro) {
-		if (session.getAttribute("cuenta") == null)
-			return "redirect:/login";
+		if (session.getAttribute("cuenta") == null || !autenticationService.Alumno(session)) {
+		    return "redirect:/login";
+		}
 
 		Integer idUsuario = (Integer) session.getAttribute("idUsuario");
 		filtro.setIdUsuario(idUsuario);

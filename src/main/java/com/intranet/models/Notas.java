@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,14 +35,20 @@ public class Notas {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_curso")
 	private Curso curso;
-
-	@Column(name = "nota1")
+	
+	@Min(value = 0, message = "Nota minima 0")
+	@Max(value = 20, message = "Nota máxima 20")
+	@Column(name = "nota1", nullable= false)
 	private Double nota1;
 
-	@Column(name = "nota2")
+	@Min(value = 0, message = "Nota minima 0")
+	@Max(value = 20, message = "Nota máxima 20")
+	@Column(name = "nota2", nullable= false)
 	private Double nota2;
 
-	@Column(name = "nota3")
+	@Min(value = 0, message = "Nota minima 0")
+	@Max(value = 20, message = "Nota máxima 20")
+	@Column(name = "nota3", nullable= false)
 	private Double nota3;
 
 	@Column(name = "promedio", insertable = false, updatable = false)

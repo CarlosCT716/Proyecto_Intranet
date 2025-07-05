@@ -6,6 +6,7 @@ import com.intranet.dtos.CursoFilter;
 import com.intranet.dtos.ResultadoResponse;
 import com.intranet.models.Curso;
 import com.intranet.models.Notas;
+import com.intranet.service.AutenticationService;
 import com.intranet.service.CarreraService;
 import com.intranet.service.CicloService;
 import com.intranet.service.CursoService;
@@ -14,12 +15,12 @@ import com.intranet.service.UsuarioService;
 import com.intranet.utils.Alert;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -41,11 +42,16 @@ public class NotaController {
     
     @Autowired
     private UsuarioService usuarioService;
+    
+    @Autowired
+	private AutenticationService autenticationService;
+	
 
     @GetMapping("/filtrado")
     public String getListado(@ModelAttribute CursoFilter filtro, @RequestParam(value = "idCurso", required = false) Integer idCurso, Model m, HttpSession session) {
-        if (session.getAttribute("cuenta") == null)
-            return "redirect:/login";
+    	if (session.getAttribute("cuenta") == null || !autenticationService.Profesor(session)) {
+		    return "redirect:/login";
+		}
         
         Integer idUsuario = (Integer) session.getAttribute("idUsuario");
         filtro.setIdUsuario(idUsuario);
@@ -68,17 +74,11 @@ public class NotaController {
         return "/Profesor/Notas";
 	}
 
-	@GetMapping("/edicion")
-	public String edicion(Model m) {
-		return "Profesor/editarNota";
-	}
-	
 	@GetMapping("/editarNota/{id}")
 	public String editar(@PathVariable("id") Integer id, Model m, HttpSession session) {
-	    if (session.getAttribute("cuenta") == null) {
-	        return "redirect:/login";
-	    }
-
+		if (session.getAttribute("cuenta") == null || !autenticationService.Profesor(session)) {
+		    return "redirect:/login";
+		}
 	    Notas notas = notasService.getbyID(id);
 	    
 
@@ -93,7 +93,7 @@ public class NotaController {
 	    return "Profesor/editarNota";
 	}
 	@PostMapping("/guardar")
-	public String guardar(@Validated @ModelAttribute Notas notas, BindingResult br, Model m, RedirectAttributes flash) {
+	public String guardar(@Valid @ModelAttribute Notas notas, BindingResult br, Model m, RedirectAttributes flash) {
 		if (br.hasErrors()) {
 			m.addAttribute("ciclos", cicloService.getAll());
 			m.addAttribute("carreras", carreraService.getAll());

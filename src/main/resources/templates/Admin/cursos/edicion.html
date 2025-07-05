@@ -9,7 +9,7 @@
 				<div class="col-md-6">
 					<form novalidate th:action="@{/cursos/guardar}" method="post" th:object="${curso}"
 						class="needs-validation">
-
+						<input type="hidden" th:field="*{idCurso}" />
 						<div class="mb-3">
 							<label for="nombre_curso">Nombre del Curso</label>
 							<input type="text" class="form-control" placeholder="Ej. Matemáticas Básicas" required

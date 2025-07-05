@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +17,7 @@ import com.intranet.dtos.ResultadoResponse;
 import com.intranet.models.Asistencia;
 import com.intranet.models.Curso;
 import com.intranet.service.AsistenciaService;
+import com.intranet.service.AutenticationService;
 import com.intranet.service.CarreraService;
 import com.intranet.service.CicloService;
 import com.intranet.service.CursoService;
@@ -25,6 +25,8 @@ import com.intranet.service.UsuarioService;
 import com.intranet.utils.Alert;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 
 
@@ -41,11 +43,15 @@ public class AsistenciaController {
 	private CarreraService carreraService;
 	@Autowired
 	private UsuarioService usuarioService;
+	@Autowired
+	private AutenticationService autenticationService;
 	
 	@GetMapping("/filtrado")
     public String getListado(@ModelAttribute CursoFilter filtro, Model m, HttpSession session) {
-        if (session.getAttribute("cuenta") == null)
-            return "redirect:/login";
+		if (session.getAttribute("cuenta") == null || !autenticationService.Profesor(session)) {
+		    return "redirect:/login";
+		}
+
         
         Integer idUsuario = (Integer) session.getAttribute("idUsuario");
         filtro.setIdUsuario(idUsuario);
@@ -63,16 +69,12 @@ public class AsistenciaController {
         return "/Profesor/Asistencias";
 	}
 
-	@GetMapping("/edicion")
-	public String edicion(Model m) {
-		return "Profesor/editar";
-	}
 	
 	@GetMapping("/editar/{id}")
 	public String editar(@PathVariable("id") Integer id, Model m, HttpSession session) {
-	    if (session.getAttribute("cuenta") == null) {
-	        return "redirect:/login";
-	    }
+		if (session.getAttribute("cuenta") == null || !autenticationService.Profesor(session)) {
+		    return "redirect:/login";
+		}
 
 	    Asistencia asistencia = asistenciaService.getbyID(id);
 	    
@@ -84,7 +86,7 @@ public class AsistenciaController {
 	}
 
 	@PostMapping("/guardar")
-	public String guardar(@Validated @ModelAttribute Asistencia asistencia, BindingResult br, Model m, RedirectAttributes flash) {
+	public String guardar(@Valid @ModelAttribute Asistencia asistencia, BindingResult br, Model m, RedirectAttributes flash) {
 		if (br.hasErrors()) {
 			m.addAttribute("ciclos", cicloService.getAll());
 			m.addAttribute("carreras", carreraService.getAll());
@@ -100,8 +102,15 @@ public class AsistenciaController {
 			m.addAttribute("alert", Alert.sweetAlertError(res.mensaje));
 			return "Profesor/editar";
 		}
-		flash.addFlashAttribute("toast", Alert.sweetToast(res.mensaje, "success", 5000));
-		return "redirect:/asistencia/filtrado";
+		Curso curso = cursoService.getbyID(asistencia.getCurso().getIdCurso());
+		Integer idCurso = curso.getIdCurso();
+		Integer idCiclo = curso.getCiclo().getIdCiclo();
+		Integer idCarrera = curso.getCarrera().getIdCarrera();
+
+		flash.addFlashAttribute("toast", Alert.sweetToast("Asistencia actualizada correctamente", "success", 5000));
+		return "redirect:/asistencia/filtrado?idCurso=" + idCurso +
+		           "&idCiclo=" + idCiclo +
+		           "&idCarrera=" + idCarrera;
 	}
 
 	
