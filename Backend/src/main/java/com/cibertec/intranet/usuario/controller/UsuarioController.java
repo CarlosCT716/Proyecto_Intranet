@@ -36,9 +36,9 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.actualizarUsuario(id, dto));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        usuarioService.eliminarLogico(id);
-        return ResponseEntity.noContent().build();
+    @PatchMapping("/estado/{id}")
+    public ResponseEntity<Void> cambiarEstado(@PathVariable Integer id) {
+        usuarioService.cambiarEstado(id);
+        return ResponseEntity.ok().build();
     }
 }

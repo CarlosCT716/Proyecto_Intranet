@@ -18,7 +18,7 @@ public class ProfesorController {
     private final ProfesorService profesorService;
 
 
-    @GetMapping("/curso/{idCurso}/notas")
+    @GetMapping("/curso/notas/{idCurso}")
     public ResponseEntity<List<NotaDTO>> listarNotas(@PathVariable Integer idCurso) {
         return ResponseEntity.ok(profesorService.listarNotasPorCurso(idCurso));
     }
@@ -29,7 +29,7 @@ public class ProfesorController {
     }
 
 
-    @GetMapping("/curso/{idCurso}/sesiones")
+    @GetMapping("/curso/sesiones/{idCurso}")
     public ResponseEntity<List<SesionDTO>> listarSesiones(@PathVariable Integer idCurso) {
         return ResponseEntity.ok(profesorService.listarSesionesPorCurso(idCurso));
     }

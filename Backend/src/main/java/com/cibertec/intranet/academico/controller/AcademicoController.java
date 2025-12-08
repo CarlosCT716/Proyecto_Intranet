@@ -70,7 +70,7 @@ public class AcademicoController {
         return ResponseEntity.ok(academicoService.guardarAula(aula));
     }
 
-    @PatchMapping("/aulas/{id}/estado")
+    @PatchMapping("/aulas/estado/{id}")
     public ResponseEntity<Void> cambiarEstadoAula(@PathVariable Integer id) {
         academicoService.cambiarEstadoAula(id);
         return ResponseEntity.ok().build();
@@ -97,7 +97,7 @@ public class AcademicoController {
         return ResponseEntity.ok(academicoService.actualizarCurso(id, dto));
     }
 
-    @PatchMapping("/cursos/{id}/estado")
+    @PatchMapping("/cursos/estado/{id}")
     public ResponseEntity<Void> cambiarEstadoCurso(@PathVariable Integer id) {
         academicoService.cambiarEstadoCurso(id);
         return ResponseEntity.ok().build();
@@ -124,7 +124,7 @@ public class AcademicoController {
         return ResponseEntity.ok(academicoService.actualizarHorario(id, dto));
     }
 
-    @PatchMapping("/horarios/{id}/estado")
+    @PatchMapping("/horarios/estado/{id}")
     public ResponseEntity<Void> cambiarEstadoHorario(@PathVariable Integer id) {
         academicoService.cambiarEstadoHorario(id);
         return ResponseEntity.ok().build();

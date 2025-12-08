@@ -1,9 +1,12 @@
 package com.cibertec.intranet.auth.jwt;
 
+import com.cibertec.intranet.usuario.model.Usuario;
+import com.cibertec.intranet.usuario.repository.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +23,8 @@ public class jwtAuthFilter extends OncePerRequestFilter {
 
     private final jwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     public jwtAuthFilter(jwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
@@ -53,6 +58,13 @@ public class jwtAuthFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
+            Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
+
+            if (usuario == null || !usuario.getActivo()) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("La cuenta ha sido desactivada.");
+                return;
+            }
             if (jwtUtil.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,

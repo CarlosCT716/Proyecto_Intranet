@@ -5,6 +5,8 @@ import com.cibertec.intranet.academico.model.Horario;
 import com.cibertec.intranet.academico.repository.CarreraRepository;
 import com.cibertec.intranet.academico.repository.CicloRepository;
 import com.cibertec.intranet.academico.repository.HorarioRepository;
+import com.cibertec.intranet.asistente.model.HistorialInteraccion;
+import com.cibertec.intranet.asistente.repository.HistorialRepository;
 import com.cibertec.intranet.matricula.model.DetalleMatricula;
 import com.cibertec.intranet.matricula.model.Matricula;
 import com.cibertec.intranet.matricula.model.Pago;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +42,7 @@ public class GeminiService {
     private final Client client;
     private final PagoRepository pagoRepository;
     private final UsuarioRepository usuarioRepository;
-    private final CicloRepository cicloRepository;
-    private final CarreraRepository carreraRepository;
+    private final HistorialRepository historialRepository;
     private final HorarioRepository horarioRepository;
     private final MatriculaRepository matriculaRepository;
     private final NotaRepository notaRepository;
@@ -73,7 +75,6 @@ public class GeminiService {
                 default -> "No se encontró información específica para la consulta.";
             };
 
-            // 🚀 SIEMPRE enviamos el PDF como texto, no importa el tipo de consulta
             String prompt = """
                 Eres el asistente virtual oficial de la Intranet Cibertec.
 
@@ -104,8 +105,16 @@ public class GeminiService {
                     Content.builder().parts(List.of(Part.fromText(prompt))).build(),
                     null
             );
+            String respuestaIA = response.text();
+            HistorialInteraccion historial = new HistorialInteraccion();
+            historial.setIdUsuario(userId);
+            historial.setPreguntaUsuario(mensaje);
+            historial.setRespuestaIa(respuestaIA);
+            historial.setFecha(LocalDateTime.now());
 
-            return response.text();
+            historialRepository.save(historial);
+
+            return respuestaIA;
 
         } catch (Exception e) {
             e.printStackTrace();

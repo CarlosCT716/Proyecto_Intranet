@@ -38,24 +38,23 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 1. RUTAS PÚBLICAS
+                        //RUTAS PÚBLICAS
                         .requestMatchers("/auth/**").permitAll() // Login
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/usuarios","/api/matriculas","/api/asistente/chat").permitAll()
 
-                        // 2. RUTAS DE ADMINISTRADOR (Auditoría y Gestión de Usuarios)
+                        //RUTAS DE ADMINISTRADOR
                         .requestMatchers("/api/auditoria/**").hasRole("ADMIN")
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 
-                        // 3. RUTAS DE PROFESOR (Asistencia y Notas)
-                        // Nota: El Admin también suele tener permiso para arreglar cosas
+                        //RUTAS DE PROFESOR
                         .requestMatchers("/api/asistencias/**").hasAnyRole("PROFESOR", "ADMIN")
                         .requestMatchers("/api/notas/**").hasAnyRole("PROFESOR", "ADMIN")
 
-                        // 4. RUTAS DE ALUMNO (Matrícula y ver sus cosas)
+                        //RUTAS DE ALUMNO
                         .requestMatchers("/api/matriculas/**").hasAnyRole("ALUMNO", "ADMIN")
 
-                        // 5. CHATBOT (Para usuarios)
+                        //CHATBOT
                         .requestMatchers("/api/chatbot/**").authenticated()
 
                         .anyRequest().authenticated()

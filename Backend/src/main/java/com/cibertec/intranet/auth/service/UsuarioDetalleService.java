@@ -24,7 +24,6 @@ public class UsuarioDetalleService implements UserDetailsService {
         Usuario usuario = _usuario.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-        // Convertimos el Rol de la BD a formato Spring Security
         GrantedAuthority authority = new SimpleGrantedAuthority(usuario.getRol().getNombreRol());
 
         return new User(

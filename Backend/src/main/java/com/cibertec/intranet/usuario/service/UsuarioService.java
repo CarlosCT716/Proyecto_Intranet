@@ -1,5 +1,6 @@
 package com.cibertec.intranet.usuario.service;
 
+import com.cibertec.intranet.academico.model.Horario;
 import com.cibertec.intranet.usuario.dto.UsuarioCreateDTO;
 import com.cibertec.intranet.usuario.dto.UsuarioDTO;
 import com.cibertec.intranet.usuario.model.Rol;
@@ -72,13 +73,12 @@ public class UsuarioService {
     }
 
     @Transactional
-    public void eliminarLogico(Integer id) {
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        usuario.setActivo(false);
-        usuarioRepository.save(usuario);
+    public void cambiarEstado(Integer id) {
+        Usuario u = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Horario no encontrado"));
+        u.setActivo(!u.getActivo());
+        usuarioRepository.save(u);
     }
+
 
     private UsuarioDTO convertirADTO(Usuario u) {
         UsuarioDTO dto = new UsuarioDTO();

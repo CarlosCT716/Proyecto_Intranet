@@ -6,6 +6,7 @@ import com.cibertec.intranet.academico.dto.HorarioCreateDTO;
 import com.cibertec.intranet.academico.dto.HorarioDTO;
 import com.cibertec.intranet.academico.model.*;
 import com.cibertec.intranet.academico.repository.*;
+import com.cibertec.intranet.auditoria.annotation.Auditable;
 import com.cibertec.intranet.usuario.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,7 @@ public class AcademicoService {
         return aulaRepository.findById(id).orElseThrow(() -> new RuntimeException("Aula no encontrada"));
     }
 
+    @Auditable(accion = "CREACION", tabla = "tb_aula")
     @Transactional
     public Aula guardarAula(Aula aula) {
         if(aula.getIdAula() == null) aula.setActivo(true);

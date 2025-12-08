@@ -29,8 +29,8 @@ public class jwtUtil {
 
     public String generateToken(String username, String role, Integer userId) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);   // Guardamos ROLE_ALUMNO, ROLE_PROFESOR, etc.
-        claims.put("userId", userId); // Guardamos el ID para consultas rápidas
+        claims.put("role", role);
+        claims.put("userId", userId);
 
         return Jwts.builder()
                 .setClaims(claims)
