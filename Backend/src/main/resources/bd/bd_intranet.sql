@@ -63,9 +63,16 @@ CREATE TABLE tb_curso (
     id_ciclo INT NOT NULL,
     id_profesor INT NOT NULL,
     cupo_maximo INT DEFAULT 30,
+    activo BIT default 1,
     FOREIGN KEY (id_carrera) REFERENCES tb_carrera(id_carrera),
     FOREIGN KEY (id_ciclo) REFERENCES tb_ciclo(id_ciclo),
     FOREIGN KEY (id_profesor) REFERENCES tb_usuario(id_usuario)
+);
+
+CREATE TABLE tb_aula (
+	id_aula INT auto_increment PRIMARY KEY,
+    activo BIT default 1,
+    descripcion VARCHAR(250) NOT NULL
 );
 
 CREATE TABLE tb_horario (
@@ -74,8 +81,10 @@ CREATE TABLE tb_horario (
     dia_semana VARCHAR(15) NOT NULL, 
     hora_inicio TIME NOT NULL,
     hora_fin TIME NOT NULL,
-    aula VARCHAR(20) NOT NULL,
-    FOREIGN KEY (id_curso) REFERENCES tb_curso(id_curso)
+    id_aula INT NOT NULL,
+    activo BIT default 1,
+    FOREIGN KEY (id_curso) REFERENCES tb_curso(id_curso),
+    foreign key (id_aula) REFERENCES tb_aula(id_aula)
 );
 
 CREATE TABLE tb_sesion_clase (
@@ -146,12 +155,7 @@ CREATE TABLE tb_asistencia (
     UNIQUE(id_sesion, id_alumno) 
 );
 
-CREATE TABLE tb_ia_faq (
-    id_faq INT AUTO_INCREMENT PRIMARY KEY,
-    pregunta VARCHAR(255) NOT NULL,
-    respuesta TEXT NOT NULL,
-    categoria VARCHAR(50) 
-);
+
 
 CREATE TABLE tb_ia_historial (
     id_interaccion INT AUTO_INCREMENT PRIMARY KEY,
@@ -184,10 +188,13 @@ INSERT INTO tb_curso (nombre_curso, creditos, id_carrera, id_ciclo, id_profesor)
 ('Lenguaje de Programación I', 4, 1, 1, 2), 
 ('Base de Datos I', 3, 1, 1, 3);
 
+INSERT INTO tb_aula( descripcion) VALUES	
+('A001'),
+('A002');
 
-INSERT INTO tb_horario (id_curso, dia_semana, hora_inicio, hora_fin, aula) VALUES 
-(1, 'LUNES', '08:00:00', '10:00:00', 'Lab-101'),
-(1, 'MIERCOLES', '08:00:00', '10:00:00', 'Lab-101');
+INSERT INTO tb_horario (id_curso, dia_semana, hora_inicio, hora_fin, id_aula) VALUES 
+(1, 'LUNES', '08:00:00', '10:00:00', '1'),
+(1, 'MIERCOLES', '08:00:00', '10:00:00', '2');
 
 
 INSERT INTO tb_sesion_clase (id_curso, fecha, estado_sesion) VALUES 
@@ -209,9 +216,14 @@ INSERT INTO tb_pago (id_matricula, concepto, monto, fecha_vencimiento, id_estado
 INSERT INTO tb_nota (id_detalle_matricula) VALUES (1), (2), (3);
 
 
-INSERT INTO tb_ia_faq (pregunta, respuesta, categoria) VALUES 
-('¿Cuándo vencen los pagos?', 'Las cuotas vencen el primer día de cada mes.', 'Pagos'),
-('¿Cómo veo mis notas?', 'Ingresa al menú "Mis Notas" en el panel lateral.', 'Intranet');
-
 SELECT * FROM tb_usuario;
 select * from tb_nota;
+select * from tb_carrera;
+select * from tb_curso;
+select * from tb_matricula;
+select * from tb_auditoria;
+
+select * from tb_ia_faq;
+select * from tb_ia_historial;
+
+update tb_usuario set activo = 1 where id_usuario = 6
