@@ -1,6 +1,7 @@
     package com.cibertec.intranet.profesor.service;
 
     import com.cibertec.intranet.academico.model.Curso;
+    import com.cibertec.intranet.auditoria.annotation.Auditable;
     import com.cibertec.intranet.profesor.model.Sesion;
     import com.cibertec.intranet.academico.repository.CursoRepository;
     import com.cibertec.intranet.profesor.repository.SesionRepository;
@@ -29,33 +30,36 @@
         private final CursoRepository cursoRepository;
         private final UsuarioRepository usuarioRepository;
 
+        public List<Curso> listarCursosAsignados(Integer idProfesor, Integer idCiclo, Integer idCarrera) {
+            List<Curso> cursos = cursoRepository.findByProfesor_IdUsuario(idProfesor);
+
+            return cursos.stream()
+                    .filter(c -> idCiclo == null || c.getCiclo().getIdCiclo().equals(idCiclo))
+                    .filter(c -> idCarrera == null || c.getCarrera().getIdCarrera().equals(idCarrera))
+                    .collect(Collectors.toList());
+        }
         // GESTIÓN DE NOTAS
-        // Listar alumnos con sus notas para mostrarlos en la tabla del profesor
         public List<NotaDTO> listarNotasPorCurso(Integer idCurso) {
             return notaRepository.findByDetalleMatricula_Curso_IdCurso(idCurso).stream()
                     .map(this::convertirNotaADTO)
                     .collect(Collectors.toList());
         }
 
+        @Auditable(accion = "ACTUALZACION", tabla = "tb_notas")
         @Transactional
         public NotaDTO actualizarNota(NotaDTO dto) {
             Nota nota = notaRepository.findById(dto.getIdNota())
                     .orElseThrow(() -> new RuntimeException("Registro de notas no encontrado"));
 
-            // Actualizamos solo los valores
             nota.setNota1(dto.getNota1());
             nota.setNota2(dto.getNota2());
             nota.setNota3(dto.getNota3());
             nota.setExamenFinal(dto.getExamenFinal());
 
-            // El promedio se calcula automáticamente en BD (Generated Column) o lo hace JPA al guardar
             return convertirNotaADTO(notaRepository.save(nota));
         }
 
-        // ==========================================
-        // 2. GESTIÓN DE SESIONES (Clases por fecha)
-        // ==========================================
-
+        // GESTIÓN DE SESIONES (Clases por fecha)
         public List<SesionDTO> listarSesionesPorCurso(Integer idCurso) {
             return sesionRepository.findByCurso_IdCursoOrderByFechaDesc(idCurso).stream()
                     .map(s -> {
@@ -68,6 +72,7 @@
                     }).collect(Collectors.toList());
         }
 
+        @Auditable(accion = "CREACION", tabla = "tb_sesion")
         @Transactional
         public SesionDTO crearSesion(SesionDTO dto) {
             Curso curso = cursoRepository.findById(dto.getIdCurso())
@@ -86,6 +91,7 @@
         }
 
         //Asistencia
+        @Auditable(accion = "CREACION", tabla = "tb_asistencia")
         @Transactional
         public void registrarAsistenciaMasiva(Integer idSesion, List<AsistenciaDTO> listaAsistencia) {
             Sesion sesion = sesionRepository.findById(idSesion)

@@ -31,19 +31,20 @@ public class AcademicoService {
     public Carrera obtenerCarrera(Integer id) {
         return carreraRepository.findById(id).orElseThrow(() -> new RuntimeException("Carrera no encontrada"));
     }
-
+    @Auditable(accion = "CREACION", tabla = "tb_carrera")
     @Transactional
     public Carrera guardarCarrera(Carrera carrera) {
         return carreraRepository.save(carrera);
     }
 
-
-    public List<Ciclo> listarCiclos() { return cicloRepository.findAll(); }
+    public List<Ciclo> listarCiclos()
+    { return cicloRepository.findAll(); }
 
     public Ciclo obtenerCiclo(Integer id) {
         return cicloRepository.findById(id).orElseThrow(() -> new RuntimeException("Ciclo no encontrado"));
     }
 
+    @Auditable(accion = "CREACION", tabla = "tb_ciclo")
     @Transactional
     public Ciclo guardarCiclo(Ciclo ciclo) {
         return cicloRepository.save(ciclo);
@@ -65,6 +66,7 @@ public class AcademicoService {
         return aulaRepository.save(aula);
     }
 
+    @Auditable(accion = "ESTADO", tabla = "tb_aula")
     @Transactional
     public void cambiarEstadoAula(Integer id) {
         Aula aula = obtenerAula(id);
@@ -86,6 +88,7 @@ public class AcademicoService {
         return convertirCursoADTO(curso);
     }
 
+    @Auditable(accion = "CREACION", tabla = "tb_curso")
     @Transactional
     public CursoDTO guardarCurso(CursoCreateDTO dto) {
         Curso curso = new Curso();
@@ -93,12 +96,13 @@ public class AcademicoService {
         return registrarDatosCurso(curso, dto);
     }
 
+    @Auditable(accion = "ACTUALIZACIÓN", tabla = "tb_curso")
     @Transactional
     public CursoDTO actualizarCurso(Integer id, CursoCreateDTO dto) {
         Curso curso = cursoRepository.findById(id).orElseThrow(() -> new RuntimeException("Curso no encontrado"));
         return registrarDatosCurso(curso, dto);
     }
-
+    @Auditable(accion = "ESTADO", tabla = "tb_curso")
     @Transactional
     public void cambiarEstadoCurso(Integer id) {
         Curso curso = cursoRepository.findById(id).orElseThrow(() -> new RuntimeException("Curso no encontrado"));
@@ -119,6 +123,7 @@ public class AcademicoService {
         return convertirHorarioADTO(horario);
     }
 
+    @Auditable(accion = "CREACION", tabla = "tb_horario")
     @Transactional
     public HorarioDTO crearHorario(HorarioCreateDTO dto) {
         Horario horario = new Horario();
@@ -126,12 +131,14 @@ public class AcademicoService {
         return registrarDatosHorario(horario, dto);
     }
 
+    @Auditable(accion = "ACTUALIZACION", tabla = "tb_horario")
     @Transactional
     public HorarioDTO actualizarHorario(Integer id, HorarioCreateDTO dto) {
         Horario horario = horarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Horario no encontrado"));
         return registrarDatosHorario(horario, dto);
     }
 
+    @Auditable(accion = "ESTADO", tabla = "tb_horario")
     @Transactional
     public void cambiarEstadoHorario(Integer id) {
         Horario horario = horarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Horario no encontrado"));
