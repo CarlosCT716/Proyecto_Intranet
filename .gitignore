@@ -30,3 +30,6 @@ build/
 # Archivos sensibles
 **/application.properties
 **/application.yml
+
+# Archivos de sistema
+.DS_Store

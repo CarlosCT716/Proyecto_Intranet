@@ -1,0 +1,15 @@
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+*.class
+
+# Archivos de logs
+*.log
+
+# Archivos de configuración de IDE (Opcional pero recomendado)
+.idea
+*.iml
+.vscode
+
+# Archivos de sistema
+.DS_Store
