@@ -1,0 +1,72 @@
+<section class="bg-linear-to-r from-[#0B4D6C] to-[#002940] min-h-screen flex items-center justify-center p-4">
+    
+    <div class="bg-gray-100 flex rounded-2xl shadow-2xl max-w-5xl w-full overflow-hidden min-h-[550px]">
+        
+        <div class="w-full md:w-1/2 flex flex-col justify-center p-8 md:p-14 relative">
+            
+            <div class="mb-8">
+                <h2 class="font-bold text-4xl text-[#015071] mb-2">Socrates</h2>
+                <p class="text-gray-500 text-lg">Introduce tus credenciales para acceder</p>
+            </div>
+
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+                
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm font-bold text-[#015071] ml-1">Usuario</label>
+                    <input 
+                        class="p-4 rounded-xl border border-[#015071] bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0B4D6C] transition text-gray-700" 
+                        type="text" 
+                        formControlName="username" 
+                        placeholder="Ej: admin">
+                </div>
+
+                <div class="flex flex-col gap-1 relative">
+                    <label class="text-sm font-bold text-[#015071] ml-1">Contraseña</label>
+                    <div class="relative">
+                        <input 
+                            [type]="showPassword ? 'text' : 'password'" 
+                            formControlName="password"
+                            class="p-4 rounded-xl border border-[#015071] bg-slate-50 w-full focus:outline-none focus:ring-2 focus:ring-[#0B4D6C] transition text-gray-700 pr-10" 
+                            placeholder="••••••••">
+                        
+                        <i (click)="togglePasswordVisibility()"
+                           class="absolute top-1/2 -translate-y-1/2 right-4 cursor-pointer text-[#015071] text-lg hover:text-[#0B4D6C]"
+                           [ngClass]="showPassword ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash'">
+                        </i>
+                    </div>
+                </div>
+
+                @if (errorMessage) {
+                    <div class="bg-red-100 text-red-700 p-3 rounded-lg text-sm font-semibold border-l-4 border-red-500">
+                        {{ errorMessage }}
+                    </div>
+                }
+
+                <button 
+                    type="submit" 
+                    [disabled]="isLoading || loginForm.invalid"
+                    class="bg-[#015071] flex justify-center mt-4 rounded-xl text-white py-4 text-lg font-bold shadow-md hover:bg-[#0B4D6C] hover:shadow-lg transform hover:-translate-y-0.5 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    @if (isLoading) {
+                        <i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando...
+                    } @else {
+                        Acceder
+                    }
+                </button>
+            </form>
+
+            <div class="mt-8 flex flex-col items-center gap-4 text-sm text-gray-600">
+                <a href="#" class="hover:text-[#015071] hover:underline transition">¿Olvidaste tu contraseña?</a>
+                <div class="w-full border-t border-gray-300"></div>
+                <p>
+                    ¿No tienes cuenta? 
+                    <a routerLink="/register" class="font-bold text-[#015071] hover:underline text-base cursor-pointer">Regístrate aquí</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="hidden md:block w-1/2 bg-[#002940] relative">
+            <div class="absolute inset-0 bg-[#015071] opacity-20 z-10"></div>
+            <img class="h-full w-full object-cover object-center opacity-90" src="assets/img/Socrates.png" alt="Socrates">
+        </div>
+    </div>
+</section>

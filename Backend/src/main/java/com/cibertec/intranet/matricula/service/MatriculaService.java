@@ -9,9 +9,11 @@ import com.cibertec.intranet.academico.repository.CursoRepository;
 import com.cibertec.intranet.auditoria.annotation.Auditable;
 import com.cibertec.intranet.matricula.dto.MatriculaDTO;
 import com.cibertec.intranet.matricula.model.DetalleMatricula;
+import com.cibertec.intranet.matricula.model.EstadoPago;
 import com.cibertec.intranet.matricula.model.Matricula;
 import com.cibertec.intranet.matricula.model.Pago;
 import com.cibertec.intranet.matricula.repository.DetalleMatriculaRepository;
+import com.cibertec.intranet.matricula.repository.EstadoPagoRepository;
 import com.cibertec.intranet.matricula.repository.MatriculaRepository;
 import com.cibertec.intranet.matricula.repository.PagoRepository;
 import com.cibertec.intranet.profesor.model.Nota;
@@ -41,6 +43,7 @@ public class MatriculaService {
     private final CicloRepository cicloRepository;
     private final CursoRepository cursoRepository;
     private final NotaRepository notaRepository;
+    private final EstadoPagoRepository estadoPagoRepository;
 
     @Auditable(accion = "CREACION", tabla = "tb_matricula")
     @Transactional
@@ -80,12 +83,10 @@ public class MatriculaService {
             detalle.setCurso(curso);
             DetalleMatricula detalleGuardado = detalleMatriculaRepository.save(detalle);
 
+            // CORRECCIÓN: Creamos la nota vacía (NULL)
             Nota notaInicial = new Nota();
             notaInicial.setDetalleMatricula(detalleGuardado);
-            notaInicial.setNota1(BigDecimal.ZERO);
-            notaInicial.setNota2(BigDecimal.ZERO);
-            notaInicial.setNota3(BigDecimal.ZERO);
-            notaInicial.setExamenFinal(BigDecimal.ZERO);
+            // No seteamos nota1, nota2, etc. Se irán como NULL.
             notaRepository.save(notaInicial);
         }
 
@@ -97,7 +98,7 @@ public class MatriculaService {
     private void generarPagosAutomaticos(Matricula matricula, int totalCreditos) {
         LocalDate fechaBase = LocalDate.now();
 
-        crearCuota(matricula, "Derecho de Matrícula", new BigDecimal("300.00"), fechaBase.plusDays(3), 2);
+        crearCuota(matricula, "Derecho de Matrícula", new BigDecimal("300.00"), fechaBase, 2);
 
         BigDecimal costoPorCredito = new BigDecimal("75.00");
         BigDecimal totalBoleta = costoPorCredito.multiply(new BigDecimal(totalCreditos));
@@ -107,9 +108,8 @@ public class MatriculaService {
 
         for (int i = 1; i <= numeroCuotas; i++) {
             String concepto = "Mensualidad " + i + " (Costo Créditos)";
-            LocalDate vencimiento = fechaBase.plusMonths(i).withDayOfMonth(1);
-
-            Integer estado = (i == 1) ? 2 : 1;
+            LocalDate vencimiento = fechaBase.plusMonths(i - 1).withDayOfMonth(28);
+            Integer estado = 1;
 
             if (i == numeroCuotas) {
                 BigDecimal pagadoHastaAhora = montoCuota.multiply(new BigDecimal(numeroCuotas - 1));
@@ -121,15 +121,16 @@ public class MatriculaService {
         }
     }
 
-    private void crearCuota(Matricula m, String concepto, BigDecimal monto, LocalDate vencimiento, Integer estadoPago) {
+    private void crearCuota(Matricula m, String concepto, BigDecimal monto, LocalDate vencimiento, Integer idEstado) {
         Pago pago = new Pago();
         pago.setMatricula(m);
         pago.setConcepto(concepto);
         pago.setMonto(monto);
         pago.setFechaVencimiento(vencimiento);
-        pago.setIdEstadoPago(estadoPago);
-
-        if (estadoPago.equals(2)) {
+        EstadoPago estado = estadoPagoRepository.findById(idEstado)
+                .orElseThrow(() -> new RuntimeException("Estado de pago no encontrado: " + idEstado));
+        pago.setEstadoPago(estado);
+        if (idEstado == 2) {
             pago.setFechaPago(LocalDate.now());
         } else {
             pago.setFechaPago(null);
@@ -137,7 +138,6 @@ public class MatriculaService {
 
         pagoRepository.save(pago);
     }
-
     public List<Matricula> listarTodas() {
         return matriculaRepository.findAll();
     }

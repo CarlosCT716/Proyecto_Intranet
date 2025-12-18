@@ -18,16 +18,15 @@ public class Nota {
     private DetalleMatricula detalleMatricula;
 
     @Column(precision = 4, scale = 2)
-    private BigDecimal nota1 = BigDecimal.ZERO;
+    private BigDecimal nota1;
+    @Column(precision = 4, scale = 2)
+    private BigDecimal nota2;
 
     @Column(precision = 4, scale = 2)
-    private BigDecimal nota2 = BigDecimal.ZERO;
-
-    @Column(precision = 4, scale = 2)
-    private BigDecimal nota3 = BigDecimal.ZERO;
+    private BigDecimal nota3;
 
     @Column(name = "examen_final", precision = 4, scale = 2)
-    private BigDecimal examenFinal = BigDecimal.ZERO;
+    private BigDecimal examenFinal;
 
     @Column(name = "promedio_final", insertable = false, updatable = false)
     private BigDecimal promedioFinal;

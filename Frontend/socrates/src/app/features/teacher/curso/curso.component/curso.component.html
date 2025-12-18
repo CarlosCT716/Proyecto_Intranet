@@ -1,0 +1,45 @@
+<div class="p-6 min-h-screen bg-gray-50">
+    <header class="bg-white shadow-sm h-16 flex items-center justify-between px-6 sticky top-0 z-20 rounded-lg mb-6">
+        <h2 class="text-lg font-bold text-[#0B4D6C]">Mis Cursos Asignados</h2>
+        <div class="w-10 h-10 rounded-full bg-[#0B4D6C] text-white flex items-center justify-center">
+            <i class="fa-solid fa-chalkboard-user"></i>
+        </div>
+    </header>
+
+    @if (isLoading) {
+        <app-loading-spinner message="Cargando cursos..."></app-loading-spinner>
+    } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">
+            @for (curso of cursos; track $index) {
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group">
+                    <div class="h-32 bg-linear-to-r p-6 relative"
+                         [ngClass]="$index % 2 === 0 ? 'from-[#0B4D6C] to-[#2d7a9e]' : 'from-[#ea580c] to-[#f97316]'">
+                        <span class="absolute top-4 right-4 bg-white/20 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">Presencial</span>
+                        <h3 class="text-white font-bold text-xl mt-8 truncate" [title]="curso.nombreCurso">
+                            {{ curso.nombreCurso }}
+                        </h3>
+                        <p [class]="$index % 2 === 0 ? 'text-blue-100' : 'text-orange-100'" class="text-sm">
+                            Sección T{{curso.idCiclo}}WN
+                        </p>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <a [routerLink]="['/docente/cursos', curso.idCurso, 'notas']" 
+                               class="bg-gray-100 text-[#0B4D6C] py-2 rounded-lg text-sm font-bold text-center hover:bg-gray-200 transition cursor-pointer">
+                                <i class="fa-solid fa-marker mr-1"></i> Notas
+                            </a>
+                            <a [routerLink]="['/docente/cursos', curso.idCurso, 'sesiones']" 
+                               class="bg-[#0B4D6C] text-white py-2 rounded-lg text-sm font-bold text-center hover:bg-[#002940] transition cursor-pointer">
+                                <i class="fa-solid fa-check mr-1"></i> Asistencia
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            } @empty {
+                <div class="col-span-full text-center text-gray-500 py-10">
+                    No tienes cursos asignados para este periodo.
+                </div>
+            }
+        </div>
+    }
+</div>

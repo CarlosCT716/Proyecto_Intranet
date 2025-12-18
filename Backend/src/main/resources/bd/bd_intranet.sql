@@ -55,6 +55,7 @@ CREATE TABLE tb_auditoria (
     ip_origen VARCHAR(45),
     FOREIGN KEY (id_usuario) REFERENCES tb_usuario(id_usuario)
 );
+
 CREATE TABLE tb_curso (
     id_curso INT AUTO_INCREMENT PRIMARY KEY,
     nombre_curso VARCHAR(100) NOT NULL,
@@ -70,7 +71,7 @@ CREATE TABLE tb_curso (
 );
 
 CREATE TABLE tb_aula (
-	id_aula INT auto_increment PRIMARY KEY,
+    id_aula INT auto_increment PRIMARY KEY,
     activo BIT default 1,
     descripcion VARCHAR(250) NOT NULL
 );
@@ -90,7 +91,7 @@ CREATE TABLE tb_horario (
 CREATE TABLE tb_sesion_clase (
     id_sesion INT AUTO_INCREMENT PRIMARY KEY,
     id_curso INT NOT NULL,
-    fecha DATE NOT NULL, -- 2024-10-23
+    fecha DATE NOT NULL, 
     tema_tratado VARCHAR(200),
     observaciones_docente TEXT,
     estado_sesion VARCHAR(20) DEFAULT 'PROGRAMADA', 
@@ -119,7 +120,6 @@ CREATE TABLE tb_detalle_matricula (
     UNIQUE(id_matricula, id_curso) 
 );
 
-
 CREATE TABLE tb_pago (
     id_pago INT AUTO_INCREMENT PRIMARY KEY,
     id_matricula INT NOT NULL,
@@ -135,11 +135,11 @@ CREATE TABLE tb_pago (
 CREATE TABLE tb_nota (
     id_nota INT AUTO_INCREMENT PRIMARY KEY,
     id_detalle_matricula INT NOT NULL, 
-    nota1 DECIMAL(4,2) DEFAULT 0,
-    nota2 DECIMAL(4,2) DEFAULT 0,
-    nota3 DECIMAL(4,2) DEFAULT 0,
-    examen_final DECIMAL(4,2) DEFAULT 0,
-    promedio_final DECIMAL(4,2) GENERATED ALWAYS AS ((nota1*0.2 + nota2*0.2 + nota3*0.2 + examen_final*0.4)) STORED,
+    nota1 DECIMAL(4,2) DEFAULT NULL,
+    nota2 DECIMAL(4,2) DEFAULT NULL,
+    nota3 DECIMAL(4,2) DEFAULT NULL,
+    examen_final DECIMAL(4,2) DEFAULT NULL,
+    promedio_final DECIMAL(4,2) GENERATED ALWAYS AS ((IFNULL(nota1,0)*0.2 + IFNULL(nota2,0)*0.2 + IFNULL(nota3,0)*0.2 + IFNULL(examen_final,0)*0.4)) STORED,
     FOREIGN KEY (id_detalle_matricula) REFERENCES tb_detalle_matricula(id_detalle)
 );
 
@@ -155,8 +155,6 @@ CREATE TABLE tb_asistencia (
     UNIQUE(id_sesion, id_alumno) 
 );
 
-
-
 CREATE TABLE tb_ia_historial (
     id_interaccion INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT, 
@@ -165,16 +163,13 @@ CREATE TABLE tb_ia_historial (
     fecha DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-
 INSERT INTO tb_rol (nombre_rol) VALUES ('ROLE_ADMIN'), ('ROLE_PROFESOR'), ('ROLE_ALUMNO');
 
 INSERT INTO tb_estado_asistencia VALUES (1, 'Presente'), (2, 'Falta'), (3, 'Tardanza'), (4, 'Justificado');
 INSERT INTO tb_estado_pago VALUES (1, 'Pendiente'), (2, 'Pagado'), (3, 'Vencido');
 
-
 INSERT INTO tb_carrera (nombre_carrera, descripcion) VALUES ('Computación e Informática', 'Desarrollo de software y redes');
 INSERT INTO tb_ciclo (nombre_ciclo) VALUES ('I'), ('II'), ('III'), ('IV'), ('V'), ('VI');
-
 
 INSERT INTO tb_usuario (username, password, nombres, apellidos, email, dni, id_rol) VALUES 
 ('admin', 'admin123', 'Administrador', 'Sistema', 'admin@cibertec.edu.pe', '00000001', 1),
@@ -182,7 +177,6 @@ INSERT INTO tb_usuario (username, password, nombres, apellidos, email, dni, id_r
 ('profesor2', '$2a$10$X/xyz...', 'Maria', 'Lopez Docente', 'maria.lopez@cibertec.edu.pe', '10000002', 2),
 ('alumno1', 'alumno1', 'Carlos', 'Estudiante Uno', 'carlos.uno@cibertec.edu.pe', '20000001', 3),
 ('alumno2', '$2a$10$X/xyz...', 'Ana', 'Estudiante Dos', 'ana.dos@cibertec.edu.pe', '20000002', 3);
-
 
 INSERT INTO tb_curso (nombre_curso, creditos, id_carrera, id_ciclo, id_profesor) VALUES 
 ('Lenguaje de Programación I', 4, 1, 1, 2), 
@@ -195,7 +189,6 @@ INSERT INTO tb_aula( descripcion) VALUES
 INSERT INTO tb_horario (id_curso, dia_semana, hora_inicio, hora_fin, id_aula) VALUES 
 (1, 'LUNES', '08:00:00', '10:00:00', '1'),
 (1, 'MIERCOLES', '08:00:00', '10:00:00', '2');
-
 
 INSERT INTO tb_sesion_clase (id_curso, fecha, estado_sesion) VALUES 
 (1, '2024-10-21', 'FINALIZADA'), 
@@ -222,8 +215,10 @@ select * from tb_carrera;
 select * from tb_curso;
 select * from tb_matricula;
 select * from tb_auditoria;
-
-select * from tb_ia_faq;
+select * from tb_horario;
+use bd_intranet;
 select * from tb_ia_historial;
+select * from tb_pago;
+select * from tb_sesion_clase;
 
 update tb_usuario set activo = 1 where id_usuario = 6

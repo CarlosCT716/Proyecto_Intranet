@@ -3,7 +3,6 @@ package com.cibertec.intranet.matricula.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -23,6 +22,10 @@ public class Pago {
     private String concepto;
     private BigDecimal monto;
     private LocalDate fechaVencimiento;
-    private Integer idEstadoPago;
+
+    @ManyToOne
+    @JoinColumn(name = "id_estado_pago")
+    private EstadoPago estadoPago;
+
     private LocalDate fechaPago;
 }

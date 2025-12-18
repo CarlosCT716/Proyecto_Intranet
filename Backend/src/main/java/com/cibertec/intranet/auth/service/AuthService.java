@@ -1,5 +1,6 @@
 package com.cibertec.intranet.auth.service;
 
+import com.cibertec.intranet.auth.dto.request.ChangePasswordRequest;
 import com.cibertec.intranet.auth.dto.request.LoginRequest;
 import com.cibertec.intranet.auth.dto.response.LoginResponse;
 import com.cibertec.intranet.auth.jwt.jwtUtil;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +20,7 @@ public class AuthService {
     private final UsuarioRepository _usuario;
     private final jwtUtil jwtUtil;
     private final AuthenticationManager _auth;
+    private final PasswordEncoder passwordEncoder;
 
     public LoginResponse login(LoginRequest request) {
         _auth.authenticate(
@@ -41,5 +44,13 @@ public class AuthService {
                 usuario.getApellidos(),
                 usuario.getRol().getNombreRol()
         );
+    }
+
+    public void cambiarContrasena(ChangePasswordRequest request) {
+        Usuario usuario = _usuario.findById(request.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        usuario.setPassword(passwordEncoder.encode(request.getNuevaContrasena()));
+        _usuario.save(usuario);
     }
 }

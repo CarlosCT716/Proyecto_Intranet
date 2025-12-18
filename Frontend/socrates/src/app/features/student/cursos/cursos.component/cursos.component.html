@@ -1,0 +1,48 @@
+<div class="flex flex-col min-h-screen bg-gray-100 font-sans text-gray-800">
+    
+   <div class="bg-white shadow-sm h-16 flex items-center justify-between px-6 sticky top-0 z-10">
+        <div>
+            <h2 class="text-lg font-bold text-[#0B4D6C]">Mis Cursos</h2>
+            <p class="text-xs text-gray-500 hidden sm:block">Ciclo Académico 2025-02</p>
+        </div>
+    </div>
+
+    <main class="fgrow p-6">
+        @if (isLoading) {
+            <app-loading-spinner message="Cargando tus cursos..."></app-loading-spinner>
+        } @else {
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">
+                @for (curso of cursos; track $index) {
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group">
+                        <div class="h-32 bg-linear-to-r from-[#0B4D6C] to-[#2d7a9e] p-6 relative">
+                            <span class="absolute top-4 right-4 bg-white/20 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
+                                {{ curso.modalidad }}
+                            </span>
+                            <h3 class="text-white font-bold text-xl mt-8">{{ curso.nombreCurso }}</h3>
+                            <p class="text-blue-100 text-sm">Sección {{ curso.seccion }}</p>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-4 text-sm text-gray-600">
+                                <span><i class="fa-solid fa-chalkboard-user mr-2 text-[#0B4D6C]"></i>{{ curso.docente }}</span>
+                                <span class="truncate max-w-[100px]"><i class="fa-solid fa-door-open mr-2 text-[#0B4D6C]"></i>{{ curso.aula }}</span>
+                            </div>
+                            <div class="border-t pt-4 flex justify-between items-center">
+                                <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">En Curso</span>
+                                <a [routerLink]="['/estudiante/cursos', curso.idCurso]" 
+                                   class="bg-[#0B4D6C] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#002940] transition cursor-pointer flex items-center">
+                                    Ver Detalle <i class="fa-solid fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                } @empty {
+                    <div class="col-span-3 text-center p-10 text-gray-500">
+                        <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
+                        <p>No se encontraron cursos matriculados.</p>
+                    </div>
+                }
+            </div>
+        }
+    </main>
+</div>

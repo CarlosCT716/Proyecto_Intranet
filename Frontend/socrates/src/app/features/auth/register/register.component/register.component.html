@@ -1,0 +1,165 @@
+<section class="bg-linear-to-r from-[#0B4D6C] to-[#002940] min-h-screen flex items-center justify-center p-4 font-sans">
+    
+    <div class="bg-gray-100 flex rounded-2xl shadow-2xl max-w-5xl w-full overflow-hidden min-h-[600px]">
+        
+        <div class="w-full md:w-3/5 p-8 relative flex flex-col">
+            
+            <div class="mb-6">
+                <h2 class="font-bold text-3xl text-[#015071]">Regístrate</h2>
+                <p class="text-sm text-gray-500 mt-1">Únete a la Intranet Socrates</p>
+                
+                <div class="flex items-center mt-4 gap-2">
+                    <div [class]="currentStep >= 1 ? 'w-8 bg-[#015071]' : 'w-2 bg-gray-300'" class="h-2 rounded-full transition-all duration-300"></div>
+                    <div [class]="currentStep >= 2 ? 'w-8 bg-[#015071]' : 'w-2 bg-gray-300'" class="h-2 rounded-full transition-all duration-300"></div>
+                    <div [class]="currentStep >= 3 ? 'w-8 bg-[#015071]' : 'w-2 bg-gray-300'" class="h-2 rounded-full transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="grow flex flex-col justify-between">
+                
+                @if (currentStep === 1) {
+                    <div class="fade-in flex flex-col gap-4 h-full" formGroupName="datosPersonales">
+                        <h3 class="text-[#015071] font-semibold border-b border-gray-300 pb-1 mb-2">1. Datos Personales</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input formControlName="nombres" class="p-2 rounded-xl border border-[#015071] bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0B4D6C]" type="text" placeholder="Nombres">
+                            <input formControlName="apellidos" class="p-2 rounded-xl border border-[#015071] bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0B4D6C]" type="text" placeholder="Apellidos">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input formControlName="dni" class="p-2 rounded-xl border border-[#015071] bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0B4D6C]" type="text" placeholder="DNI" maxlength="8">
+                            <input formControlName="email" class="p-2 rounded-xl border border-[#015071] bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0B4D6C]" type="email" placeholder="Correo Electrónico">
+                        </div>
+
+                        <input formControlName="username" class="p-2 rounded-xl border border-[#015071] bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0B4D6C]" type="text" placeholder="Usuario">
+                        
+                        <div class="relative">
+                            <input 
+                                [type]="showPassword ? 'text' : 'password'" 
+                                formControlName="password" 
+                                class="p-2 rounded-xl border border-[#015071] bg-slate-50 w-full focus:outline-none focus:ring-2 focus:ring-[#0B4D6C]" 
+                                placeholder="Contraseña">
+                            <i (click)="togglePassword()" 
+                               [class]="showPassword ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash'"
+                               class="absolute top-3 right-3 cursor-pointer text-[#015071]"></i>
+                        </div>
+                        
+                        <div class="mt-auto pt-4 flex justify-end">
+                            <button type="button" (click)="nextStep()" class="bg-[#015071] text-white px-6 py-2 rounded-xl hover:bg-[#0B4D6C] transition shadow-md flex items-center gap-2">
+                                Siguiente <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="mt-4 text-xs text-center text-gray-600">
+                            ¿Ya tienes cuenta? <a routerLink="/login" class="font-bold text-[#015071] hover:underline cursor-pointer">Iniciar Sesión</a>
+                        </div>
+                    </div>
+                }
+
+                @if (currentStep === 2) {
+                    <div class="fade-in flex flex-col gap-4 h-full" formGroupName="seleccionAcademica">
+                        <h3 class="text-[#015071] font-semibold border-b border-gray-300 pb-1 mb-2">2. Selección Académica</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="flex flex-col">
+                                <label class="text-xs text-[#015071] font-bold ml-1">Carrera</label>
+                                <select formControlName="carrera" class="p-2 rounded-xl border border-[#015071] bg-slate-50 text-gray-700 focus:outline-none">
+                                    <option value="" disabled selected>Seleccione...</option>
+                                    <option *ngFor="let c of carreras" [value]="c.idCarrera">{{ c.nombreCarrera }}</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="text-xs text-[#015071] font-bold ml-1">Ciclo</label>
+                                <select formControlName="ciclo" class="p-2 rounded-xl border border-[#015071] bg-slate-50 text-gray-700 focus:outline-none">
+                                    <option value="" disabled selected>Seleccione...</option>
+                                    <option *ngFor="let ci of ciclos" [value]="ci.idCiclo">{{ ci.nombreCiclo }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col grow">
+                            <label class="text-xs text-[#015071] font-bold ml-1 mb-1">Cursos Disponibles</label>
+                            
+                            <div class="border border-[#015071] rounded-xl bg-slate-50 p-3 h-48 overflow-y-auto scrollbar-hide grid grid-cols-1 gap-2">
+                                @if (cursosFiltrados.length === 0) {
+                                    <p class="text-xs text-gray-400 text-center mt-10">Seleccione una carrera y ciclo para ver los cursos.</p>
+                                } @else {
+                                    @for (curso of cursosFiltrados; track curso.idCurso) {
+                                        <label class="flex items-center p-2 rounded-lg hover:bg-blue-100 cursor-pointer transition border border-gray-200 select-none">
+                                            <input 
+                                                type="checkbox" 
+                                                class="w-4 h-4 text-[#015071] rounded focus:ring-[#015071]" 
+                                                [checked]="isCursoSelected(curso.idCurso)"
+                                                (change)="onCursoChange($event, curso.idCurso)">
+                                            <span class="ml-3 text-sm text-gray-700">{{ curso.nombreCurso }} ({{ curso.creditos }} Cr)</span>
+                                        </label>
+                                    }
+                                }
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1 text-right">Periodo Académico: 2025-2026</p>
+                        </div>
+
+                        <div class="mt-auto pt-4 flex justify-between">
+                            <button type="button" (click)="prevStep()" class="text-[#015071] px-4 py-2 rounded-xl hover:bg-gray-200 transition font-bold">
+                                Atrás
+                            </button>
+                            <button type="button" (click)="nextStep()" class="bg-[#015071] text-white px-6 py-2 rounded-xl hover:bg-[#0B4D6C] transition shadow-md flex items-center gap-2">
+                                Siguiente <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
+
+                @if (currentStep === 3) {
+                    <div class="fade-in flex flex-col gap-4 h-full">
+                        <h3 class="text-[#015071] font-semibold border-b border-gray-300 pb-1 mb-2">3. Boleta Informativa</h3>
+
+                        <div class="bg-white border-2 border-dashed border-[#015071] rounded-xl p-5 flex flex-col gap-3 shadow-inner">
+                            <div class="flex justify-between items-center border-b pb-2">
+                                <span class="text-sm font-bold text-gray-600">Concepto</span>
+                                <span class="text-sm font-bold text-gray-600">Monto</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-800">Derecho de Inscripción</span>
+                                <span class="text-sm font-bold text-[#015071]">S/ {{ montoInscripcion | number:'1.2-2' }}</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-800">Mensualidad 1 (Adelanto)</span>
+                                <span class="text-sm font-bold text-[#015071]">S/ {{ montoMensualidad | number:'1.2-2' }}</span>
+                            </div>
+
+                            <div class="mt-2 pt-2 border-t flex justify-between items-center">
+                                <span class="text-lg font-bold text-[#0B4D6C]">TOTAL A PAGAR</span>
+                                <span class="text-xl font-extrabold text-[#0B4D6C]">S/ {{ montoTotal | number:'1.2-2' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <p class="text-xs text-blue-800 flex items-start gap-2">
+                                <i class="fa-solid fa-circle-info mt-0.5"></i>
+                                Al completar el pago tendrás acceso inmediato a tu cuenta y podrás comenzar a utilizar todos los servicios de la Intranet Socrates.
+                            </p>
+                        </div>
+
+                        <div class="mt-auto pt-4 flex justify-between items-center">
+                            <button type="button" (click)="prevStep()" class="text-[#015071] px-4 py-2 rounded-xl hover:bg-gray-200 transition font-bold">
+                                Atrás
+                            </button>
+                            <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition shadow-lg flex items-center gap-2 text-lg font-bold transform hover:scale-105 duration-200">
+                                <i class="fa-regular fa-credit-card"></i> Pagar y Matricular
+                            </button>
+                        </div>
+                    </div>
+                }
+
+            </form>
+        </div>
+
+        <div class="hidden md:block w-2/5 bg-[#002940] relative overflow-hidden">
+            <div class="absolute inset-0 bg-[#015071] opacity-20 z-10"></div>
+            <img class="h-full w-full object-cover object-center opacity-90" src="assets/img/Socrates.png" alt="Socrates">
+        </div>
+    </div>
+</section>

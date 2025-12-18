@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,10 +11,19 @@ import { RouterLink } from '@angular/router';
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent {
-  @Input() title: string = '';
-  isProfileOpen: boolean = false; // Controla el dropdown
+  private authService = inject(AuthService);
+  @Input() title: string = 'Bienvenido';
+  @Input() subtitle: string = 'Panel de Gestión'; 
+  @Input() userName: string = 'Usuario';
+  @Input() userRoleLabel: string = 'Usuario'; 
+
+  isProfileOpen = false;
 
   toggleProfile() {
     this.isProfileOpen = !this.isProfileOpen;
+  }
+
+  logout() {
+    this.authService.logout(); 
   }
 }

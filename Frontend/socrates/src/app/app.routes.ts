@@ -1,27 +1,77 @@
 import { Routes } from '@angular/router';
+import { LoginComponent } from './features/auth/login/login.component/login.component';
+import { MainLayoutComponent } from './layout/main-layout/main-layout-component';
+import { RegisterComponent } from './features/auth/register/register.component/register.component';
 
 export const routes: Routes = [
-    /*
-  // Ruta Pública (Login)
-  { path: 'login', component: LoginComponent },
-
-  // Rutas Privadas (Protegidas con Layout)
-  {
-    path: '',
-    component: MainLayoutComponent,
-    canActivate: [AuthGuard], // Tu guard de seguridad
-    children: [
-      // Redirección por defecto según rol (lógica en un guard o componente)
-      { path: '', redirectTo: 'estudiante/inicio', pathMatch: 'full' },
-
-      // Rutas Estudiante
-      { path: 'estudiante/inicio', component: StudentDashboardComponent },
-      { path: 'estudiante/cursos', component: StudentCursosComponent },
-      { path: 'estudiante/pagos', component: StudentPagosComponent },
-      { path: 'estudiante/asistente', component: AsistenteChatComponent },
-
-      // Rutas Docente
-      { path: 'docente/inicio', component: TeacherDashboardComponent },
-    ]
-  }*/
+    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
+    {
+        path: '',
+        component: MainLayoutComponent,
+        children: [
+            {
+                path: 'perfil',
+                loadComponent: () => import('./layout/profile/profile.component/profile.component').then(m => m.ProfileComponent)
+            },
+            {
+                path: 'estudiante/inicio',
+                loadComponent: () => import('./features/student/dashboard/dashboard.component/dashboard.component')
+                    .then(m => m.DashboardComponent)
+            },
+            {
+                path: 'estudiante/cursos',
+                loadComponent: () => import('./features/student/cursos/cursos.component/cursos.component').then(m => m.CursosComponent)
+            },
+            {
+                path: 'estudiante/cursos/:id',
+                loadComponent: () => import('./features/student/cursos/detalle/detalle-curso.component/detalle-curso.component').then(m => m.DetalleCursoComponent)
+            },
+            {
+                path: 'estudiante/horario',
+                loadComponent: () => import('./features/student/horario/horario.component/horario.component').then(m => m.HorarioComponent)
+            },
+            {
+                path: 'estudiante/pagos',
+                loadComponent: () => import('./features/student/pago/pago.component/pago.component').then(m => m.PagoComponent)
+            },
+            {
+                path: 'estudiante/asistente',
+                loadComponent: () => import('./features/student/asistente/asistente.component/asistente.component').then(m => m.AsistenteComponent)
+            },
+            {
+                path: 'docente/inicio',
+                loadComponent: () => import('./features/teacher/dashboard/dashboard.component/dashboard.component')
+                    .then(m => m.DashboardComponent)
+            },
+            {
+                path: 'docente/cursos',
+                loadComponent: () => import('./features/teacher/curso/curso.component/curso.component').then(m => m.CursoComponent)
+            },
+            {
+                path: 'docente/cursos/:id/notas',
+                loadComponent: () => import('./features/teacher/curso/notas/notas.component/notas.component').then(m => m.NotasComponent)
+            },
+            {
+                path: 'docente/cursos/:id/sesiones',
+                loadComponent: () => import('./features/teacher/curso/sesion/sesion.component/sesion.component').then(m => m.SesionesComponent)
+            },
+            {
+                path: 'docente/sesiones/:idSesion/asistencia',
+                loadComponent: () => import('./features/teacher/curso/sesion/asistencia/asistencia.component/asistencia.component').then(m => m.AsistenciaComponent)
+            },
+            {
+                path: 'docente/agenda',
+                loadComponent: () => import('./features/teacher/agenda/agenda.component/agenda.component')
+                    .then(m => m.AgendaComponent)
+            },
+            {
+                path: 'admin/dashboard',
+                loadComponent: () => import('./features/admin/dashboard/dashboard.component/dashboard.component')
+                    .then(m => m.DashboardComponent)
+            }
+        ]
+    },
+    { path: '**', redirectTo: 'login' }
 ];

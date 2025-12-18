@@ -39,20 +39,26 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         //RUTAS PÚBLICAS
-                        .requestMatchers("/auth/**").permitAll() // Login
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/auth/cambiar-contrasena").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/usuarios","/api/matriculas","/api/asistente/chat").permitAll()
-
+                        .requestMatchers(HttpMethod.GET, "/api/academico/carreras").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/academico/ciclos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/academico/cursos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/academico/cursos/filtro").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/academico/horarios/**").permitAll()
                         //RUTAS DE ADMINISTRADOR
                         .requestMatchers("/api/auditoria/**").hasRole("ADMIN")
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 
                         //RUTAS DE PROFESOR
-                        .requestMatchers("/api/asistencias/**").hasAnyRole("PROFESOR", "ADMIN")
-                        .requestMatchers("/api/notas/**").hasAnyRole("PROFESOR", "ADMIN")
+                        .requestMatchers("/api/profesor/**").hasAnyRole("PROFESOR", "ADMIN")
 
                         //RUTAS DE ALUMNO
                         .requestMatchers("/api/matriculas/**").hasAnyRole("ALUMNO", "ADMIN")
+                        .requestMatchers("/api/academico/alumno/**").hasAnyRole("ALUMNO", "ADMIN")
+                        .requestMatchers("/api/pagos/**").hasAnyRole("ALUMNO", "ADMIN")
 
                         //CHATBOT
                         .requestMatchers("/api/chatbot/**").authenticated()
@@ -68,8 +74,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
 

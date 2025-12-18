@@ -1,0 +1,69 @@
+<div class="flex flex-col h-full bg-gray-100 font-sans text-gray-800">
+        
+    <header class="bg-white shadow-sm h-16 flex-none flex items-center justify-between px-6 z-10">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white shadow">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div>
+                <h2 class="text-lg font-bold text-[#0B4D6C]">Asistente Virtual</h2>
+                <p class="text-xs text-green-500 font-bold flex items-center gap-1">
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <main class="grow p-4 overflow-y-auto no-scrollbar bg-slate-50 flex flex-col gap-4" #scrollContainer>
+        
+        @for (msg of messages; track $index) {
+            <div [class]="msg.isUser ? 'flex gap-3 max-w-3xl ml-auto flex-row-reverse' : 'flex gap-3 max-w-3xl'">
+                
+                <div [class]="msg.isUser ? 'bg-[#0B4D6C]' : 'bg-linear-to-br from-blue-500 to-purple-600'"
+                     class="w-8 h-8 rounded-full flex-none flex items-center justify-center text-white text-xs shadow-sm">
+                    <i [class]="msg.isUser ? 'fa-solid fa-user' : 'fa-solid fa-robot'"></i>
+                </div>
+
+                <div [class]="msg.isUser ? 'bg-[#0B4D6C] text-white rounded-tr-none' : 'bg-white text-gray-700 border border-gray-100 rounded-tl-none'"
+                     class="p-3 rounded-2xl shadow-sm text-sm whitespace-pre-line">
+                    <p>{{ msg.text }}</p>
+                    <p [class]="msg.isUser ? 'text-blue-200' : 'text-gray-400'" class="text-[10px] mt-1 text-right">
+                        {{ msg.timestamp | date:'shortTime' }}
+                    </p>
+                </div>
+            </div>
+        }
+
+        @if (isTyping) {
+            <div class="flex gap-3 max-w-3xl fade-in">
+                <div class="w-8 h-8 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex-none flex items-center justify-center text-white text-xs">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex items-center gap-1">
+                    <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                    <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                    <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+                </div>
+            </div>
+        }
+
+    </main>
+
+    <footer class="bg-white p-4 border-t border-gray-200 flex-none">
+        <div class="max-w-4xl mx-auto relative flex items-center gap-2">
+            <input type="text" 
+                   [(ngModel)]="userMessage" 
+                   (keyup.enter)="sendMessage()"
+                   placeholder="Escribe tu consulta aquí..." 
+                   [disabled]="isTyping"
+                   class="w-full bg-gray-100 text-gray-700 rounded-full py-3 px-5 focus:outline-none focus:ring-2 focus:ring-[#0B4D6C] transition pr-12 shadow-inner disabled:bg-gray-200">
+            
+            <button (click)="sendMessage()" 
+                    [disabled]="!userMessage.trim() || isTyping"
+                    class="bg-[#0B4D6C] text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-[#002940] transition shadow-md absolute right-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+            </button>
+        </div>
+        <p class="text-[10px] text-center text-gray-400 mt-2">La IA puede cometer errores. Verifica la información importante.</p>
+    </footer>
+
+</div>

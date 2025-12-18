@@ -15,7 +15,30 @@ import java.util.List;
 public class AcademicoController {
 
     private final AcademicoService academicoService;
+    //Alumno
+    @GetMapping("/alumno/{id}/dashboard")
+    public ResponseEntity<DashboardDTO> obtenerDashboard(@PathVariable Integer id) {
+        return ResponseEntity.ok(academicoService.obtenerDashboardAlumno(id));
+    }
+    @GetMapping("/alumno/{id}/cursos-matriculados")
+    public ResponseEntity<List<CursoMatriculadoDTO>> listarCursosAlumno(@PathVariable Integer id) {
+        return ResponseEntity.ok(academicoService.listarCursosMatriculados(id));
+    }
+    @GetMapping("/alumno/{id}/cursos")
+    public ResponseEntity<List<CursoMatriculadoDTO>> listarCursos(@PathVariable Integer id) {
+        return ResponseEntity.ok(academicoService.listarCursosMatriculados(id));
+    }
 
+    @GetMapping("/alumno/{idAlumno}/curso/{idCurso}/detalle")
+    public ResponseEntity<CursoDetalleDTO> verDetalleCurso(
+            @PathVariable Integer idAlumno,
+            @PathVariable Integer idCurso) {
+        return ResponseEntity.ok(academicoService.obtenerDetalleCurso(idAlumno, idCurso));
+    }
+    @GetMapping("/alumno/{id}/horario")
+    public ResponseEntity<List<HorarioAlumnoDTO>> obtenerHorarioAlumno(@PathVariable Integer id) {
+        return ResponseEntity.ok(academicoService.obtenerHorarioAlumno(id));
+    }
     // carreras
     @GetMapping("/carreras")
     public ResponseEntity<List<Carrera>> listarCarreras() {
@@ -85,6 +108,12 @@ public class AcademicoController {
     @GetMapping("/cursos/{id}")
     public ResponseEntity<CursoDTO> obtenerCurso(@PathVariable Integer id) {
         return ResponseEntity.ok(academicoService.obtenerCurso(id));
+    }
+    @GetMapping("/cursos/filtro")
+    public ResponseEntity<List<CursoDTO>> filtrarCursos(
+            @RequestParam Integer idCarrera,
+            @RequestParam Integer idCiclo) {
+        return ResponseEntity.ok(academicoService.filtrarCursos(idCarrera, idCiclo));
     }
 
     @PostMapping("/cursos")

@@ -1,0 +1,99 @@
+<div class="flex flex-col min-h-screen bg-gray-100 font-sans text-gray-800">
+    
+    @if (isLoading) {
+        <app-loading-spinner message="Cargando detalle del curso..."></app-loading-spinner>
+    } @else {
+        <header class="bg-white shadow-sm h-16 flex items-center justify-between px-6 sticky top-0 z-10">
+            <div class="flex items-center gap-4">
+                <a routerLink="/estudiante/cursos" class="text-gray-500 hover:text-[#0B4D6C] transition cursor-pointer">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h2 class="text-lg font-bold text-[#0B4D6C]">{{ data?.nombreCurso || 'Curso' }}</h2>
+                    <p class="text-xs text-gray-500">Detalle de Notas y Asistencia</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="grow p-6 space-y-6 fade-in">
+            
+            <section>
+                <h3 class="font-bold text-[#002940] mb-4 text-lg border-l-4 border-[#0B4D6C] pl-3">Notas Registradas</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+                        <p class="text-gray-500 text-xs font-bold uppercase mb-2">Evaluación T1</p>
+                        <div class="text-3xl font-bold" [class.text-[#0B4D6C]]="data?.nota1" [class.text-gray-300]="!data?.nota1">
+                            {{ data?.nota1 || '-' }}
+                        </div>
+                        @if (data?.nota1 >= 13) { <span class="text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded mt-1 inline-block">Aprobado</span> }
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+                        <p class="text-gray-500 text-xs font-bold uppercase mb-2">Evaluación T2</p>
+                        <div class="text-3xl font-bold" [class.text-[#0B4D6C]]="data?.nota2" [class.text-gray-300]="!data?.nota2">
+                            {{ data?.nota2 || '-' }}
+                        </div>
+                        @if (data?.nota2 >= 13) { <span class="text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded mt-1 inline-block">Aprobado</span> }
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+                        <p class="text-gray-500 text-xs font-bold uppercase mb-2">Evaluación T3</p>
+                        <div class="text-3xl font-bold" [class.text-[#0B4D6C]]="data?.nota3" [class.text-gray-300]="!data?.nota3">
+                            {{ data?.nota3 || '-' }}
+                        </div>
+                        @if (data?.nota3 >= 13) { <span class="text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded mt-1 inline-block">Aprobado</span> }
+                    </div>
+
+                    <div class="bg-[#0B4D6C] p-4 rounded-xl shadow-md text-center text-white">
+                        <p class="text-blue-100 text-xs font-bold uppercase mb-2">Promedio Actual</p>
+                        <div class="text-3xl font-bold">{{ data?.promedio || '0.0' }}</div>
+                        <span class="text-[10px] text-white bg-white/20 px-2 py-0.5 rounded mt-1 inline-block">En curso</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-5 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-bold text-[#002940] text-lg">Historial de Asistencia</h3>
+                    <div class="text-sm">
+                        <span class="font-bold text-[#0B4D6C]">{{ data?.porcentajeAsistencia }}</span> 
+                        <span class="text-gray-500 text-xs">Asistencia Global</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3">Sesión</th>
+                                <th class="px-6 py-3">Fecha</th>
+                                <th class="px-6 py-3">Tema</th>
+                                <th class="px-6 py-3 text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (item of data?.historialAsistencia; track $index) {
+                                <tr class="bg-white border-b">
+                                    <td class="px-6 py-4 font-medium text-gray-900">{{ item.sesion }}</td>
+                                    <td class="px-6 py-4">{{ item.fecha }}</td>
+                                    <td class="px-6 py-4">{{ item.tema }}</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span [class]="item.estado === 'Presente' ? 'bg-green-100 text-green-800' : 
+                                                       item.estado === 'Falta' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'"
+                                              class="text-xs font-bold px-2.5 py-0.5 rounded">
+                                            {{ item.estado }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            } @empty {
+                                <tr>
+                                    <td colspan="4" class="px-6 py-8 text-center text-gray-400">No hay asistencias registradas.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    }
+</div>
