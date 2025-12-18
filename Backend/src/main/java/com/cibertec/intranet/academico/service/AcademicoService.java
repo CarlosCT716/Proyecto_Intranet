@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 
 @Service
@@ -200,7 +199,7 @@ public class AcademicoService {
 
             asisDto.setEstado(descEstado);
 
-            if (a.getIdEstado() == 1) asistenciasCount++;
+            if (a.getIdEstado() == 1 || a.getIdEstado() == 3 || a.getIdEstado() == 4) asistenciasCount++;
 
             historial.add(asisDto);
         }
@@ -373,6 +372,7 @@ public class AcademicoService {
         curso.setNombreCurso(dto.getNombreCurso());
         curso.setCreditos(dto.getCreditos());
         curso.setCupoMaximo(dto.getCupoMaximo());
+        curso.setCupoActual(dto.getCupoActual());
         curso.setCarrera(carreraRepository.findById(dto.getIdCarrera()).orElseThrow(() -> new RuntimeException("Carrera no encontrada")));
         curso.setCiclo(cicloRepository.findById(dto.getIdCiclo()).orElseThrow(() -> new RuntimeException("Ciclo no encontrado")));
         curso.setProfesor(usuarioRepository.findById(dto.getIdProfesor()).orElseThrow(() -> new RuntimeException("Profesor no encontrado")));
@@ -385,6 +385,7 @@ public class AcademicoService {
         dto.setNombreCurso(c.getNombreCurso());
         dto.setCreditos(c.getCreditos());
         dto.setCupoMaximo(c.getCupoMaximo());
+        dto.setCupoActual(c.getCupoActual());
         if(c.getCarrera() != null) dto.setNombreCarrera(c.getCarrera().getNombreCarrera());
         if(c.getCiclo() != null) dto.setNombreCiclo(c.getCiclo().getNombreCiclo());
         if(c.getProfesor() != null) {

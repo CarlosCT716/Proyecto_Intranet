@@ -1,11 +1,15 @@
 package com.cibertec.intranet.matricula.service;
 
+import com.cibertec.intranet.academico.model.Aula;
 import com.cibertec.intranet.academico.model.Carrera;
 import com.cibertec.intranet.academico.model.Ciclo;
 import com.cibertec.intranet.academico.model.Curso;
+import com.cibertec.intranet.academico.model.Horario;
+import com.cibertec.intranet.academico.repository.AulaRepository;
 import com.cibertec.intranet.academico.repository.CarreraRepository;
 import com.cibertec.intranet.academico.repository.CicloRepository;
 import com.cibertec.intranet.academico.repository.CursoRepository;
+import com.cibertec.intranet.academico.repository.HorarioRepository;
 import com.cibertec.intranet.auditoria.annotation.Auditable;
 import com.cibertec.intranet.matricula.dto.MatriculaDTO;
 import com.cibertec.intranet.matricula.model.DetalleMatricula;
@@ -42,6 +46,9 @@ public class MatriculaService {
     private final CarreraRepository carreraRepository;
     private final CicloRepository cicloRepository;
     private final CursoRepository cursoRepository;
+    private final HorarioRepository horarioRepository;
+    private final AulaRepository aulaRepository;
+    
     private final NotaRepository notaRepository;
     private final EstadoPagoRepository estadoPagoRepository;
 
@@ -76,6 +83,23 @@ public class MatriculaService {
         for (Integer idCurso : dto.getIdCursos()) {
             Curso curso = cursoRepository.findById(idCurso)
                     .orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + idCurso));
+   
+            if (curso.getCupoActual() <= 0) {
+                throw new RuntimeException("El curso " + curso.getNombreCurso() + " no tiene vacantes disponibles.");
+            }
+            curso.setCupoActual(curso.getCupoActual() - 1);
+            cursoRepository.save(curso);
+            List<Horario> horarios = horarioRepository.findByCursoIdCurso(idCurso);
+            if (!horarios.isEmpty()) {
+
+                Aula aula = horarios.get(0).getAula();
+                if (aula.getAforoActual() <= 0) {
+                    throw new RuntimeException("El aula " + aula.getDescripcion() + " no tiene aforo disponible para el curso " + curso.getNombreCurso());
+                }
+                aula.setAforoActual(aula.getAforoActual() - 1);
+                aulaRepository.save(aula);
+            }
+
             totalCreditos += curso.getCreditos();
 
             DetalleMatricula detalle = new DetalleMatricula();
@@ -83,10 +107,8 @@ public class MatriculaService {
             detalle.setCurso(curso);
             DetalleMatricula detalleGuardado = detalleMatriculaRepository.save(detalle);
 
-            // CORRECCIÓN: Creamos la nota vacía (NULL)
             Nota notaInicial = new Nota();
             notaInicial.setDetalleMatricula(detalleGuardado);
-            // No seteamos nota1, nota2, etc. Se irán como NULL.
             notaRepository.save(notaInicial);
         }
 
@@ -103,7 +125,7 @@ public class MatriculaService {
         BigDecimal costoPorCredito = new BigDecimal("75.00");
         BigDecimal totalBoleta = costoPorCredito.multiply(new BigDecimal(totalCreditos));
 
-        int numeroCuotas = 5;
+        int numeroCuotas = 6;
         BigDecimal montoCuota = totalBoleta.divide(new BigDecimal(numeroCuotas), 2, RoundingMode.HALF_UP);
 
         for (int i = 1; i <= numeroCuotas; i++) {

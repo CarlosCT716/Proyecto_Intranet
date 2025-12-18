@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/academico/cursos/filtro").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/academico/horarios/**").permitAll()
                         //RUTAS DE ADMINISTRADOR
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/auditoria/**").hasRole("ADMIN")
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 

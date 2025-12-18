@@ -19,7 +19,7 @@
             
             <section>
                 <h3 class="font-bold text-[#002940] mb-4 text-lg border-l-4 border-[#0B4D6C] pl-3">Notas Registradas</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                     
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
                         <p class="text-gray-500 text-xs font-bold uppercase mb-2">Evaluación T1</p>
@@ -44,6 +44,13 @@
                         </div>
                         @if (data?.nota3 >= 13) { <span class="text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded mt-1 inline-block">Aprobado</span> }
                     </div>
+                      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+                        <p class="text-gray-500 text-xs font-bold uppercase mb-2">Examen final</p>
+                        <div class="text-3xl font-bold" [class.text-[#0B4D6C]]="data?.nota3" [class.text-gray-300]="!data?.nota3">
+                            {{ data?.examenFinal || '-' }}
+                        </div>
+                        @if (data?.nota3 >= 13) { <span class="text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded mt-1 inline-block">Aprobado</span> }
+                    </div>
 
                     <div class="bg-[#0B4D6C] p-4 rounded-xl shadow-md text-center text-white">
                         <p class="text-blue-100 text-xs font-bold uppercase mb-2">Promedio Actual</p>
@@ -57,8 +64,8 @@
                 <div class="p-5 border-b border-gray-100 flex justify-between items-center">
                     <h3 class="font-bold text-[#002940] text-lg">Historial de Asistencia</h3>
                     <div class="text-sm">
-                        <span class="font-bold text-[#0B4D6C]">{{ data?.porcentajeAsistencia }}</span> 
-                        <span class="text-gray-500 text-xs">Asistencia Global</span>
+                        <span class="text-gray-500 text-xs">Asistencia Global: </span>
+                        <span class="font-bold text-[#0B4D6C]">{{ data?.porcentajeAsistencia }}</span>      
                     </div>
                 </div>
                 <div class="overflow-x-auto">

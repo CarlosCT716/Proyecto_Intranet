@@ -20,6 +20,9 @@ public class Curso {
     @Column(name = "cupo_maximo")
     private Integer cupoMaximo;
 
+    @Column(name = "cupo_actual")
+    private Integer cupoActual;
+
     @ManyToOne
     @JoinColumn(name = "id_carrera")
     private Carrera carrera;

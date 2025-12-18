@@ -1,58 +1,146 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AdminService } from '../../../../core/services/admin.service';
+import { AdminDashboard } from '../../../../core/models/admin.interface'; 
+import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner.component';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
 @Component({
-  selector: 'app-dashboard.component',
-  imports: [CommonModule],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+  selector: 'app-admin-dashboard',
+  standalone: true,
+  imports: [CommonModule, LoadingSpinnerComponent],
+  templateUrl: './dashboard.component.html'
 })
-export class DashboardComponent implements AfterViewInit {
+export class DashboardComponent implements OnInit, OnDestroy {
+  private adminService = inject(AdminService);
+  private cdr = inject(ChangeDetectorRef);
+
   @ViewChild('studentsChart') studentsChartRef!: ElementRef;
   @ViewChild('usersChart') usersChartRef!: ElementRef;
 
-  chart1: any;
-  chart2: any;
+  data: AdminDashboard | null = null;
+  isLoading = true;
+  
+  chartInstances: Chart[] = [];
 
-  ngAfterViewInit() {
-    this.initStudentsChart();
-    this.initUsersChart();
+  ngOnInit() {
+    this.isLoading = true;
+    this.adminService.getDashboard().subscribe({
+      next: (res) => {
+        this.data = res;
+        this.isLoading = false;
+        
+        // Forzamos la detección de cambios para que el @if(isLoading) se resuelva y aparezcan los canvas
+        this.cdr.detectChanges(); 
+
+        // Ahora sí inicializamos los gráficos
+        this.initCharts();
+      },
+      error: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
-initStudentsChart() {
+
+  initCharts() {
+    // Limpiar gráficos previos si existen (por si acaso)
+    this.chartInstances.forEach(c => c.destroy());
+    this.chartInstances = [];
+
+    if (!this.data) return;
+
+    // Gráfico de Estudiantes
     if (this.studentsChartRef?.nativeElement) {
-      this.chart1 = new Chart(this.studentsChartRef.nativeElement, {
+      const labels = this.data.estudiantesPorCarrera.map(d => d.label);
+      const values = this.data.estudiantesPorCarrera.map(d => d.value);
+
+      this.chartInstances.push(new Chart(this.studentsChartRef.nativeElement, {
         type: 'bar',
         data: {
-          labels: ['Ing. Sistemas', 'Diseño Gráfico', 'Administración', 'Marketing', 'Redes y Com.'],
+          labels: labels,
           datasets: [{
-            label: 'Estudiantes Activos',
-            data: [450, 320, 280, 150, 210],
+            label: 'Estudiantes',
+            data: values,
             backgroundColor: '#0B4D6C',
-            borderRadius: 5
+            borderRadius: 5,
+            barThickness: 40 // Ajuste visual opcional
           }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { 
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#002940',
+                padding: 10
+            }
+          },
+          scales: {
+            y: {
+                beginAtZero: true,
+                grid: { color: '#f3f4f6' }
+            },
+            x: {
+                grid: { display: false }
+            }
+          }
+        }
+      }));
     }
-  }
 
-  initUsersChart() {
+    // Gráfico de Usuarios
     if (this.usersChartRef?.nativeElement) {
-      this.chart2 = new Chart(this.usersChartRef.nativeElement, {
+      const labels = this.data.distribucionUsuarios.map(d => d.label);
+      const values = this.data.distribucionUsuarios.map(d => d.value);
+
+      this.chartInstances.push(new Chart(this.usersChartRef.nativeElement, {
         type: 'doughnut',
         data: {
-          labels: ['Estudiantes', 'Docentes', 'Administrativos'],
+          labels: labels,
           datasets: [{
-            data: [1245, 84, 15],
-            backgroundColor: ['#0B4D6C', '#10B981', '#F59E0B'],
+            data: values,
+            backgroundColor: ['#0B4D6C', '#22c55e', '#eab308', '#a855f7'], // Agregué morado por si hay más roles
+            borderWidth: 2,
+            borderColor: '#ffffff',
             hoverOffset: 4
           }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-      });
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '70%', // Hace el agujero del doughnut más grande (estilo moderno)
+          plugins: { 
+            legend: { 
+                position: 'bottom',
+                labels: {
+                    usePointStyle: true,
+                    padding: 20
+                }
+            } 
+          }
+        }
+      }));
     }
+  }
+
+  ngOnDestroy() {
+    this.chartInstances.forEach(c => c.destroy());
+  }
+
+  getBadgeClass(accion: string): string {
+    if (!accion) return 'bg-gray-100 text-gray-800';
+    const acc = accion.toUpperCase();
+    
+    // Mapeo más robusto
+    if (acc.includes('CREACION') || acc.includes('REGISTRO')) return 'bg-green-100 text-green-800';
+    if (acc.includes('ACTUALIZACION') || acc.includes('MODIFICACION')) return 'bg-blue-100 text-blue-800';
+    if (acc.includes('LOGIN') || acc.includes('ACCESO')) return 'bg-purple-100 text-purple-800';
+    if (acc.includes('ELIMINACION') || acc.includes('BAJA')) return 'bg-red-100 text-red-800';
+    
+    return 'bg-gray-100 text-gray-800';
   }
 }

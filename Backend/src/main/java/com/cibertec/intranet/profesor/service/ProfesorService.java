@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -68,6 +69,7 @@ public class ProfesorService {
 
         dashboard.setCursos(cursosDTO);
 
+        // 2. AGENDA DE HOY
         String diaHoy = LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("es", "ES")).toUpperCase();
         if(diaHoy.equals("MIÉRCOLES")) diaHoy = "MIERCOLES";
         if(diaHoy.equals("SÁBADO")) diaHoy = "SABADO";
@@ -83,18 +85,33 @@ public class ProfesorService {
 
         dashboard.setAgendaHoy(agenda);
 
-        List<Sesion> sesionesHoy = sesionRepository.findByCursoProfesorIdUsuarioAndFecha(idProfesor, LocalDate.now());
+        List<Sesion> sesionesPendientes = sesionRepository.findByCursoProfesorIdUsuarioAndEstadoSesion(idProfesor, "PROGRAMADA");
 
-        if (!sesionesHoy.isEmpty()) {
-            Sesion s = sesionesHoy.get(0);
-            TeacherDashboardDTO.SesionPendienteDTO sesionDto = new TeacherDashboardDTO.SesionPendienteDTO();
-            sesionDto.setIdSesion(s.getIdSesion());
-            sesionDto.setCurso(s.getCurso().getNombreCurso());
-            sesionDto.setFecha(s.getFecha().toString());
-            sesionDto.setEstado("En curso");
-            dashboard.setAsistenciaPendiente(sesionDto);
-        }
+        List<TeacherDashboardDTO.SesionPendienteDTO> asistenciasDTO = sesionesPendientes.stream()
+                .sorted(Comparator.comparing(Sesion::getFecha)) 
+                .limit(2) 
+                .map(s -> {
+                    TeacherDashboardDTO.SesionPendienteDTO dto = new TeacherDashboardDTO.SesionPendienteDTO();
+                    dto.setIdSesion(s.getIdSesion());
+                    dto.setCurso(s.getCurso().getNombreCurso());
+                    dto.setFecha(s.getFecha().toString());
 
+                    // Lógica visual
+                    if (s.getFecha().isEqual(LocalDate.now())) {
+                        dto.setEstado("Hoy");
+                    } else if (s.getFecha().isBefore(LocalDate.now())) {
+                        dto.setEstado("Vencida");
+                    } else {
+                        dto.setEstado("Próxima");
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        dashboard.setAsistenciasPendientes(asistenciasDTO);
+
+
+        // 4. CARGA DE NOTAS (LIMITADO A 2)
         List<TeacherDashboardDTO.AvanceNotasDTO> avances = new ArrayList<>();
 
         for (Curso c : cursosEntity) {
@@ -111,6 +128,7 @@ public class ProfesorService {
             TeacherDashboardDTO.AvanceNotasDTO avance = new TeacherDashboardDTO.AvanceNotasDTO();
             avance.setCurso(c.getNombreCurso());
 
+            // Prioridad: mostrar la primera nota que falte llenar
             if (t1 < total) {
                 avance.setEvaluacion("Nota 1 (T1)");
                 avance.setPorcentaje((int) ((t1 * 100.0) / total));
@@ -132,7 +150,7 @@ public class ProfesorService {
             avances.add(avance);
         }
 
-        dashboard.setCargaNotas(avances);
+        dashboard.setCargaNotas(avances.stream().limit(2).collect(Collectors.toList()));
 
         return dashboard;
     }

@@ -27,9 +27,9 @@
                                     <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">Activo</span>
                                 </div>
                             </div>
-                            <button class="bg-[#0B4D6C] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#002940] transition">
+                            <a [routerLink]="['/docente/cursos', curso.idCurso, 'notas']" class="bg-[#0B4D6C] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#002940] transition cursor-pointer">
                                 Gestionar
-                            </button>
+                            </a>
                         </div>
                     } @empty {
                         <p class="text-gray-500 text-center py-4">No tienes cursos asignados.</p>
@@ -68,32 +68,40 @@
             <section class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 lg:col-span-2">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="font-bold text-lg text-[#002940]">Sesiones Pendientes de Asistencia</h2>
-                    <a href="#" class="text-sm font-semibold text-[#0B4D6C] hover:underline">Historial</a>
+                    <a routerLink="/docente/cursos" class="text-sm font-semibold text-[#0B4D6C] hover:underline cursor-pointer">Ver Cursos</a>
                 </div>
 
-                @if (data?.asistenciaPendiente) {
-                    <div class="flex flex-col md:flex-row items-center justify-between p-4 border border-yellow-100 bg-yellow-50 rounded-xl gap-4">
-                        <div class="flex items-center gap-4 w-full">
-                            <div class="h-10 w-10 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center">
-                                <i class="fa-regular fa-clock"></i>
+                <div class="flex flex-col gap-4">
+                    @for (sesion of data?.asistenciasPendientes; track sesion.idSesion) {
+                        <div class="flex flex-col md:flex-row items-center justify-between p-4 border border-yellow-100 bg-yellow-50 rounded-xl gap-4">
+                            <div class="flex items-center gap-4 w-full">
+                                <div class="h-10 w-10 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center shrink-0">
+                                    <i class="fa-regular fa-clock"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">{{ sesion.curso }}</p>
+                                    <p class="text-xs text-gray-500">
+                                        Fecha: {{ sesion.fecha }} | 
+                                        <span [ngClass]="{
+                                            'text-green-600': sesion.estado === 'Hoy',
+                                            'text-red-500': sesion.estado === 'Vencida',
+                                            'text-yellow-600': sesion.estado === 'Próxima'
+                                        }" class="font-bold uppercase">{{ sesion.estado }}</span>
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="font-semibold text-gray-800">{{ data.asistenciaPendiente.curso }}</p>
-                                <p class="text-xs text-gray-500">Fecha: {{ data.asistenciaPendiente.fecha }} | 
-                                   <span class="font-bold text-yellow-600">{{ data.asistenciaPendiente.estado }}</span>
-                                </p>
-                            </div>
+                            <a [routerLink]="['/docente/sesiones', sesion.idSesion, 'asistencia']"
+                               class="w-full md:w-auto text-sm bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition font-bold shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                                <i class="fa-solid fa-list-check"></i> Tomar Asistencia
+                            </a>
                         </div>
-                        <button class="w-full md:w-auto text-sm bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition font-bold shadow-sm flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-list-check"></i> Tomar Asistencia
-                        </button>
-                    </div>
-                } @else {
-                    <div class="p-4 border border-green-100 bg-green-50 rounded-xl flex items-center gap-3 text-green-700">
-                        <i class="fa-solid fa-check-circle text-xl"></i>
-                        <p class="font-semibold">¡Todo al día! No hay asistencias pendientes.</p>
-                    </div>
-                }
+                    } @empty {
+                        <div class="p-4 border border-green-100 bg-green-50 rounded-xl flex items-center gap-3 text-green-700">
+                            <i class="fa-solid fa-check-circle text-xl"></i>
+                            <p class="font-semibold">¡Todo al día! No hay asistencias pendientes.</p>
+                        </div>
+                    }
+                </div>
             </section>
 
             <section class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 col-span-1">
@@ -104,22 +112,26 @@
                     @for (avance of data?.cargaNotas; track $index) {
                         <div>
                             <div class="flex justify-between text-xs mb-1">
-                                <span>{{ avance.curso }} ({{ avance.evaluacion }})</span>
-                                <span [class]="avance.porcentaje === 100 ? 'text-green-600' : 'text-orange-500'" class="font-bold">
-                                    {{ avance.porcentaje === 100 ? '100%' : 'Pendiente' }}
+                                <span class="truncate pr-2 font-medium" title="{{avance.curso}}">{{ avance.curso }}</span>
+                                <span [class]="avance.porcentaje === 100 ? 'text-green-600' : 'text-orange-500'" class="font-bold whitespace-nowrap">
+                                    {{ avance.porcentaje === 100 ? '100%' : avance.evaluacion }}
                                 </span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-2">
                                 <div [class]="avance.porcentaje === 100 ? 'bg-green-500' : 'bg-orange-400'" 
-                                     class="h-2 rounded-full" 
+                                     class="h-2 rounded-full transition-all duration-500" 
                                      [style.width.%]="avance.porcentaje"></div>
                             </div>
+                            
                             @if(avance.porcentaje < 100) {
-                                <button class="mt-2 text-xs text-[#0B4D6C] font-bold hover:underline">Completar registro</button>
+                                <a [routerLink]="['/docente/cursos', data?.cursos?.[$index]?.idCurso, 'notas']" 
+                                   class="mt-2 text-xs text-[#0B4D6C] font-bold hover:underline block text-right cursor-pointer">
+                                   Completar registro
+                                </a>
                             }
                         </div>
                     } @empty {
-                         <p class="text-sm text-gray-500 italic">No hay periodos de evaluación activos.</p>
+                         <p class="text-sm text-gray-500 italic">No hay información de avance disponible.</p>
                     }
                 </div>
             </section>

@@ -7,7 +7,9 @@ import java.util.List;
 public class TeacherDashboardDTO {
     private List<CursoAsignadoDTO> cursos;
     private List<ClaseHoyDTO> agendaHoy;
-    private SesionPendienteDTO asistenciaPendiente;
+  
+    private List<SesionPendienteDTO> asistenciasPendientes; 
+    
     private List<AvanceNotasDTO> cargaNotas;
 
     @Data
@@ -32,7 +34,7 @@ public class TeacherDashboardDTO {
         private Integer idSesion;
         private String curso;
         private String fecha;
-        private String estado;
+        private String estado; 
     }
 
     @Data

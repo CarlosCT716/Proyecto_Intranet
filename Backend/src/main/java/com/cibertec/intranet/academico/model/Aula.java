@@ -13,4 +13,8 @@ public class Aula {
     private String descripcion;
     @Column(name = "activo")
     private Boolean activo = true;
+    @Column(name = "aforo_actual")
+    private Integer aforoActual;
+     @Column(name = "aforo_maximo")
+    private Integer aforoMaximo;
 }

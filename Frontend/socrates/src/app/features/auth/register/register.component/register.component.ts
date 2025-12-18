@@ -24,16 +24,17 @@ export class RegisterComponent implements OnInit {
   showPassword = false;
   readonly ID_ROL_ALUMNO = 3;
   readonly PERIODO_ACTUAL = "2025-1";
+  readonly COSTO_POR_CREDITO = 75.00;
+  readonly NUMERO_CUOTAS = 6;
 
-  // Variables de Datos
   carreras: Carrera[] = [];
   ciclos: Ciclo[] = [];
-  cursosFiltrados: Curso[] = []; // Ya no necesitamos 'cursosTodos'
+  cursosFiltrados: Curso[] = [];
 
-  // Variables Financieras
   montoInscripcion: number = 300.00;
-  montoMensualidad: number = 450.00;
-  montoTotal: number = 750.00;
+  montoMensualidad: number = 0.00;
+  montoTotal: number = 0.00;
+  totalCreditos: number = 0;
 
   registerForm = this.fb.group({
     datosPersonales: this.fb.group({
@@ -57,8 +58,6 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {
     this.cargarDatosMaestros();
-
-    // Escuchar cambios: Si cambia carrera o ciclo, llamamos al backend
     this.academicoForm.get('carrera')?.valueChanges.subscribe(() => this.buscarCursosEnBackend());
     this.academicoForm.get('ciclo')?.valueChanges.subscribe(() => this.buscarCursosEnBackend());
   }
@@ -68,17 +67,14 @@ export class RegisterComponent implements OnInit {
     this.academicoService.getCiclos().subscribe(data => this.ciclos = data);
   }
 
-  // LOGICA PRINCIPAL: Petición al Backend
   buscarCursosEnBackend() {
     const carreraId = Number(this.academicoForm.get('carrera')?.value);
     const cicloId = Number(this.academicoForm.get('ciclo')?.value);
 
-    // Solo consultamos si ambos tienen valor válido
     if (carreraId > 0 && cicloId > 0) {
-
-      // Limpiamos selección anterior para evitar errores
       this.cursosFormArray.clear();
       this.cursosFiltrados = [];
+      this.calcularCostos(); 
 
       this.academicoService.getCursosPorFiltro(carreraId, cicloId).subscribe({
         next: (data) => {
@@ -89,7 +85,6 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  // Checkbox logic
   onCursoChange(e: any, cursoId: number) {
     if (e.target.checked) {
       this.cursosFormArray.push(this.fb.control(cursoId));
@@ -99,14 +94,28 @@ export class RegisterComponent implements OnInit {
         this.cursosFormArray.removeAt(index);
       }
     }
+    this.calcularCostos();
   }
 
-  // Helper para mantener checkboxes marcados si navegas entre pasos
+  calcularCostos() {
+    const selectedIds = this.cursosFormArray.value as number[];
+    const cursosSeleccionados = this.cursosFiltrados.filter(c => selectedIds.includes(c.idCurso));
+    
+    this.totalCreditos = cursosSeleccionados.reduce((sum, c) => sum + c.creditos, 0);
+    
+    this.montoTotal = this.totalCreditos * this.COSTO_POR_CREDITO;
+    
+    if (this.NUMERO_CUOTAS > 0) {
+      this.montoMensualidad = this.montoTotal / this.NUMERO_CUOTAS;
+    } else {
+      this.montoMensualidad = 0;
+    }
+  }
+
   isCursoSelected(cursoId: number): boolean {
     return this.cursosFormArray.value.includes(cursoId);
   }
 
-  // Navegación
   nextStep() {
     if (this.currentStep === 1) {
       if (this.personalForm.invalid) {
@@ -114,7 +123,6 @@ export class RegisterComponent implements OnInit {
         return;
       }
     } else if (this.currentStep === 2) {
-      // Validar paso 2
       if (this.academicoForm.invalid || this.cursosFormArray.length === 0) {
         this.academicoForm.markAllAsTouched();
         if (this.cursosFormArray.length === 0) alert("Debe seleccionar al menos un curso.");
@@ -133,46 +141,39 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-  if (this.registerForm.invalid) return;
+    if (this.registerForm.invalid) return;
 
-  // 1. Preparamos los datos del USUARIO
-  const formValue = this.registerForm.value;
-  const usuarioPayload = {
-    username: formValue.datosPersonales?.username,
-    password: formValue.datosPersonales?.password, // El backend lo encriptará
-    nombres: formValue.datosPersonales?.nombres,
-    apellidos: formValue.datosPersonales?.apellidos,
-    email: formValue.datosPersonales?.email,
-    dni: formValue.datosPersonales?.dni,
-    idRol: this.ID_ROL_ALUMNO // Enviamos el ID del rol
-  };
-  this.authService.registrarUsuario(usuarioPayload).pipe(
-    
-    switchMap((usuarioCreadoResponse) => {
-      console.log('Usuario creado, ID:', usuarioCreadoResponse.idUsuario); // Verifica que tu backend devuelva el ID aquí
+    const formValue = this.registerForm.value;
+    const usuarioPayload = {
+      username: formValue.datosPersonales?.username,
+      password: formValue.datosPersonales?.password,
+      nombres: formValue.datosPersonales?.nombres,
+      apellidos: formValue.datosPersonales?.apellidos,
+      email: formValue.datosPersonales?.email,
+      dni: formValue.datosPersonales?.dni,
+      idRol: this.ID_ROL_ALUMNO
+    };
 
-      const matriculaPayload = {
-        idAlumno: usuarioCreadoResponse.idUsuario, 
-        idCarrera: Number(formValue.seleccionAcademica?.carrera),
-        idCiclo: Number(formValue.seleccionAcademica?.ciclo),
-        periodo: this.PERIODO_ACTUAL,
-        idCursos: formValue.seleccionAcademica?.cursos 
-      };
-
-      return this.academicoService.crearMatricula(matriculaPayload);
-    })
-
-  ).subscribe({
-    next: (matriculaResponse) => {
-      console.log('Matrícula exitosa:', matriculaResponse);
-      alert('¡Registro y Matrícula completados con éxito! Ahora puedes iniciar sesión.');
-      this.router.navigate(['/login']);
-    },
-    error: (err) => {
-      console.error('Error en el proceso:', err);
-      alert('Hubo un error en el registro. Verifique los datos o intente nuevamente.');
-    }
-  });
-}
-
+    this.authService.registrarUsuario(usuarioPayload).pipe(
+      switchMap((usuarioCreadoResponse) => {
+        const matriculaPayload = {
+          idAlumno: usuarioCreadoResponse.idUsuario, 
+          idCarrera: Number(formValue.seleccionAcademica?.carrera),
+          idCiclo: Number(formValue.seleccionAcademica?.ciclo),
+          periodo: this.PERIODO_ACTUAL,
+          idCursos: formValue.seleccionAcademica?.cursos 
+        };
+        return this.academicoService.crearMatricula(matriculaPayload);
+      })
+    ).subscribe({
+      next: (matriculaResponse) => {
+        alert('¡Registro y Matrícula completados con éxito! Ahora puedes iniciar sesión.');
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error(err);
+        alert(err.error?.message || 'Hubo un error en el registro. Verifique vacantes o intente nuevamente.');
+      }
+    });
+  }
 }

@@ -1,6 +1,5 @@
 package com.cibertec.intranet.academico.model;
 
-import com.cibertec.intranet.auth.service.AuthService;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalTime;

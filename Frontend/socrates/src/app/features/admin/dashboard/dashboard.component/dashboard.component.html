@@ -1,106 +1,97 @@
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-[#0B4D6C] flex items-center justify-between">
-        <div>
-            <p class="text-gray-500 text-xs font-bold uppercase">Total Estudiantes</p>
-            <h3 class="text-2xl font-bold text-[#002940]">1,245</h3>
+<div class="p-6 bg-gray-50 min-h-screen">
+    
+    @if (isLoading) {
+        <app-loading-spinner message="Cargando panel administrativo..."></app-loading-spinner>
+    } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 fade-in">
+            <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-[#0B4D6C] flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-xs font-bold uppercase">Total Estudiantes</p>
+                    <h3 class="text-2xl font-bold text-[#002940]">{{ data?.totalEstudiantes }}</h3>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-lg text-[#0B4D6C]"><i class="fa-solid fa-users text-xl"></i></div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-green-500 flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-xs font-bold uppercase">Docentes Activos</p>
+                    <h3 class="text-2xl font-bold text-[#002940]">{{ data?.docentesActivos }}</h3>
+                </div>
+                <div class="bg-green-50 p-3 rounded-lg text-green-600"><i class="fa-solid fa-chalkboard-user text-xl"></i></div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-yellow-500 flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-xs font-bold uppercase">Incidencias IA</p>
+                    <h3 class="text-2xl font-bold text-[#002940]">{{ data?.incidenciasIA }}</h3>
+                </div>
+                <div class="bg-yellow-50 p-3 rounded-lg text-yellow-600"><i class="fa-solid fa-robot text-xl"></i></div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-purple-500 flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-xs font-bold uppercase">Auditoría (Hoy)</p>
+                    <h3 class="text-2xl font-bold text-[#002940]">{{ data?.auditoriaHoy }} <span class="text-xs font-normal text-gray-400">movimientos</span></h3>
+                </div>
+                <div class="bg-purple-50 p-3 rounded-lg text-purple-600"><i class="fa-solid fa-list-check text-xl"></i></div>
+            </div>
         </div>
-        <div class="bg-blue-50 p-3 rounded-lg text-[#0B4D6C]"><i class="fa-solid fa-users text-xl"></i></div>
-    </div>
-    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-green-500 flex items-center justify-between">
-        <div>
-            <p class="text-gray-500 text-xs font-bold uppercase">Docentes Activos</p>
-            <h3 class="text-2xl font-bold text-[#002940]">84</h3>
-        </div>
-        <div class="bg-green-50 p-3 rounded-lg text-green-600"><i class="fa-solid fa-chalkboard-user text-xl"></i></div>
-    </div>
-    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-yellow-500 flex items-center justify-between">
-        <div>
-            <p class="text-gray-500 text-xs font-bold uppercase">Incidencias IA</p>
-            <h3 class="text-2xl font-bold text-[#002940]">12</h3>
-        </div>
-        <div class="bg-yellow-50 p-3 rounded-lg text-yellow-600"><i class="fa-solid fa-robot text-xl"></i></div>
-    </div>
-    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-purple-500 flex items-center justify-between">
-        <div>
-            <p class="text-gray-500 text-xs font-bold uppercase">Auditoría (Hoy)</p>
-            <h3 class="text-2xl font-bold text-[#002940]">342 <span
-                    class="text-xs font-normal text-gray-400">movimientos</span></h3>
-        </div>
-        <div class="bg-purple-50 p-3 rounded-lg text-purple-600"><i class="fa-solid fa-list-check text-xl"></i></div>
-    </div>
-</div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
-        <h3 class="font-bold text-[#002940] mb-4">Estudiantes Matriculados por Carrera</h3>
-        <div class="relative h-64 w-full">
-            <canvas #studentsChart></canvas>
-        </div>
-    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 fade-in">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
+                <h3 class="font-bold text-[#002940] mb-4">Estudiantes Matriculados por Carrera</h3>
+                <div class="relative h-64 w-full">
+                    
+                    <canvas #studentsChart></canvas>
+                </div>
+            </div>
 
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 col-span-1">
-        <h3 class="font-bold text-[#002940] mb-4">Distribución de Usuarios</h3>
-        <div class="relative h-64 w-full flex justify-center">
-            <canvas #usersChart></canvas>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 col-span-1">
+                <h3 class="font-bold text-[#002940] mb-4">Distribución de Usuarios</h3>
+                <div class="relative h-64 w-full flex justify-center">
+                    
+                    <canvas #usersChart></canvas>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="p-5 border-b border-gray-100 flex justify-between items-center">
-        <h3 class="font-bold text-[#002940]">Últimos Movimientos de Auditoría</h3>
-        <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded transition">Ver
-            todo</button>
-    </div>
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-500">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3">Usuario</th>
-                    <th class="px-6 py-3">Acción</th>
-                    <th class="px-6 py-3">Tabla Afectada</th>
-                    <th class="px-6 py-3">Fecha/Hora</th>
-                    <th class="px-6 py-3">IP</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-gray-900">admin01</td>
-                    <td class="px-6 py-4"><span
-                            class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">CREACION</span>
-                    </td>
-                    <td class="px-6 py-4">tb_curso</td>
-                    <td class="px-6 py-4">08/12/2025 14:30:22</td>
-                    <td class="px-6 py-4">192.168.1.15</td>
-                </tr>
-                <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-gray-900">docente_fidel</td>
-                    <td class="px-6 py-4"><span
-                            class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">ACTUALIZACION</span>
-                    </td>
-                    <td class="px-6 py-4">tb_nota</td>
-                    <td class="px-6 py-4">08/12/2025 14:28:10</td>
-                    <td class="px-6 py-4">192.168.1.42</td>
-                </tr>
-                <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-gray-900">alumno_carlos</td>
-                    <td class="px-6 py-4"><span
-                            class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded">LOGIN</span>
-                    </td>
-                    <td class="px-6 py-4">tb_usuario</td>
-                    <td class="px-6 py-4">08/12/2025 14:25:05</td>
-                    <td class="px-6 py-4">181.65.20.10</td>
-                </tr>
-                <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-gray-900">admin01</td>
-                    <td class="px-6 py-4"><span
-                            class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">ELIMINACION</span>
-                    </td>
-                    <td class="px-6 py-4">tb_matricula</td>
-                    <td class="px-6 py-4">08/12/2025 13:10:00</td>
-                    <td class="px-6 py-4">192.168.1.15</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden fade-in">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-bold text-[#002940]">Últimos Movimientos de Auditoría</h3>
+                <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded transition">Ver todo</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3">Usuario</th>
+                            <th class="px-6 py-3">Acción</th>
+                            <th class="px-6 py-3">Tabla Afectada</th>
+                            <th class="px-6 py-3">Fecha/Hora</th>
+                            <th class="px-6 py-3">IP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (mov of data?.ultimosMovimientos; track $index) {
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <td class="px-6 py-4 font-medium text-gray-900">{{ mov.usuario }}</td>
+                                <td class="px-6 py-4">
+                                    <span [class]="getBadgeClass(mov.accion)" class="text-xs font-medium px-2.5 py-0.5 rounded uppercase">
+                                        {{ mov.accion }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">{{ mov.tabla }}</td>
+                                <td class="px-6 py-4">{{ mov.fecha }}</td>
+                                <td class="px-6 py-4">{{ mov.ip }}</td>
+                            </tr>
+                        } @empty {
+                            <tr>
+                                <td colspan="5" class="px-6 py-4 text-center text-gray-500">No hay registros recientes.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </div>

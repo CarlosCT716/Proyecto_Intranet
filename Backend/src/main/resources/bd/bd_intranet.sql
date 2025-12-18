@@ -64,6 +64,7 @@ CREATE TABLE tb_curso (
     id_ciclo INT NOT NULL,
     id_profesor INT NOT NULL,
     cupo_maximo INT DEFAULT 30,
+    cupo_actual INT DEFAULT 30,
     activo BIT default 1,
     FOREIGN KEY (id_carrera) REFERENCES tb_carrera(id_carrera),
     FOREIGN KEY (id_ciclo) REFERENCES tb_ciclo(id_ciclo),
@@ -73,7 +74,9 @@ CREATE TABLE tb_curso (
 CREATE TABLE tb_aula (
     id_aula INT auto_increment PRIMARY KEY,
     activo BIT default 1,
-    descripcion VARCHAR(250) NOT NULL
+    descripcion VARCHAR(250) NOT NULL,
+    aforo_actual INT NOT NULL,
+    aforo_maximo INT NOT NULL
 );
 
 CREATE TABLE tb_horario (
@@ -182,17 +185,17 @@ INSERT INTO tb_curso (nombre_curso, creditos, id_carrera, id_ciclo, id_profesor)
 ('Lenguaje de Programación I', 4, 1, 1, 2), 
 ('Base de Datos I', 3, 1, 1, 3);
 
-INSERT INTO tb_aula( descripcion) VALUES	
-('A001'),
-('A002');
+INSERT INTO tb_aula( descripcion, aforo_actual, aforo_maximo) VALUES	
+('A001',25,25),
+('A002',25,25);
 
 INSERT INTO tb_horario (id_curso, dia_semana, hora_inicio, hora_fin, id_aula) VALUES 
 (1, 'LUNES', '08:00:00', '10:00:00', '1'),
 (1, 'MIERCOLES', '08:00:00', '10:00:00', '2');
 
 INSERT INTO tb_sesion_clase (id_curso, fecha, estado_sesion) VALUES 
-(1, '2024-10-21', 'FINALIZADA'), 
-(1, '2024-10-23', 'PROGRAMADA');
+(1, '2025-12-17', 'FINALIZADA'), 
+(1, '2025-12-18', 'PROGRAMADA');
 
 INSERT INTO tb_matricula (id_alumno, periodo, id_carrera, id_ciclo) VALUES 
 (4, '2024-2', 1, 1), 
@@ -220,5 +223,6 @@ use bd_intranet;
 select * from tb_ia_historial;
 select * from tb_pago;
 select * from tb_sesion_clase;
+select * from tb_aula;
 
 update tb_usuario set activo = 1 where id_usuario = 6

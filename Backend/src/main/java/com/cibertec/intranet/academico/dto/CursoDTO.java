@@ -8,7 +8,7 @@ public class CursoDTO {
     private String nombreCurso;
     private Integer creditos;
     private Integer cupoMaximo;
-
+    private Integer cupoActual;
     private String nombreCarrera;
     private String nombreCiclo;
     private String nombreProfesor;
