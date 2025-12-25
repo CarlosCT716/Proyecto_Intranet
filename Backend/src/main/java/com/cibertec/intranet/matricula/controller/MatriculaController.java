@@ -1,6 +1,7 @@
 package com.cibertec.intranet.matricula.controller;
 
 import com.cibertec.intranet.matricula.dto.MatriculaDTO;
+import com.cibertec.intranet.matricula.dto.ValidacionMatriculaDTO;
 import com.cibertec.intranet.matricula.model.Matricula;
 import com.cibertec.intranet.matricula.service.MatriculaService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,10 @@ public class MatriculaController {
 
     private final MatriculaService _matricula;
 
+    @GetMapping("/validar/{idAlumno}")
+    public ResponseEntity<ValidacionMatriculaDTO> validarMatricula(@PathVariable Integer idAlumno) {
+        return ResponseEntity.ok(_matricula.validarRequisitosMatricula(idAlumno));
+    }
     @PostMapping
     public ResponseEntity<?> registrarMatricula(@RequestBody MatriculaDTO dto) {
         try {

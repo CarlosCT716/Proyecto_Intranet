@@ -12,4 +12,5 @@ public interface SesionRepository extends JpaRepository<Sesion, Integer> {
     List<Sesion> findByCursoProfesorIdUsuarioAndFecha(Integer idProfesor, LocalDate fecha);
 
     List<Sesion> findByCursoProfesorIdUsuarioAndEstadoSesion(Integer idProfesor, String estadoSesion);
+    long countByCurso_IdCurso(Integer idCurso);
 }

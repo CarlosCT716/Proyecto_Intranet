@@ -1,0 +1,65 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-[#002940]">Gestión de Pagos</h2>
+        <div class="flex gap-2">
+            <button (click)="filtroEstado='TODOS'; filtrar()" [class.bg-blue-600]="filtroEstado=='TODOS'" [class.text-white]="filtroEstado=='TODOS'" class="px-3 py-1 rounded border text-sm transition">Todos</button>
+            <button (click)="filtroEstado='PENDIENTE'; filtrar()" [class.bg-yellow-500]="filtroEstado=='PENDIENTE'" [class.text-white]="filtroEstado=='PENDIENTE'" class="px-3 py-1 rounded border text-sm transition">Pendientes</button>
+            <button (click)="filtroEstado='PAGADO'; filtrar()" [class.bg-green-600]="filtroEstado=='PAGADO'" [class.text-white]="filtroEstado=='PAGADO'" class="px-3 py-1 rounded border text-sm transition">Pagados</button>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <div class="relative w-full">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input type="text" [(ngModel)]="searchTerm" (input)="filtrar()" 
+                   placeholder="Buscar por alumno o concepto..." 
+                   class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B4D6C] transition">
+        </div>
+    </div>
+
+    @if (isLoading) {
+        <app-loading-spinner message="Cargando historial de pagos..."></app-loading-spinner>
+    } @else {
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3">Alumno</th>
+                        <th class="px-6 py-3">Concepto</th>
+                        <th class="px-6 py-3">Monto</th>
+                        <th class="px-6 py-3">Vencimiento</th>
+                        <th class="px-6 py-3 text-center">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (pago of pagosFiltrados; track pago.idPago) {
+                        <tr class="bg-white border-b hover:bg-gray-50 transition">
+                            <td class="px-6 py-4">
+                                <div class="font-medium text-gray-900">
+                                    {{ pago.matricula?.alumno?.apellidos }}, {{ pago.matricula?.alumno?.nombres }}
+                                </div>
+                                <div class="text-xs text-gray-400">DNI: {{ pago.matricula?.alumno?.dni }}</div>
+                            </td>
+                            <td class="px-6 py-4">{{ pago.concepto }}</td>
+                            <td class="px-6 py-4 font-bold text-[#0B4D6C]">S/ {{ pago.monto | number:'1.2-2' }}</td>
+                            <td class="px-6 py-4 text-xs">
+                                {{ pago.fechaVencimiento | date:'dd/MM/yyyy' }}
+                                <div *ngIf="pago.fechaPago" class="text-green-600">Pagado: {{ pago.fechaPago | date:'dd/MM' }}</div>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span [class]="pago.estadoPago.descripcion === 'Pagado' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
+                                      class="text-xs font-bold px-2.5 py-0.5 rounded border border-opacity-20 uppercase">
+                                    {{ pago.estadoPago.descripcion }}
+                                </span>
+                            </td>
+                        </tr>
+                    } @empty {
+                        <tr>
+                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">No se encontraron pagos.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

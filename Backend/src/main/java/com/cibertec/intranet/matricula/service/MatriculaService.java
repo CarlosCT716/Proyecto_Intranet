@@ -12,6 +12,7 @@ import com.cibertec.intranet.academico.repository.CursoRepository;
 import com.cibertec.intranet.academico.repository.HorarioRepository;
 import com.cibertec.intranet.auditoria.annotation.Auditable;
 import com.cibertec.intranet.matricula.dto.MatriculaDTO;
+import com.cibertec.intranet.matricula.dto.ValidacionMatriculaDTO;
 import com.cibertec.intranet.matricula.model.DetalleMatricula;
 import com.cibertec.intranet.matricula.model.EstadoPago;
 import com.cibertec.intranet.matricula.model.Matricula;
@@ -24,6 +25,8 @@ import com.cibertec.intranet.profesor.model.Nota;
 import com.cibertec.intranet.profesor.repository.NotaRepository;
 import com.cibertec.intranet.usuario.model.Usuario;
 import com.cibertec.intranet.usuario.repository.UsuarioRepository;
+import com.cibertec.intranet.profesor.repository.AsistenciaRepository;
+import com.cibertec.intranet.profesor.repository.SesionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -51,6 +55,8 @@ public class MatriculaService {
     
     private final NotaRepository notaRepository;
     private final EstadoPagoRepository estadoPagoRepository;
+    private final AsistenciaRepository asistenciaRepository;
+    private final SesionRepository sesionRepository;
 
     @Auditable(accion = "CREACION", tabla = "tb_matricula")
     @Transactional
@@ -162,5 +168,64 @@ public class MatriculaService {
     }
     public List<Matricula> listarTodas() {
         return matriculaRepository.findAll();
+    }
+
+    public ValidacionMatriculaDTO validarRequisitosMatricula(Integer idAlumno) {
+        ValidacionMatriculaDTO respuesta = new ValidacionMatriculaDTO();
+        List<String> rechazos = new ArrayList<>();
+        
+        // 1. Obtener última matrícula
+        Matricula ultimaMatricula = matriculaRepository.findTopByAlumnoIdUsuarioOrderByFechaMatriculaDesc(idAlumno)
+                .orElse(null);
+
+        if (ultimaMatricula == null) {
+            // Es alumno nuevo o nunca se matriculó -> Apto para ciclo 1
+            respuesta.setAptoParaMatricula(true);
+            respuesta.setSiguienteCicloSugericdo(1);
+            respuesta.setMensaje("Alumno nuevo o sin historial. Apto para matrícula inicial.");
+            return respuesta;
+        }
+
+        // 2. Validar Pagos (Deuda 0)
+        List<Pago> pagosPendientes = pagoRepository.buscarPendientesVisibles(
+                ultimaMatricula.getIdMatricula(), 
+                1, 
+                LocalDate.now().plusYears(1) // Buscar cualquier pendiente futuro también
+        );
+        
+        if (!pagosPendientes.isEmpty()) {
+            rechazos.add("Tiene " + pagosPendientes.size() + " cuotas pendientes de pago.");
+        }
+
+        for (DetalleMatricula detalle : ultimaMatricula.getDetalles()) {
+            // Notas
+            Nota nota = notaRepository.findByDetalleMatricula_IdDetalle(detalle.getIdDetalle());
+            if (nota == null || nota.getPromedioFinal() == null || nota.getPromedioFinal().doubleValue() < 13.0) {
+                rechazos.add("Curso desaprobado: " + detalle.getCurso().getNombreCurso());
+            }
+
+            long totalSesiones = sesionRepository.countByCurso_IdCurso(detalle.getCurso().getIdCurso());
+            long faltas = asistenciaRepository.countByAlumno_IdUsuarioAndSesion_Curso_IdCursoAndIdEstado(idAlumno, detalle.getCurso().getIdCurso(), 2); // 2 = Falta
+            
+            if (totalSesiones > 0) {
+                double porcentajeAsistencia = 100.0 - ((double) faltas / totalSesiones * 100.0);
+                if (porcentajeAsistencia < 70.0) {
+                    rechazos.add("Inhabilitado por inasistencia en: " + detalle.getCurso().getNombreCurso() + " (" + (int)porcentajeAsistencia + "%)");
+                }
+            }
+        }
+
+        if (rechazos.isEmpty()) {
+            respuesta.setAptoParaMatricula(true);
+            respuesta.setMensaje("Cumple con todos los requisitos.");
+            // Lógica simple para sugerir siguiente ciclo (asumiendo IDs secuenciales)
+            respuesta.setSiguienteCicloSugericdo(ultimaMatricula.getCiclo().getIdCiclo() + 1);
+        } else {
+            respuesta.setAptoParaMatricula(false);
+            respuesta.setMensaje("No cumple los requisitos para la siguiente matrícula.");
+            respuesta.setMotivosRechazo(rechazos);
+        }
+
+        return respuesta;
     }
 }

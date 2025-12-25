@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import com.cibertec.intranet.usuario.model.Usuario;
 
 @Entity
 @Table(name = "tb_auditoria")
@@ -15,11 +16,12 @@ public class Auditoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idAuditoria;
 
-    @Column(name = "id_usuario")
-    private Integer idUsuario;
+    @ManyToOne(fetch = FetchType.LAZY) 
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 
     @Column(nullable = false)
-    private String accion; // CREATE, UPDATE, DELETE
+    private String accion; 
 
     @Column(name = "tabla_afectada")
     private String tablaAfectada;

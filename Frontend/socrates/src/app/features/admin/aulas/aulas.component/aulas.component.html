@@ -1,0 +1,73 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-[#002940]">Gestión de Aulas</h2>
+        <a routerLink="/admin/aulas/nuevo" class="bg-[#0B4D6C] text-white px-4 py-2 rounded-lg hover:bg-[#002940] transition shadow flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Nueva Aula
+        </a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <div class="relative max-w-md">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input type="text" [(ngModel)]="searchTerm" (input)="filtrar()" 
+                   placeholder="Buscar aula..." 
+                   class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B4D6C] transition">
+        </div>
+    </div>
+
+    @if (isLoading) {
+        <app-loading-spinner message="Cargando aulas..."></app-loading-spinner>
+    } @else {
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden max-w-5xl">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 w-16">ID</th>
+                        <th class="px-6 py-3">Descripción</th>
+                        <th class="px-6 py-3 text-center">Aforo (Disp/Max)</th>
+                        <th class="px-6 py-3 text-center w-32">Estado</th>
+                        <th class="px-6 py-3 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (item of aulasFiltradas; track item.idAula) {
+                        <tr class="bg-white border-b hover:bg-gray-50">
+                            <td class="px-6 py-4 font-mono text-xs">{{ item.idAula }}</td>
+                            <td class="px-6 py-4 font-bold text-[#0B4D6C]">{{ item.descripcion }}</td>
+                            
+                            <td class="px-6 py-4 text-center">
+                                <span class="bg-gray-100 text-gray-700 text-xs font-bold px-2 py-1 rounded border border-gray-300">
+                                    {{ item.aforoActual }} / {{ item.aforoMaximo }}
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <span [class]="item.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+                                      class="px-2.5 py-0.5 rounded-full text-xs font-bold border border-opacity-20"
+                                      [class.border-green-600]="item.activo"
+                                      [class.border-red-600]="!item.activo">
+                                    {{ item.activo ? 'ACTIVO' : 'INACTIVO' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button (click)="toggleEstado(item)" 
+                                        [title]="item.activo ? 'Desactivar' : 'Activar'"
+                                        class="mr-3 transition"
+                                        [class.text-red-500]="item.activo" 
+                                        [class.hover:text-red-700]="item.activo"
+                                        [class.text-green-500]="!item.activo"
+                                        [class.hover:text-green-700]="!item.activo">
+                                    <i class="fa-solid fa-power-off text-lg"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    } @empty {
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">No se encontraron aulas.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

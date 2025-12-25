@@ -409,6 +409,7 @@ public class AcademicoService {
         dto.setDiaSemana(h.getDiaSemana());
         dto.setHoraInicio(h.getHoraInicio());
         dto.setHoraFin(h.getHoraFin());
+        dto.setActivo(h.getActivo());
         if(h.getAula() != null) dto.setNombreAula(h.getAula().getDescripcion());
         if(h.getCurso() != null) dto.setNombreCurso(h.getCurso().getNombreCurso());
         return dto;

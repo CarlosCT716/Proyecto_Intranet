@@ -5,17 +5,16 @@ import com.cibertec.intranet.asistente.repository.HistorialRepository;
 import com.cibertec.intranet.auditoria.model.Auditoria;
 import com.cibertec.intranet.auditoria.repository.AuditoriaRepository;
 import com.cibertec.intranet.matricula.repository.MatriculaRepository;
-import com.cibertec.intranet.usuario.model.Usuario;
 import com.cibertec.intranet.usuario.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +26,7 @@ public class AdminService {
     private final HistorialRepository historialRepository;
     private final AuditoriaRepository auditoriaRepository;
 
+    @Transactional(readOnly = true)
     public AdminDashboardDTO obtenerDataDashboard() {
         AdminDashboardDTO dto = new AdminDashboardDTO();
 
@@ -47,14 +47,11 @@ public class AdminService {
         List<AdminDashboardDTO.AuditoriaResumenDTO> movimientos = ultimos.stream().map(a -> {
             AdminDashboardDTO.AuditoriaResumenDTO mov = new AdminDashboardDTO.AuditoriaResumenDTO();
             
-            String nombreUsuario = "Sistema";
-            if (a.getIdUsuario() != null) {
-                Optional<Usuario> u = usuarioRepository.findById(a.getIdUsuario());
-                if (u.isPresent()) {
-                    nombreUsuario = u.get().getUsername();
-                }
+            if (a.getUsuario() != null) {
+                mov.setUsuario(a.getUsuario().getUsername());
+            } else {
+                mov.setUsuario("Sistema");
             }
-            mov.setUsuario(nombreUsuario);
             
             mov.setAccion(a.getAccion());
             mov.setTabla(a.getTablaAfectada());

@@ -66,11 +66,24 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/teacher/agenda/agenda.component/agenda.component')
                     .then(m => m.AgendaComponent)
             },
-            {
-                path: 'admin/dashboard',
-                loadComponent: () => import('./features/admin/dashboard/dashboard.component/dashboard.component')
-                    .then(m => m.DashboardComponent)
-            }
+        ]
+    },
+    {
+        path: 'admin',
+        component: MainLayoutComponent,
+        children: [
+            { path: 'dashboard', loadComponent: () => import('./features/admin/dashboard/dashboard.component/dashboard.component').then(m => m.DashboardComponent) },
+            { path: 'carreras', loadComponent: () => import('./features/admin/carreras/carreras.component/carreras.component').then(m => m.CarrerasComponent) },
+            { path: 'carreras/nuevo', loadComponent: () => import('./features/admin/carreras/carrera-create.component/carrera-create.component').then(m => m.CarreraCreateComponent) },
+            { path: 'ciclos', loadComponent: () => import('./features/admin/ciclos/ciclos.component/ciclos.component').then(m => m.CiclosComponent) },
+            { path: 'ciclos/nuevo', loadComponent: () => import('./features/admin/ciclos/ciclo-create.component/ciclo-create.component').then(m => m.CicloCreateComponent) },
+            { path: 'aulas', loadComponent: () => import('./features/admin/aulas/aulas.component/aulas.component').then(m => m.AulasComponent) },
+            { path: 'aulas/nuevo', loadComponent: () => import('./features/admin/aulas/aulas-create.component/aulas-create.component').then(m => m.AulasCreateComponent) },
+            { path: 'horarios', loadComponent: () => import('./features/admin/horarios/horarios.component/horarios.component').then(m => m.HorariosComponent) },
+            { path: 'horarios/nuevo', loadComponent: () => import('./features/admin/horarios/horario-create.component/horario-create.component').then(m => m.HorarioCreateComponent) },
+            { path: 'usuarios', loadComponent: () => import('./features/admin/usuarios/usuarios.component/usuarios.component').then(m => m.UsuariosComponent) },
+            { path: 'pagos', loadComponent: () => import('./features/admin/pagos/pagos.component/pagos.component').then(m => m.PagosComponent) },
+            { path: 'auditoria', loadComponent: () => import('./features/admin/auditoria/auditoria.component/auditoria.component').then(m => m.AuditoriaComponent) }
         ]
     },
     { path: '**', redirectTo: 'login' }

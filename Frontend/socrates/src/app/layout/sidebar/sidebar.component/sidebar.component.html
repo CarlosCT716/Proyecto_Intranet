@@ -1,68 +1,109 @@
 <div class="bg-linear-to-r from-[#0B4D6C] to-[#002940] h-screen w-20 md:w-64 fixed z-30 transition-all duration-300">
     <div class="text-gray-100 text-xl w-full overflow-hidden p-2">
-        
+
         <div class="p-2.5 mt-1 flex items-center">
             <div class="cursor-pointer flex items-center">
                 <img src="assets/img/Socrates_icon.png" width="38px">
                 <h1 class="font-bold ml-3 hidden md:block">Socrates</h1>
-                
+
                 @if (role === 'ADMIN') {
-                    <span class="ml-2 text-[10px] bg-red-500 px-2 py-0.5 rounded hidden md:block">ADMIN</span>
+                <span class="ml-2 text-[10px] bg-red-500 px-2 py-0.5 rounded hidden md:block">ADMIN</span>
                 }
             </div>
         </div>
         <hr class="my-2 text-gray-200 border-t-2 opacity-20">
 
         @if (role === 'STUDENT') {
-            <a routerLink="/estudiante/inicio" routerLinkActive="bg-[#03407e] text-white" class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
-                <i class="fa-solid fa-house w-6 text-center"></i>
-                <span class="text-[15px] ml-4 hidden md:block">Inicio</span>
-            </a>
-            <a routerLink="/estudiante/cursos" routerLinkActive="bg-[#03407e] text-white" class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
-                <i class="fa-solid fa-book w-6 text-center"></i>
-                <span class="text-[15px] ml-4 hidden md:block">Cursos</span>
-            </a>
-            <a routerLink="/estudiante/horario" routerLinkActive="bg-[#03407e] text-white" class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
-                <i class="fa-regular fa-calendar w-6 text-center"></i>
-                <span class="text-[15px] ml-4 hidden md:block">Horarios</span>
-            </a>
-            <a routerLink="/estudiante/pagos" routerLinkActive="bg-[#03407e] text-white" class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
-                <i class="fa-solid fa-inbox w-6 text-center"></i>
-                <span class="text-[15px] ml-4 hidden md:block">Pagos</span>
-            </a>
-            <a routerLink="/estudiante/asistente" routerLinkActive="bg-[#03407e] text-white" class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
-                <i class="fa-solid fa-comment w-6 text-center"></i>
-                <span class="text-[15px] ml-4 hidden md:block">Asistente</span>
-            </a>
+        <a routerLink="/estudiante/inicio" routerLinkActive="bg-[#03407e] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
+            <i class="fa-solid fa-house w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Inicio</span>
+        </a>
+        <a routerLink="/estudiante/cursos" routerLinkActive="bg-[#03407e] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
+            <i class="fa-solid fa-book w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Cursos</span>
+        </a>
+        <a routerLink="/estudiante/horario" routerLinkActive="bg-[#03407e] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
+            <i class="fa-regular fa-calendar w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Horarios</span>
+        </a>
+        <a routerLink="/estudiante/pagos" routerLinkActive="bg-[#03407e] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
+            <i class="fa-solid fa-inbox w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Pagos</span>
+        </a>
+        <a routerLink="/estudiante/asistente" routerLinkActive="bg-[#03407e] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
+            <i class="fa-solid fa-comment w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Asistente</span>
+        </a>
         }
 
         @if (role === 'TEACHER') {
-            <a routerLink="/docente/inicio" routerLinkActive="bg-[#03407e] text-white" class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
-                <i class="fa-solid fa-house w-6 text-center"></i>
-                <span class="text-[15px] ml-4 hidden md:block">Inicio</span>
-            </a>
-            <a routerLink="/docente/cursos" routerLinkActive="bg-[#03407e] text-white" class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
-                <i class="fa-solid fa-chalkboard-user w-6 text-center"></i>
-                <span class="text-[15px] ml-4 hidden md:block">Mis Cursos</span>
-            </a>
-            <a routerLink="/docente/agenda" routerLinkActive="bg-[#03407e] text-white" class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
-                <i class="fa-regular fa-calendar-check w-6 text-center"></i>
-                <span class="text-[15px] ml-4 hidden md:block">Agenda</span>
-            </a>
+        <a routerLink="/docente/inicio" routerLinkActive="bg-[#03407e] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
+            <i class="fa-solid fa-house w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Inicio</span>
+        </a>
+        <a routerLink="/docente/cursos" routerLinkActive="bg-[#03407e] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
+            <i class="fa-solid fa-chalkboard-user w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Mis Cursos</span>
+        </a>
+        <a routerLink="/docente/agenda" routerLinkActive="bg-[#03407e] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-gray-200 my-3 group">
+            <i class="fa-regular fa-calendar-check w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Agenda</span>
+        </a>
         }
 
         @if (role === 'ADMIN') {
-            <a routerLink="/admin/dashboard" routerLinkActive="bg-[#ffffff10] text-white" class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#ffffff10] text-gray-300 my-3 group">
-                <i class="fa-solid fa-chart-line w-6 text-center"></i>
-                <span class="text-[15px] ml-4 hidden md:block">Dashboard</span>
-            </a>
-            <a routerLink="/admin/usuarios" routerLinkActive="bg-[#ffffff10] text-white" class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#ffffff10] text-gray-300 my-3 group">
-                <i class="fa-solid fa-users w-6 text-center"></i>
-                <span class="text-[15px] ml-4 hidden md:block">Usuarios</span>
-            </a>
-            }
+        <a routerLink="/admin/dashboard" routerLinkActive="bg-[#ffffff10] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#ffffff10] text-gray-300 my-3 group">
+            <i class="fa-solid fa-chart-line w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Dashboard</span>
+        </a>
+        <a routerLink="/admin/carreras" routerLinkActive="bg-[#ffffff10] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#ffffff10] text-gray-300 my-3 group">
+            <i class="fa-solid fa-graduation-cap w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Carreras</span>
+        </a>
+        <a routerLink="/admin/ciclos" routerLinkActive="bg-[#ffffff10] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#ffffff10] text-gray-300 my-3 group">
+            <i class="fa-solid fa-layer-group w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Ciclos</span>
+        </a>
+        <a routerLink="/admin/aulas" routerLinkActive="bg-[#ffffff10] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#ffffff10] text-gray-300 my-3 group">
+            <i class="fa-solid fa-door-open w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Aulas</span>
+        </a>
+        <a routerLink="/admin/horarios" routerLinkActive="bg-[#ffffff10] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#ffffff10] text-gray-300 my-3 group">
+            <i class="fa-regular fa-clock w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Horarios</span>
+        </a>
+        <a routerLink="/admin/usuarios" routerLinkActive="bg-[#ffffff10] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#ffffff10] text-gray-300 my-3 group">
+            <i class="fa-solid fa-users w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Usuarios</span>
+        </a>
+        <a routerLink="/admin/pagos" routerLinkActive="bg-[#ffffff10] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#ffffff10] text-gray-300 my-3 group">
+            <i class="fa-solid fa-money-bill-wave w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Pagos</span>
+        </a>
+        <a routerLink="/admin/auditoria" routerLinkActive="bg-[#ffffff10] text-white"
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#ffffff10] text-gray-300 my-3 group">
+            <i class="fa-solid fa-shield-halved w-6 text-center"></i>
+            <span class="text-[15px] ml-4 hidden md:block">Auditoria</span>
+        </a>
+        }
 
-        <div class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-red-200 hover:text-red-100 group">
+        <div
+            class="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-[#03407e] text-red-200 hover:text-red-100 group">
             <i class="fa-solid fa-arrow-right-from-bracket w-6 text-center"></i>
             <a routerLink="/auth/login" class="text-[15px] ml-4 hidden md:block">Salir</a>
         </div>

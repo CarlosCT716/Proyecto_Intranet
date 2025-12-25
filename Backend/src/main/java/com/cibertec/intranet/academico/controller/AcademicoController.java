@@ -3,6 +3,8 @@ package com.cibertec.intranet.academico.controller;
 import com.cibertec.intranet.academico.dto.*;
 import com.cibertec.intranet.academico.model.*;
 import com.cibertec.intranet.academico.service.AcademicoService;
+import com.cibertec.intranet.auditoria.model.Auditoria;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -16,7 +16,6 @@ public class Pago {
 
     @ManyToOne
     @JoinColumn(name = "id_matricula")
-    @JsonIgnore
     private Matricula matricula;
 
     private String concepto;

@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/auditoria/**").hasRole("ADMIN")
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
+                
 
                         //RUTAS DE PROFESOR
                         .requestMatchers("/api/profesor/**").hasAnyRole("PROFESOR", "ADMIN")

@@ -33,4 +33,5 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
             @Param("idMatricula") Integer idMatricula,
             @Param("fechaLimite") LocalDate fechaLimite
     );
+    List<Pago> findByEstadoPago_IdEstadoPago(Integer idEstadoPago);
 }
