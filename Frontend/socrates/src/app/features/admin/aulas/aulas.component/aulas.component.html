@@ -34,13 +34,11 @@
                         <tr class="bg-white border-b hover:bg-gray-50">
                             <td class="px-6 py-4 font-mono text-xs">{{ item.idAula }}</td>
                             <td class="px-6 py-4 font-bold text-[#0B4D6C]">{{ item.descripcion }}</td>
-                            
                             <td class="px-6 py-4 text-center">
                                 <span class="bg-gray-100 text-gray-700 text-xs font-bold px-2 py-1 rounded border border-gray-300">
                                     {{ item.aforoActual }} / {{ item.aforoMaximo }}
                                 </span>
                             </td>
-
                             <td class="px-6 py-4 text-center">
                                 <span [class]="item.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
                                       class="px-2.5 py-0.5 rounded-full text-xs font-bold border border-opacity-20"
@@ -50,6 +48,9 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right">
+                                <button [routerLink]="['/admin/aulas/editar', item.idAula]" class="text-blue-600 hover:text-blue-800 mr-3 transition" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <button (click)="toggleEstado(item)" 
                                         [title]="item.activo ? 'Desactivar' : 'Activar'"
                                         class="mr-3 transition"

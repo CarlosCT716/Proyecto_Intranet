@@ -386,10 +386,18 @@ public class AcademicoService {
         dto.setCreditos(c.getCreditos());
         dto.setCupoMaximo(c.getCupoMaximo());
         dto.setCupoActual(c.getCupoActual());
-        if(c.getCarrera() != null) dto.setNombreCarrera(c.getCarrera().getNombreCarrera());
-        if(c.getCiclo() != null) dto.setNombreCiclo(c.getCiclo().getNombreCiclo());
+        dto.setActivo(c.getActivo());
+        if(c.getCarrera() != null) {
+            dto.setNombreCarrera(c.getCarrera().getNombreCarrera());
+            dto.setIdCarrera(c.getCarrera().getIdCarrera());
+        }
+        if(c.getCiclo() != null) {
+            dto.setNombreCiclo(c.getCiclo().getNombreCiclo());
+            dto.setIdCiclo(c.getCiclo().getIdCiclo());
+        }
         if(c.getProfesor() != null) {
             dto.setNombreProfesor(c.getProfesor().getNombres() + " " + c.getProfesor().getApellidos());
+            dto.setIdProfesor(c.getProfesor().getIdUsuario());
         }
         return dto;
     }
@@ -410,8 +418,14 @@ public class AcademicoService {
         dto.setHoraInicio(h.getHoraInicio());
         dto.setHoraFin(h.getHoraFin());
         dto.setActivo(h.getActivo());
-        if(h.getAula() != null) dto.setNombreAula(h.getAula().getDescripcion());
-        if(h.getCurso() != null) dto.setNombreCurso(h.getCurso().getNombreCurso());
+        if(h.getAula() != null) {
+            dto.setNombreAula(h.getAula().getDescripcion());
+            dto.setIdAula(h.getAula().getIdAula());
+        }
+        if(h.getCurso() != null) {
+            dto.setNombreCurso(h.getCurso().getNombreCurso());
+            dto.setIdCurso(h.getCurso().getIdCurso());
+        }
         return dto;
     }
 

@@ -52,6 +52,9 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right">
+                                <button [routerLink]="['/admin/horarios/editar', item.idHorario]" class="text-blue-600 hover:text-blue-800 mr-3 transition" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
                                 <button (click)="toggleEstado(item)" 
                                         [title]="item.activo ? 'Desactivar' : 'Activar'"
                                         class="mr-3 transition"

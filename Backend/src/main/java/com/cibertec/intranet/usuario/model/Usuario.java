@@ -24,6 +24,8 @@ public class Usuario {
     private String apellidos;
     private String email;
     private String dni;
+    private String telefono;
+    private String direccion;
 
     @Column(name = "fecha_registro")
     private LocalDateTime fechaRegistro;

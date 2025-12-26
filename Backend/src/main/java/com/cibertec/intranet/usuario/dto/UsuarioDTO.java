@@ -10,6 +10,9 @@ public class UsuarioDTO {
     private String apellidos;
     private String email;
     private String dni;
+    private String telefono;
+    private String direccion;
     private String rol;
     private Boolean activo;
+    private Integer idRol;
 }

@@ -1,1 +1,67 @@
-<p>cursos.component works!</p>
+<div class="p-6 bg-gray-50 min-h-screen">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-[#002940]">Gestión de Cursos</h2>
+        <a routerLink="/admin/cursos/nuevo" class="bg-[#0B4D6C] text-white px-4 py-2 rounded-lg hover:bg-[#002940] transition shadow flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Nuevo Curso
+        </a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <div class="relative">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input type="text" [(ngModel)]="searchTerm" (input)="filtrar()" 
+                   placeholder="Buscar por curso, carrera o profesor..." 
+                   class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B4D6C] transition">
+        </div>
+    </div>
+
+    @if (isLoading) {
+        <app-loading-spinner message="Cargando cursos..."></app-loading-spinner>
+    } @else {
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3">Curso</th>
+                        <th class="px-6 py-3">Créditos</th>
+                        <th class="px-6 py-3">Cupos</th>
+                        <th class="px-6 py-3">Carrera / Ciclo</th>
+                        <th class="px-6 py-3">Profesor</th>
+                        <th class="px-6 py-3 text-center">Estado</th>
+                        <th class="px-6 py-3 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (c of cursosFiltrados; track c.idCurso) {
+                        <tr class="bg-white border-b hover:bg-gray-50">
+                            <td class="px-6 py-4 font-bold text-[#0B4D6C]">{{ c.nombreCurso }}</td>
+                            <td class="px-6 py-4">{{ c.creditos }}</td>
+                            <td class="px-6 py-4 text-xs">
+                                <span class="font-bold">{{ c.cupoActual }}</span> / {{ c.cupoMaximo }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="font-medium">{{ c.nombreCarrera }}</div>
+                                <div class="text-xs text-gray-400">{{ c.nombreCiclo }}</div>
+                            </td>
+                            <td class="px-6 py-4 text-xs">{{ c.nombreProfesor || 'Sin asignar' }}</td>
+                            <td class="px-6 py-4 text-center">
+                                <span [class]="c.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                      class="px-2 py-1 rounded-full text-xs font-bold">
+                                    {{ c.activo ? 'ACTIVO' : 'INACTIVO' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button [routerLink]="['/admin/cursos/editar', c.idCurso]" class="text-blue-600 hover:text-blue-800 mr-3">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button (click)="toggleEstado(c)" [class]="c.activo ? 'text-red-500' : 'text-green-500'">
+                                    <i class="fa-solid fa-power-off"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

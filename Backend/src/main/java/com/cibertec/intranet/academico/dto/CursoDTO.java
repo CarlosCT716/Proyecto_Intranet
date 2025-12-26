@@ -12,4 +12,8 @@ public class CursoDTO {
     private String nombreCarrera;
     private String nombreCiclo;
     private String nombreProfesor;
+    private Integer idCarrera;
+    private Integer idCiclo;
+    private Integer idProfesor;
+    private Boolean activo;
 }

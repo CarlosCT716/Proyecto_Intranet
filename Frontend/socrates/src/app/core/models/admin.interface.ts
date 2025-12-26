@@ -96,3 +96,37 @@ export interface Auditoria {
     fecha: string;
     ipOrigen: string;
 }
+export interface Usuario {
+    idUsuario: number;
+    username: string;
+    nombres: string;
+    apellidos: string;
+    email: string;
+    dni: string;           
+    rol: string;           
+    activo: boolean;       
+}
+export interface CursoDTO {
+    idCurso: number;
+    nombreCurso: string;
+    creditos: number;
+    cupoMaximo: number;
+    cupoActual: number;
+    nombreCarrera?: string;
+    nombreCiclo?: string;
+    nombreProfesor?: string;
+    activo: boolean;
+    idCarrera?: number;
+    idCiclo?: number;
+    idProfesor?: number;
+}
+
+export interface CursoCreateDTO {
+    nombreCurso: string;
+    creditos: number;
+    cupoMaximo: number;
+    cupoActual: number;
+    idCarrera: number;
+    idCiclo: number;
+    idProfesor: number;
+}

@@ -11,5 +11,7 @@ public class HorarioDTO {
     private LocalTime horaFin;
     private String nombreAula;
     private String nombreCurso;
+    private Integer idCurso;
+    private Integer idAula;
     private Boolean activo;
 }

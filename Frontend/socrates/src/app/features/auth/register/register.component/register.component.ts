@@ -42,6 +42,8 @@ export class RegisterComponent implements OnInit {
       apellidos: ['', Validators.required],
       dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
       email: ['', [Validators.required, Validators.email]],
+      telefono: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+      direccion: ['', Validators.required],
       username: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]]
     }),
@@ -151,6 +153,8 @@ export class RegisterComponent implements OnInit {
       apellidos: formValue.datosPersonales?.apellidos,
       email: formValue.datosPersonales?.email,
       dni: formValue.datosPersonales?.dni,
+      telefono: formValue.datosPersonales?.telefono,
+      direccion: formValue.datosPersonales?.direccion,
       idRol: this.ID_ROL_ALUMNO
     };
 

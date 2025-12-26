@@ -1,6 +1,6 @@
 package com.cibertec.intranet.usuario.service;
 
-import com.cibertec.intranet.academico.model.Horario;
+import com.cibertec.intranet.auditoria.annotation.Auditable;
 import com.cibertec.intranet.usuario.dto.UsuarioCreateDTO;
 import com.cibertec.intranet.usuario.dto.UsuarioDTO;
 import com.cibertec.intranet.usuario.model.Rol;
@@ -34,6 +34,7 @@ public class UsuarioService {
         return convertirADTO(usuario);
     }
 
+    @Auditable(accion = "CREACION", tabla = "tb_usuario")
     @Transactional
     public UsuarioDTO crearUsuario(UsuarioCreateDTO dto) {
         if(usuarioRepository.findByUsername(dto.getUsername()).isPresent()) {
@@ -47,6 +48,8 @@ public class UsuarioService {
         nuevo.setApellidos(dto.getApellidos());
         nuevo.setEmail(dto.getEmail());
         nuevo.setDni(dto.getDni());
+        nuevo.setTelefono(dto.getTelefono());
+        nuevo.setDireccion(dto.getDireccion());
         nuevo.setFechaRegistro(LocalDateTime.now());
         nuevo.setActivo(true);
 
@@ -58,6 +61,7 @@ public class UsuarioService {
         return convertirADTO(guardado);
     }
 
+    @Auditable(accion = "ACTUALIZACIÓN", tabla = "tb_usuario")
     @Transactional
     public UsuarioDTO actualizarUsuario(Integer id, UsuarioCreateDTO dto) {
         Usuario existente = usuarioRepository.findById(id)
@@ -67,18 +71,19 @@ public class UsuarioService {
         existente.setApellidos(dto.getApellidos());
         existente.setEmail(dto.getEmail());
         existente.setDni(dto.getDni());
+        existente.setTelefono(dto.getTelefono());
+        existente.setDireccion(dto.getDireccion());
 
         Usuario actualizado = usuarioRepository.save(existente);
         return convertirADTO(actualizado);
     }
-
+    @Auditable(accion = "ESTADO", tabla = "tb_usuario")
     @Transactional
     public void cambiarEstado(Integer id) {
-        Usuario u = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Horario no encontrado"));
+        Usuario u = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         u.setActivo(!u.getActivo());
         usuarioRepository.save(u);
     }
-
 
     private UsuarioDTO convertirADTO(Usuario u) {
         UsuarioDTO dto = new UsuarioDTO();
@@ -88,9 +93,13 @@ public class UsuarioService {
         dto.setApellidos(u.getApellidos());
         dto.setEmail(u.getEmail());
         dto.setDni(u.getDni());
+        dto.setTelefono(u.getTelefono());
+        dto.setDireccion(u.getDireccion());
         dto.setActivo(u.getActivo());
+
         if (u.getRol() != null) {
             dto.setRol(u.getRol().getNombreRol());
+            dto.setIdRol(u.getRol().getIdRol());
         }
         return dto;
     }

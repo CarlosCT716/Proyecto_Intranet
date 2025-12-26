@@ -57,7 +57,20 @@ public class AcademicoController {
         carrera.setIdCarrera(id);
         return ResponseEntity.ok(academicoService.guardarCarrera(carrera));
     }
+    @GetMapping("/carreras/{id}")
+    public ResponseEntity<Carrera> obtenerCarrera(@PathVariable Integer id) {
+        return ResponseEntity.ok(academicoService.obtenerCarrera(id));
+    }
 
+    @GetMapping("/ciclos/{id}")
+    public ResponseEntity<Ciclo> obtenerCiclo(@PathVariable Integer id) {
+        return ResponseEntity.ok(academicoService.obtenerCiclo(id));
+    }
+
+    @GetMapping("/aulas/{id}")
+    public ResponseEntity<Aula> obtenerAula(@PathVariable Integer id) {
+        return ResponseEntity.ok(academicoService.obtenerAula(id));
+    }
 
 
     // ciclos

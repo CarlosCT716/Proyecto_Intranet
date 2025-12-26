@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CicloCreateComponent } from './ciclo-create.component';
+import { CarreraFormComponent } from './carrera-form.component';
 
-describe('CicloCreateComponent', () => {
-  let component: CicloCreateComponent;
-  let fixture: ComponentFixture<CicloCreateComponent>;
+describe('CarreraFormComponent', () => {
+  let component: CarreraFormComponent;
+  let fixture: ComponentFixture<CarreraFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CicloCreateComponent]
+      imports: [CarreraFormComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CicloCreateComponent);
+    fixture = TestBed.createComponent(CarreraFormComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

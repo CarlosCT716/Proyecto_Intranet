@@ -10,5 +10,7 @@ public class UsuarioCreateDTO {
     private String apellidos;
     private String email;
     private String dni;
+    private String telefono;
+    private String direccion;
     private Integer idRol;
 }

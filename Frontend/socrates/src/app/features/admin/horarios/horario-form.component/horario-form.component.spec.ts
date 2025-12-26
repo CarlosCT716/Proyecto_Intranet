@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HorarioCreateComponent } from './horario-create.component';
+import { HorarioFormComponent } from './horario-form.component';
 
-describe('HorarioCreateComponent', () => {
-  let component: HorarioCreateComponent;
-  let fixture: ComponentFixture<HorarioCreateComponent>;
+describe('HorarioFormComponent', () => {
+  let component: HorarioFormComponent;
+  let fixture: ComponentFixture<HorarioFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HorarioCreateComponent]
+      imports: [HorarioFormComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(HorarioCreateComponent);
+    fixture = TestBed.createComponent(HorarioFormComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -11,14 +11,14 @@ export const routes: Routes = [
         path: '',
         component: MainLayoutComponent,
         children: [
+            // ... (Rutas de Estudiante y Docente se mantienen igual) ...
             {
                 path: 'perfil',
                 loadComponent: () => import('./layout/profile/profile.component/profile.component').then(m => m.ProfileComponent)
             },
             {
                 path: 'estudiante/inicio',
-                loadComponent: () => import('./features/student/dashboard/dashboard.component/dashboard.component')
-                    .then(m => m.DashboardComponent)
+                loadComponent: () => import('./features/student/dashboard/dashboard.component/dashboard.component').then(m => m.DashboardComponent)
             },
             {
                 path: 'estudiante/cursos',
@@ -42,8 +42,7 @@ export const routes: Routes = [
             },
             {
                 path: 'docente/inicio',
-                loadComponent: () => import('./features/teacher/dashboard/dashboard.component/dashboard.component')
-                    .then(m => m.DashboardComponent)
+                loadComponent: () => import('./features/teacher/dashboard/dashboard.component/dashboard.component').then(m => m.DashboardComponent)
             },
             {
                 path: 'docente/cursos',
@@ -63,8 +62,7 @@ export const routes: Routes = [
             },
             {
                 path: 'docente/agenda',
-                loadComponent: () => import('./features/teacher/agenda/agenda.component/agenda.component')
-                    .then(m => m.AgendaComponent)
+                loadComponent: () => import('./features/teacher/agenda/agenda.component/agenda.component').then(m => m.AgendaComponent)
             },
         ]
     },
@@ -73,15 +71,35 @@ export const routes: Routes = [
         component: MainLayoutComponent,
         children: [
             { path: 'dashboard', loadComponent: () => import('./features/admin/dashboard/dashboard.component/dashboard.component').then(m => m.DashboardComponent) },
+            
+            // CARRERAS
             { path: 'carreras', loadComponent: () => import('./features/admin/carreras/carreras.component/carreras.component').then(m => m.CarrerasComponent) },
-            { path: 'carreras/nuevo', loadComponent: () => import('./features/admin/carreras/carrera-create.component/carrera-create.component').then(m => m.CarreraCreateComponent) },
+            { path: 'carreras/nuevo', loadComponent: () => import('./features/admin/carreras/carrera-form.component/carrera-form.component').then(m => m.CarreraFormComponent) },
+            { path: 'carreras/editar/:id', loadComponent: () => import('./features/admin/carreras/carrera-form.component/carrera-form.component').then(m => m.CarreraFormComponent) },
+            
+            // CICLOS
             { path: 'ciclos', loadComponent: () => import('./features/admin/ciclos/ciclos.component/ciclos.component').then(m => m.CiclosComponent) },
-            { path: 'ciclos/nuevo', loadComponent: () => import('./features/admin/ciclos/ciclo-create.component/ciclo-create.component').then(m => m.CicloCreateComponent) },
+            
+            // AULAS
             { path: 'aulas', loadComponent: () => import('./features/admin/aulas/aulas.component/aulas.component').then(m => m.AulasComponent) },
-            { path: 'aulas/nuevo', loadComponent: () => import('./features/admin/aulas/aulas-create.component/aulas-create.component').then(m => m.AulasCreateComponent) },
+            { path: 'aulas/nuevo', loadComponent: () => import('./features/admin/aulas/aula-form.component/aula-form.component').then(m => m.AulaFormComponent) },
+            { path: 'aulas/editar/:id', loadComponent: () => import('./features/admin/aulas/aula-form.component/aula-form.component').then(m => m.AulaFormComponent) },
+            
+            // HORARIOS
             { path: 'horarios', loadComponent: () => import('./features/admin/horarios/horarios.component/horarios.component').then(m => m.HorariosComponent) },
-            { path: 'horarios/nuevo', loadComponent: () => import('./features/admin/horarios/horario-create.component/horario-create.component').then(m => m.HorarioCreateComponent) },
+            { path: 'horarios/nuevo', loadComponent: () => import('./features/admin/horarios/horario-form.component/horario-form.component').then(m => m.HorarioFormComponent) },
+            { path: 'horarios/editar/:id', loadComponent: () => import('./features/admin/horarios/horario-form.component/horario-form.component').then(m => m.HorarioFormComponent) },
+            
+            // USUARIOS
             { path: 'usuarios', loadComponent: () => import('./features/admin/usuarios/usuarios.component/usuarios.component').then(m => m.UsuariosComponent) },
+            { path: 'usuarios/nuevo', loadComponent: () => import('./features/admin/usuarios/usuario-form.component/usuario-form.component').then(m => m.UsuarioFormComponent) },
+            { path: 'usuarios/editar/:id', loadComponent: () => import('./features/admin/usuarios/usuario-form.component/usuario-form.component').then(m => m.UsuarioFormComponent) },
+            
+            // CURSOS
+            { path: 'cursos', loadComponent: () => import('./features/admin/cursos/cursos.component/cursos.component').then(m => m.CursosComponent) },
+            { path: 'cursos/nuevo', loadComponent: () => import('./features/admin/cursos/curso-form.component/curso-form.component').then(m => m.CursoFormComponent) },
+            { path: 'cursos/editar/:id', loadComponent: () => import('./features/admin/cursos/curso-form.component/curso-form.component').then(m => m.CursoFormComponent) },
+
             { path: 'pagos', loadComponent: () => import('./features/admin/pagos/pagos.component/pagos.component').then(m => m.PagosComponent) },
             { path: 'auditoria', loadComponent: () => import('./features/admin/auditoria/auditoria.component/auditoria.component').then(m => m.AuditoriaComponent) }
         ]
