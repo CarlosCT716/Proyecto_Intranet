@@ -41,6 +41,7 @@ public class SecurityConfig {
                         //RUTAS PÚBLICAS
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/auth/cambiar-contrasena").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").authenticated()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/usuarios","/api/matriculas","/api/asistente/chat").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/academico/carreras").permitAll()

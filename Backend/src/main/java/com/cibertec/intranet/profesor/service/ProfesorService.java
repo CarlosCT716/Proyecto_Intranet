@@ -41,6 +41,7 @@ public class ProfesorService {
     private final HorarioRepository horarioRepository;
     private final DetalleMatriculaRepository detalleMatriculaRepository;
 
+
     public TeacherDashboardDTO obtenerDashboardProfesor(Integer idProfesor) {
         TeacherDashboardDTO dashboard = new TeacherDashboardDTO();
 
@@ -216,17 +217,6 @@ public class ProfesorService {
         return actualizados;
     }
 
-    public List<SesionDTO> listarSesionesPorCurso(Integer idCurso) {
-        return sesionRepository.findByCurso_IdCursoOrderByFechaDesc(idCurso).stream()
-                .map(s -> {
-                    SesionDTO dto = new SesionDTO();
-                    dto.setIdSesion(s.getIdSesion());
-                    dto.setFecha(s.getFecha());
-                    dto.setTemaTratado(s.getTemaTratado());
-                    dto.setEstado(s.getEstadoSesion());
-                    return dto;
-                }).collect(Collectors.toList());
-    }
 
     public List<AsistenciaDetalleDTO> obtenerDetalleAsistencia(Integer idSesion) {
         Sesion sesion = sesionRepository.findById(idSesion)
@@ -289,6 +279,36 @@ public class ProfesorService {
         sesionRepository.save(sesion);
     }
 
+    @Transactional(readOnly = true)
+    public List<SesionDTO> listarSesionesPorCurso(Integer idCurso) {
+        return sesionRepository.findByCurso_IdCursoOrderByFechaAsc(idCurso).stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public SesionDTO actualizarTema(Integer idSesion, SesionDTO dto) {
+        Sesion sesion = sesionRepository.findById(idSesion)
+                .orElseThrow(() -> new RuntimeException("Sesión no encontrada"));
+        
+ 
+        sesion.setTemaTratado(dto.getTemaTratado());
+        if(dto.getTemaTratado() != null && !dto.getTemaTratado().isBlank()) {
+             sesion.setEstadoSesion("FINALIZADA");
+        }
+
+        return convertirADTO(sesionRepository.save(sesion));
+    }
+
+    private SesionDTO convertirADTO(Sesion s) {
+        SesionDTO dto = new SesionDTO();
+        dto.setIdSesion(s.getIdSesion());
+        dto.setIdCurso(s.getCurso().getIdCurso());
+        dto.setFecha(s.getFecha());
+        dto.setTemaTratado(s.getTemaTratado());
+        dto.setEstado(s.getEstadoSesion());
+        return dto;
+    }
     private NotaDTO convertirNotaADTO(Nota n) {
         NotaDTO dto = new NotaDTO();
         dto.setIdNota(n.getIdNota());

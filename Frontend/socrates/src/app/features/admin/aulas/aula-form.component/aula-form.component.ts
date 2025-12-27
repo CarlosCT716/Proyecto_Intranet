@@ -5,6 +5,7 @@ import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AdminService } from '../../../../core/services/admin.service';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner.component';
 import { delay } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-aula-form',
@@ -50,9 +51,15 @@ export class AulaFormComponent implements OnInit {
         },
         error: () => {
           this.isLoading = false;
-          alert('Error al cargar el aula');
-          this.router.navigate(['/admin/aulas']);
           this.cdr.detectChanges();
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al cargar la información del aula',
+            confirmButtonColor: '#d33'
+          }).then(() => {
+            this.router.navigate(['/admin/aulas']);
+          });
         }
       });
   }
@@ -64,20 +71,42 @@ export class AulaFormComponent implements OnInit {
   }
 
   guardar() {
+    Swal.fire({
+      title: this.isEditMode ? 'Actualizando...' : 'Guardando...',
+      text: 'Por favor espere',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     this.isLoading = true;
+    this.cdr.detectChanges();
+
     const request$ = this.isEditMode 
         ? this.adminService.actualizarAula(this.aula.idAula, this.aula)
         : this.adminService.crearAula(this.aula);
 
     request$.subscribe({
         next: () => {
-          alert(this.isEditMode ? 'Aula actualizada' : 'Aula creada');
-          this.router.navigate(['/admin/aulas']);
+          Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: this.isEditMode ? 'Aula actualizada correctamente' : 'Aula creada correctamente',
+            confirmButtonColor: '#0B4D6C'
+          }).then(() => {
+            this.router.navigate(['/admin/aulas']);
+          });
         },
         error: () => {
           this.isLoading = false;
-          alert('Error al guardar');
           this.cdr.detectChanges();
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al guardar los cambios',
+            confirmButtonColor: '#d33'
+          });
         }
     });
   }

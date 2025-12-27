@@ -36,12 +36,6 @@
                     </div>
                 </div>
 
-                @if (errorMessage) {
-                    <div class="bg-red-100 text-red-700 p-3 rounded-lg text-sm font-semibold border-l-4 border-red-500">
-                        {{ errorMessage }}
-                    </div>
-                }
-
                 <button 
                     type="submit" 
                     [disabled]="isLoading || loginForm.invalid"
@@ -55,7 +49,7 @@
             </form>
 
             <div class="mt-8 flex flex-col items-center gap-4 text-sm text-gray-600">
-                <a href="#" class="hover:text-[#015071] hover:underline transition">¿Olvidaste tu contraseña?</a>
+                <a routerLink="/password" class="hover:text-[#015071] hover:underline transition">¿Olvidaste tu contraseña?</a>
                 <div class="w-full border-t border-gray-300"></div>
                 <p>
                     ¿No tienes cuenta? 

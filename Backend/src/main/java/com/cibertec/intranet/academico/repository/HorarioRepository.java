@@ -10,4 +10,5 @@ public interface HorarioRepository extends JpaRepository<Horario, Integer> {
     List<Horario> findByCursoIdCursoIn(List<Integer> cursosIds);
     Horario findFirstByCursoIdCurso(Integer idCurso);
     List<Horario> findByCursoProfesorIdUsuarioAndDiaSemana(Integer idProfesor, String diaSemana);
+    List<Horario> findByActivoTrue();
 }

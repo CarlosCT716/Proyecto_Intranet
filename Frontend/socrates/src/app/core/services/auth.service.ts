@@ -53,4 +53,7 @@ export class AuthService {
   isAuthenticated(): boolean {
     return !!localStorage.getItem('token');
   }
+  cambiarPassword(data: { usuario: string, nuevaContrasena: string }) {
+  return this.http.post(`${this.apiUrl}/cambiar-contrasena`, data);
+}
 }

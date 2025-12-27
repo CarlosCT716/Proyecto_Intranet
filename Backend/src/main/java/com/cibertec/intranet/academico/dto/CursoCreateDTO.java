@@ -11,4 +11,5 @@ public class CursoCreateDTO {
     private Integer idCarrera;
     private Integer idCiclo;
     private Integer idProfesor;
+    private Integer idRequisito;
 }

@@ -20,4 +20,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     @Query("SELECT new com.cibertec.intranet.admin.dto.AdminDashboardDTO$ChartDataDTO(u.rol.nombreRol, COUNT(u)) FROM Usuario u GROUP BY u.rol.nombreRol")
     List<AdminDashboardDTO.ChartDataDTO> obtenerDistribucionUsuarios();
+    List<Usuario> findByActivoTrue();
 }

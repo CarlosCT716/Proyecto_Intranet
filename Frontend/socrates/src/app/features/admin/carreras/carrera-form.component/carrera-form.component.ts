@@ -5,6 +5,7 @@ import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AdminService } from '../../../../core/services/admin.service';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner.component';
 import { delay } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-carrera-form',
@@ -39,7 +40,7 @@ export class CarreraFormComponent implements OnInit {
   cargarCarrera(id: number) {
     this.isLoading = true;
     this.adminService.obtenerCarrera(id)
-      .pipe(delay(2000))
+      .pipe(delay(500))
       .subscribe({
         next: (res) => {
           this.carrera = res;
@@ -48,16 +49,28 @@ export class CarreraFormComponent implements OnInit {
         },
         error: () => {
           this.isLoading = false;
-          alert('Error al cargar la carrera');
-          this.router.navigate(['/admin/carreras']);
           this.cdr.detectChanges();
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al cargar la información de la carrera',
+            confirmButtonColor: '#d33'
+          }).then(() => {
+            this.router.navigate(['/admin/carreras']);
+          });
         }
       });
   }
 
   guardar() {
-    this.isLoading = true;
-    this.cdr.detectChanges();
+    Swal.fire({
+      title: this.isEditMode ? 'Actualizando...' : 'Guardando...',
+      text: 'Por favor espere',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
 
     const request$ = this.isEditMode
         ? this.adminService.actualizarCarrera(this.carrera.idCarrera, this.carrera)
@@ -65,13 +78,22 @@ export class CarreraFormComponent implements OnInit {
 
     request$.subscribe({
         next: () => {
-          alert(this.isEditMode ? 'Carrera actualizada' : 'Carrera creada');
-          this.router.navigate(['/admin/carreras']);
+          Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: this.isEditMode ? 'Carrera actualizada correctamente' : 'Carrera creada correctamente',
+            confirmButtonColor: '#0B4D6C'
+          }).then(() => {
+            this.router.navigate(['/admin/carreras']);
+          });
         },
         error: () => {
-          this.isLoading = false;
-          alert('Error al guardar');
-          this.cdr.detectChanges();
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al guardar los cambios',
+            confirmButtonColor: '#d33'
+          });
         }
     });
   }

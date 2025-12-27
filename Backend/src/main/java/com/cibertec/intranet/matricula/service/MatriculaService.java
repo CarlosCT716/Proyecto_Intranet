@@ -170,59 +170,83 @@ public class MatriculaService {
         return matriculaRepository.findAll();
     }
 
+
     public ValidacionMatriculaDTO validarRequisitosMatricula(Integer idAlumno) {
         ValidacionMatriculaDTO respuesta = new ValidacionMatriculaDTO();
         List<String> rechazos = new ArrayList<>();
-        
-        // 1. Obtener última matrícula
+
         Matricula ultimaMatricula = matriculaRepository.findTopByAlumnoIdUsuarioOrderByFechaMatriculaDesc(idAlumno)
                 .orElse(null);
 
         if (ultimaMatricula == null) {
-            // Es alumno nuevo o nunca se matriculó -> Apto para ciclo 1
+            // Caso: Alumno nuevo (Ciclo I)
             respuesta.setAptoParaMatricula(true);
             respuesta.setSiguienteCicloSugericdo(1);
-            respuesta.setMensaje("Alumno nuevo o sin historial. Apto para matrícula inicial.");
+            respuesta.setMensaje("Alumno nuevo habilitado para matrícula inicial.");
             return respuesta;
         }
 
-        // 2. Validar Pagos (Deuda 0)
-        List<Pago> pagosPendientes = pagoRepository.buscarPendientesVisibles(
+    
+        long pagosRealizados = pagoRepository.countByMatricula_IdMatriculaAndEstadoPago_IdEstadoPago(
                 ultimaMatricula.getIdMatricula(), 
-                1, 
-                LocalDate.now().plusYears(1) // Buscar cualquier pendiente futuro también
+                2 // ID Estado Pagado
         );
-        
-        if (!pagosPendientes.isEmpty()) {
-            rechazos.add("Tiene " + pagosPendientes.size() + " cuotas pendientes de pago.");
+
+        if (pagosRealizados < 6) {
+            long pendientes = 6 - pagosRealizados;
+            rechazos.add("Deuda Pendiente: Usted ha pagado " + pagosRealizados + " de 6 cuotas. Le faltan " + pendientes + ".");
         }
 
-        for (DetalleMatricula detalle : ultimaMatricula.getDetalles()) {
-            // Notas
-            Nota nota = notaRepository.findByDetalleMatricula_IdDetalle(detalle.getIdDetalle());
-            if (nota == null || nota.getPromedioFinal() == null || nota.getPromedioFinal().doubleValue() < 13.0) {
-                rechazos.add("Curso desaprobado: " + detalle.getCurso().getNombreCurso());
-            }
 
-            long totalSesiones = sesionRepository.countByCurso_IdCurso(detalle.getCurso().getIdCurso());
-            long faltas = asistenciaRepository.countByAlumno_IdUsuarioAndSesion_Curso_IdCursoAndIdEstado(idAlumno, detalle.getCurso().getIdCurso(), 2); // 2 = Falta
+        boolean desaproboAlgunCurso = false;
+        List<String> cursosJalados = new ArrayList<>();
+
+        for (DetalleMatricula detalle : ultimaMatricula.getDetalles()) {
+            Nota nota = notaRepository.findByDetalleMatricula_IdDetalle(detalle.getIdDetalle());
             
-            if (totalSesiones > 0) {
-                double porcentajeAsistencia = 100.0 - ((double) faltas / totalSesiones * 100.0);
-                if (porcentajeAsistencia < 70.0) {
-                    rechazos.add("Inhabilitado por inasistencia en: " + detalle.getCurso().getNombreCurso() + " (" + (int)porcentajeAsistencia + "%)");
+  
+            if (nota == null || nota.getPromedioFinal() == null || nota.getPromedioFinal().doubleValue() < 13.0) {
+                desaproboAlgunCurso = true;
+                cursosJalados.add(detalle.getCurso().getNombreCurso());
+            } 
+
+            else {
+                long totalSesiones = sesionRepository.countByCurso_IdCurso(detalle.getCurso().getIdCurso());
+                long faltas = asistenciaRepository.countByAlumno_IdUsuarioAndSesion_Curso_IdCursoAndIdEstado(idAlumno, detalle.getCurso().getIdCurso(), 2);
+                
+                if (totalSesiones > 0) {
+                    double porcentajeAsistencia = 100.0 - ((double) faltas / totalSesiones * 100.0);
+                    if (porcentajeAsistencia < 70.0) {
+                        desaproboAlgunCurso = true;
+                        cursosJalados.add(detalle.getCurso().getNombreCurso() + " (Inasistencia)");
+                    }
                 }
             }
         }
 
+        if (!cursosJalados.isEmpty()) {
+            rechazos.add("Cursos pendientes por reprobación: " + String.join(", ", cursosJalados));
+        }
+
+        Integer cicloActual = ultimaMatricula.getCiclo().getIdCiclo();
+        
         if (rechazos.isEmpty()) {
             respuesta.setAptoParaMatricula(true);
-            respuesta.setMensaje("Cumple con todos los requisitos.");
-            // Lógica simple para sugerir siguiente ciclo (asumiendo IDs secuenciales)
-            respuesta.setSiguienteCicloSugericdo(ultimaMatricula.getCiclo().getIdCiclo() + 1);
+            respuesta.setSiguienteCicloSugericdo(cicloActual < 6 ? cicloActual + 1 : cicloActual);
+            respuesta.setMensaje("¡Felicitaciones! Has completado el ciclo " + cicloActual + " exitosamente.");
         } else {
-            respuesta.setAptoParaMatricula(false);
-            respuesta.setMensaje("No cumple los requisitos para la siguiente matrícula.");
+     
+            boolean debeDinero = pagosRealizados < 6;
+            
+            if (debeDinero) {
+                respuesta.setAptoParaMatricula(false); 
+                respuesta.setMensaje("Matrícula Bloqueada por Deuda.");
+            } else {
+                respuesta.setAptoParaMatricula(true); 
+                respuesta.setSiguienteCicloSugericdo(cicloActual); 
+                respuesta.setMensaje("Habilitado para matrícula (Cursos de cargo pendientes).");
+            }
+            
             respuesta.setMotivosRechazo(rechazos);
         }
 

@@ -18,57 +18,107 @@
     @if (isLoading) {
         <app-loading-spinner message="Cargando aulas..."></app-loading-spinner>
     } @else {
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden max-w-5xl">
-            <table class="w-full text-sm text-left text-gray-500">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 w-16">ID</th>
-                        <th class="px-6 py-3">Descripción</th>
-                        <th class="px-6 py-3 text-center">Aforo (Disp/Max)</th>
-                        <th class="px-6 py-3 text-center w-32">Estado</th>
-                        <th class="px-6 py-3 text-right">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (item of aulasFiltradas; track item.idAula) {
-                        <tr class="bg-white border-b hover:bg-gray-50">
-                            <td class="px-6 py-4 font-mono text-xs">{{ item.idAula }}</td>
-                            <td class="px-6 py-4 font-bold text-[#0B4D6C]">{{ item.descripcion }}</td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="bg-gray-100 text-gray-700 text-xs font-bold px-2 py-1 rounded border border-gray-300">
-                                    {{ item.aforoActual }} / {{ item.aforoMaximo }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span [class]="item.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
-                                      class="px-2.5 py-0.5 rounded-full text-xs font-bold border border-opacity-20"
-                                      [class.border-green-600]="item.activo"
-                                      [class.border-red-600]="!item.activo">
-                                    {{ item.activo ? 'ACTIVO' : 'INACTIVO' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <button [routerLink]="['/admin/aulas/editar', item.idAula]" class="text-blue-600 hover:text-blue-800 mr-3 transition" title="Editar">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button (click)="toggleEstado(item)" 
-                                        [title]="item.activo ? 'Desactivar' : 'Activar'"
-                                        class="mr-3 transition"
-                                        [class.text-red-500]="item.activo" 
-                                        [class.hover:text-red-700]="item.activo"
-                                        [class.text-green-500]="!item.activo"
-                                        [class.hover:text-green-700]="!item.activo">
-                                    <i class="fa-solid fa-power-off text-lg"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    } @empty {
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col w-full">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">No se encontraron aulas.</td>
+                            <th class="px-6 py-3 w-16">ID</th>
+                            <th class="px-6 py-3">Descripción</th>
+                            <th class="px-6 py-3 text-center">Aforo (Disp/Max)</th>
+                            <th class="px-6 py-3 text-center w-32">Estado</th>
+                            <th class="px-6 py-3 text-right">Acciones</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @for (item of paginatedAulas; track item.idAula) {
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <td class="px-6 py-4 font-mono text-xs">{{ item.idAula }}</td>
+                                <td class="px-6 py-4 font-bold text-[#0B4D6C]">{{ item.descripcion }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="bg-gray-100 text-gray-700 text-xs font-bold px-2 py-1 rounded border border-gray-300">
+                                        {{ item.aforoActual }} / {{ item.aforoMaximo }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span [class]="item.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+                                          class="px-2.5 py-0.5 rounded-full text-xs font-bold border border-opacity-20"
+                                          [class.border-green-600]="item.activo"
+                                          [class.border-red-600]="!item.activo">
+                                        {{ item.activo ? 'ACTIVO' : 'INACTIVO' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <button [routerLink]="['/admin/aulas/editar', item.idAula]" class="text-blue-600 hover:text-blue-800 mr-3 transition" title="Editar">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button (click)="toggleEstado(item)" 
+                                            [title]="item.activo ? 'Desactivar' : 'Activar'"
+                                            class="mr-3 transition"
+                                            [class.text-red-500]="item.activo" 
+                                            [class.hover:text-red-700]="item.activo"
+                                            [class.text-green-500]="!item.activo"
+                                            [class.hover:text-green-700]="!item.activo">
+                                        <i class="fa-solid fa-power-off text-lg"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        } @empty {
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-500">No se encontraron aulas.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+                <div class="flex flex-1 justify-between sm:hidden">
+                    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1"
+                        class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+                        Anterior
+                    </button>
+                    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages"
+                        class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+                        Siguiente
+                    </button>
+                </div>
+                
+                <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Mostrando
+                            <span class="font-medium">{{ aulasFiltradas.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0 }}</span>
+                            a
+                            <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, aulasFiltradas.length) }}</span>
+                            de
+                            <span class="font-medium">{{ aulasFiltradas.length }}</span>
+                            resultados
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                            <button (click)="changePage(currentPage - 1)" 
+                                    [disabled]="currentPage === 1"
+                                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span class="sr-only">Anterior</span>
+                                <i class="fa-solid fa-chevron-left h-5 w-5 flex items-center justify-center"></i>
+                            </button>
+                            
+                            <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">
+                                {{ currentPage }} / {{ totalPages }}
+                            </span>
+    
+                            <button (click)="changePage(currentPage + 1)"
+                                    [disabled]="currentPage === totalPages || totalPages === 0"
+                                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span class="sr-only">Siguiente</span>
+                                <i class="fa-solid fa-chevron-right h-5 w-5 flex items-center justify-center"></i>
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+            </div>
         </div>
     }
 </div>

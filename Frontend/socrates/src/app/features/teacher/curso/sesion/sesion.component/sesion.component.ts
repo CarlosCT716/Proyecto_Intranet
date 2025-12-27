@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProfesorService } from '../../../../../core/services/profesor.service';
 import { LoadingSpinnerComponent } from '../../../../../shared/loading-spinner.component';
 import { delay } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-sesiones',
@@ -32,6 +33,18 @@ export class SesionesComponent implements OnInit {
       error: () => {
         this.isLoading = false;
         this.cdr.detectChanges();
+        
+        // Alerta opcional si falla la carga
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+        Toast.fire({
+            icon: 'error',
+            title: 'Error al cargar sesiones'
+        });
       }
     });
   }

@@ -15,11 +15,15 @@ import { delay } from 'rxjs';
 export class AuditoriaComponent implements OnInit {
   private adminService = inject(AdminService);
   private cdr = inject(ChangeDetectorRef);
+  protected readonly Math = Math;
 
   logs: Auditoria[] = [];
   logsFiltrados: Auditoria[] = [];
   isLoading = true;
   searchTerm: string = '';
+
+  paginaActual: number = 1;
+  itemsPorPagina: number = 10;
 
   ngOnInit() {
     this.cargarData();
@@ -30,7 +34,7 @@ export class AuditoriaComponent implements OnInit {
     this.adminService.listarAuditoria().pipe(delay(500)).subscribe({
       next: (res) => {
         this.logs = res;
-        this.filtrar();
+        this.filtrar(); 
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -45,6 +49,23 @@ export class AuditoriaComponent implements OnInit {
       log.accion.toLowerCase().includes(term) ||
       log.tablaAfectada?.toLowerCase().includes(term)
     );
+    this.paginaActual = 1;
+  }
+
+  get logsPaginados(): Auditoria[] {
+    const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
+    const fin = inicio + this.itemsPorPagina;
+    return this.logsFiltrados.slice(inicio, fin);
+  }
+
+  get totalPaginas(): number {
+    return Math.ceil(this.logsFiltrados.length / this.itemsPorPagina);
+  }
+
+  cambiarPagina(pagina: number) {
+    if (pagina >= 1 && pagina <= this.totalPaginas) {
+      this.paginaActual = pagina;
+    }
   }
 
   getBadgeClass(accion: string): string {

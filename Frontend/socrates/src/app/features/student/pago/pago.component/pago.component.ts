@@ -4,6 +4,7 @@ import { delay } from 'rxjs/operators';
 import { PagosService } from '../../../../core/services/pago.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pagos',
@@ -33,7 +34,6 @@ export class PagoComponent implements OnInit {
     this.isLoading = true;
     this.cdr.detectChanges();
 
-    // Cargar pendientes
     this.pagosService.getPendientes(this.userId).pipe(delay(500)).subscribe({
       next: (data) => {
         this.pendientes = data;
@@ -41,7 +41,6 @@ export class PagoComponent implements OnInit {
       }
     });
 
-    // Cargar historial
     this.pagosService.getHistorial(this.userId).pipe(delay(800)).subscribe({
       next: (data) => {
         this.historial = data;
@@ -53,14 +52,48 @@ export class PagoComponent implements OnInit {
   }
 
   pagar(idPago: number) {
-    if(!confirm('¿Confirmar pago de esta cuota?')) return;
+    Swal.fire({
+      title: '¿Confirmar pago?',
+      text: "¿Estás seguro de pagar esta cuota ahora?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0B4D6C',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, pagar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        
+        Swal.fire({
+            title: 'Procesando pago',
+            text: 'Por favor espere...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
-    this.pagosService.realizarPago(idPago).subscribe({
-      next: () => {
-        alert('Pago realizado con éxito');
-        this.cargarDatos(); // Recargar tablas
-      },
-      error: (err) => alert('Error al procesar el pago')
+        this.pagosService.realizarPago(idPago).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Pago realizado',
+              text: 'La cuota ha sido pagada con éxito.',
+              confirmButtonColor: '#0B4D6C'
+            });
+            this.cargarDatos(); 
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un problema al procesar el pago.',
+              confirmButtonColor: '#d33'
+            });
+          }
+        });
+      }
     });
   }
 }

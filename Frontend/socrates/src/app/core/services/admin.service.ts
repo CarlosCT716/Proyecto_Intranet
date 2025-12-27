@@ -10,6 +10,7 @@ export class AdminService {
   private http = inject(HttpClient);
 
   private apiBase = 'http://localhost:5050/api';
+   private apiUsuariosUrl = 'http://localhost:5050/api/usuarios';
 
   getDashboard(): Observable<AdminDashboard> {
     return this.http.get<AdminDashboard>(`${this.apiBase}/admin/dashboard`);
@@ -114,5 +115,8 @@ export class AdminService {
 
   actualizarUsuario(id: number, usuario: any): Observable<any> {
     return this.http.put<any>(`${this.apiBase}/usuarios/${id}`, usuario);
+  }
+  listarUsuariosActivos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUsuariosUrl}/activos`);
   }
 }

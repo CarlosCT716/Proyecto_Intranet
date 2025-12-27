@@ -2,6 +2,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
+export interface SesionDTO {
+  idSesion: number;
+  idCurso: number;
+  fecha: string; 
+  temaTratado: string;
+  estado: string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -47,5 +54,17 @@ export class ProfesorService {
 
   finalizarSesion(idSesion: number): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/sesion/${idSesion}/finalizar`, {});
+  }
+  listarSesiones(idCurso: number): Observable<SesionDTO[]> {
+    return this.http.get<SesionDTO[]>(`${this.apiUrl}/cursos/${idCurso}/sesiones`);
+  }
+
+  actualizarTema(idSesion: number, sesionData: any): Observable<SesionDTO> {
+    const payload = {
+        idSesion: idSesion,
+        temaTratado: sesionData.temaTratado 
+    };
+
+    return this.http.patch<SesionDTO>(`${this.apiUrl}/sesiones/${idSesion}`, payload);
   }
 }

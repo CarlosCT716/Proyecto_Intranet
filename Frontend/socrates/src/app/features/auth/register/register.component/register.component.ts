@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -6,6 +6,7 @@ import { AcademicoService } from '../../../../core/services/academico.service';
 import { Carrera, Ciclo, Curso } from '../../../../core/models/register.interface';
 import { switchMap } from 'rxjs/operators';
 import { AuthService } from '../../../../core/services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-register',
@@ -19,16 +20,17 @@ export class RegisterComponent implements OnInit {
   private router = inject(Router);
   private academicoService = inject(AcademicoService);
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   currentStep: number = 1;
   showPassword = false;
   readonly ID_ROL_ALUMNO = 3;
   readonly PERIODO_ACTUAL = "2025-1";
+  readonly ID_CICLO_INICIAL = 1;
   readonly COSTO_POR_CREDITO = 75.00;
   readonly NUMERO_CUOTAS = 6;
 
   carreras: Carrera[] = [];
-  ciclos: Ciclo[] = [];
   cursosFiltrados: Curso[] = [];
 
   montoInscripcion: number = 300.00;
@@ -60,18 +62,21 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {
     this.cargarDatosMaestros();
+    this.academicoForm.patchValue({
+        ciclo: this.ID_CICLO_INICIAL
+    });
     this.academicoForm.get('carrera')?.valueChanges.subscribe(() => this.buscarCursosEnBackend());
-    this.academicoForm.get('ciclo')?.valueChanges.subscribe(() => this.buscarCursosEnBackend());
   }
 
   cargarDatosMaestros() {
-    this.academicoService.getCarreras().subscribe(data => this.carreras = data);
-    this.academicoService.getCiclos().subscribe(data => this.ciclos = data);
+    this.academicoService.listarCarreras().subscribe((data: Carrera[]) => {
+        this.carreras = data;
+    });
   }
 
   buscarCursosEnBackend() {
     const carreraId = Number(this.academicoForm.get('carrera')?.value);
-    const cicloId = Number(this.academicoForm.get('ciclo')?.value);
+    const cicloId = this.ID_CICLO_INICIAL;
 
     if (carreraId > 0 && cicloId > 0) {
       this.cursosFormArray.clear();
@@ -79,8 +84,9 @@ export class RegisterComponent implements OnInit {
       this.calcularCostos(); 
 
       this.academicoService.getCursosPorFiltro(carreraId, cicloId).subscribe({
-        next: (data) => {
-          this.cursosFiltrados = data;
+        next: (data: Curso[]) => {
+          this.cursosFiltrados = data.filter(c => c.activo === true);
+          this.cdr.detectChanges();
         },
         error: (err) => console.error('Error filtrando cursos', err)
       });
@@ -122,12 +128,26 @@ export class RegisterComponent implements OnInit {
     if (this.currentStep === 1) {
       if (this.personalForm.invalid) {
         this.personalForm.markAllAsTouched();
+        Swal.fire({
+          icon: 'warning',
+          title: 'Datos Incompletos',
+          text: 'Por favor complete todos los campos personales correctamente.',
+          confirmButtonColor: '#0B4D6C'
+        });
         return;
       }
     } else if (this.currentStep === 2) {
       if (this.academicoForm.invalid || this.cursosFormArray.length === 0) {
         this.academicoForm.markAllAsTouched();
-        if (this.cursosFormArray.length === 0) alert("Debe seleccionar al menos un curso.");
+        
+        if (this.cursosFormArray.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Debe seleccionar al menos un curso para continuar.',
+                confirmButtonColor: '#0B4D6C'
+            });
+        }
         return;
       }
     }
@@ -144,6 +164,15 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
     if (this.registerForm.invalid) return;
+
+    Swal.fire({
+        title: 'Procesando Registro',
+        text: 'Generando usuario y matrícula...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     const formValue = this.registerForm.value;
     const usuarioPayload = {
@@ -163,7 +192,7 @@ export class RegisterComponent implements OnInit {
         const matriculaPayload = {
           idAlumno: usuarioCreadoResponse.idUsuario, 
           idCarrera: Number(formValue.seleccionAcademica?.carrera),
-          idCiclo: Number(formValue.seleccionAcademica?.ciclo),
+          idCiclo: this.ID_CICLO_INICIAL,
           periodo: this.PERIODO_ACTUAL,
           idCursos: formValue.seleccionAcademica?.cursos 
         };
@@ -171,12 +200,41 @@ export class RegisterComponent implements OnInit {
       })
     ).subscribe({
       next: (matriculaResponse) => {
-        alert('¡Registro y Matrícula completados con éxito! Ahora puedes iniciar sesión.');
-        this.router.navigate(['/login']);
+        Swal.fire({
+            icon: 'success',
+            title: '¡Bienvenido!',
+            text: 'Registro y matrícula completados con éxito. Ahora puedes iniciar sesión.',
+            confirmButtonColor: '#0B4D6C',
+            confirmButtonText: 'Ir al Login'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.router.navigate(['/login']);
+            }
+        });
       },
       error: (err) => {
-        console.error(err);
-        alert(err.error?.message || 'Hubo un error en el registro. Verifique vacantes o intente nuevamente.');
+        console.error("Error en registro:", err);
+        
+        let mensaje = 'Hubo un error interno. Intente nuevamente.';
+        
+        if (err.status === 409) {
+             mensaje = 'El DNI o Usuario ya se encuentran registrados.';
+        } else if (err.error && typeof err.error === 'string') {
+             mensaje = err.error;
+        } else if (err.error?.message) {
+             if (err.error.message.includes('vacantes')) {
+                 mensaje = 'Lo sentimos, uno de los cursos seleccionados ya no tiene vacantes disponibles.';
+             } else {
+                 mensaje = err.error.message;
+             }
+        }
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de Registro',
+            text: mensaje,
+            confirmButtonColor: '#d33'
+        });
       }
     });
   }

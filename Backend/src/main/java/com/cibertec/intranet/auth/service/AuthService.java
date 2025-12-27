@@ -47,7 +47,7 @@ public class AuthService {
     }
 
     public void cambiarContrasena(ChangePasswordRequest request) {
-        Usuario usuario = _usuario.findById(request.getIdUsuario())
+        Usuario usuario = _usuario.findByUsername(request.getUsuario())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         usuario.setPassword(passwordEncoder.encode(request.getNuevaContrasena()));

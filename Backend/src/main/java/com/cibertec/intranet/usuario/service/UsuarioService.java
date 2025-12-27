@@ -28,6 +28,7 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
+     public List<Usuario> listarUsuariosActivos() { return usuarioRepository.findByActivoTrue(); }
     public UsuarioDTO buscarPorId(Integer id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));

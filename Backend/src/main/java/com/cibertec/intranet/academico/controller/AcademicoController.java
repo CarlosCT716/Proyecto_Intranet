@@ -3,7 +3,6 @@ package com.cibertec.intranet.academico.controller;
 import com.cibertec.intranet.academico.dto.*;
 import com.cibertec.intranet.academico.model.*;
 import com.cibertec.intranet.academico.service.AcademicoService;
-import com.cibertec.intranet.auditoria.model.Auditoria;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,7 @@ import java.util.List;
 public class AcademicoController {
 
     private final AcademicoService academicoService;
-    //Alumno
+
     @GetMapping("/alumno/{id}/dashboard")
     public ResponseEntity<DashboardDTO> obtenerDashboard(@PathVariable Integer id) {
         return ResponseEntity.ok(academicoService.obtenerDashboardAlumno(id));
@@ -41,11 +40,12 @@ public class AcademicoController {
     public ResponseEntity<List<HorarioAlumnoDTO>> obtenerHorarioAlumno(@PathVariable Integer id) {
         return ResponseEntity.ok(academicoService.obtenerHorarioAlumno(id));
     }
-    // carreras
+    
     @GetMapping("/carreras")
     public ResponseEntity<List<Carrera>> listarCarreras() {
         return ResponseEntity.ok(academicoService.listarCarreras());
     }
+
 
     @PostMapping("/carreras")
     public ResponseEntity<Carrera> crearCarrera(@RequestBody Carrera carrera) {
@@ -73,11 +73,12 @@ public class AcademicoController {
     }
 
 
-    // ciclos
     @GetMapping("/ciclos")
     public ResponseEntity<List<Ciclo>> listarCiclos() {
         return ResponseEntity.ok(academicoService.listarCiclos());
     }
+
+
 
     @PostMapping("/ciclos")
     public ResponseEntity<Ciclo> crearCiclo(@RequestBody Ciclo ciclo) {
@@ -91,10 +92,14 @@ public class AcademicoController {
     }
 
 
-    // aulas
     @GetMapping("/aulas")
     public ResponseEntity<List<Aula>> listarAulas() {
         return ResponseEntity.ok(academicoService.listarAulas());
+    }
+
+    @GetMapping("/aulas/activas")
+    public ResponseEntity<List<Aula>> listarAulasActivas() {
+        return ResponseEntity.ok(academicoService.listarAulasActivas());
     }
 
     @PostMapping("/aulas")
@@ -114,10 +119,14 @@ public class AcademicoController {
         return ResponseEntity.ok().build();
     }
 
-    //cursos
     @GetMapping("/cursos")
     public ResponseEntity<List<CursoDTO>> listarCursos() {
         return ResponseEntity.ok(academicoService.listarCursos());
+    }
+
+    @GetMapping("/cursos/activos")
+    public ResponseEntity<List<CursoDTO>> listarCursosActivos() {
+        return ResponseEntity.ok(academicoService.listarCursosActivos());
     }
 
     @GetMapping("/cursos/{id}")
@@ -147,10 +156,14 @@ public class AcademicoController {
         return ResponseEntity.ok().build();
     }
 
-    //horarioa
     @GetMapping("/horarios")
     public ResponseEntity<List<HorarioDTO>> listarHorarios() {
         return ResponseEntity.ok(academicoService.listarHorarios());
+    }
+
+    @GetMapping("/horarios/activos")
+    public ResponseEntity<List<HorarioDTO>> listarHorariosActivos() {
+        return ResponseEntity.ok(academicoService.listarHorariosActivos());
     }
 
     @GetMapping("/horarios/{id}")

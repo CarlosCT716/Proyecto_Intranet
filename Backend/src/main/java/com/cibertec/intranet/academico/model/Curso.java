@@ -35,6 +35,10 @@ public class Curso {
     @JoinColumn(name = "id_profesor")
     private Usuario profesor;
 
+    @ManyToOne
+    @JoinColumn(name = "id_requisito") 
+    private Curso cursoRequisito;
+
     @Column(name = "activo")
     private Boolean activo = true;
 }

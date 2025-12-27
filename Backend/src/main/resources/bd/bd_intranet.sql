@@ -65,6 +65,7 @@ CREATE TABLE tb_curso (
     id_profesor INT NOT NULL,
     cupo_maximo INT DEFAULT 30,
     cupo_actual INT DEFAULT 30,
+    id_requisito INT NULL,
     activo BIT default 1,
     FOREIGN KEY (id_carrera) REFERENCES tb_carrera(id_carrera),
     FOREIGN KEY (id_ciclo) REFERENCES tb_ciclo(id_ciclo),
@@ -171,58 +172,101 @@ INSERT INTO tb_rol (nombre_rol) VALUES ('ROLE_ADMIN'), ('ROLE_PROFESOR'), ('ROLE
 INSERT INTO tb_estado_asistencia VALUES (1, 'Presente'), (2, 'Falta'), (3, 'Tardanza'), (4, 'Justificado');
 INSERT INTO tb_estado_pago VALUES (1, 'Pendiente'), (2, 'Pagado'), (3, 'Vencido');
 
-INSERT INTO tb_carrera (nombre_carrera, descripcion) VALUES ('Computación e Informática', 'Desarrollo de software y redes');
+INSERT INTO tb_carrera (nombre_carrera, descripcion) VALUES 
+('Computación e Informática', 'Desarrollo de software y redes'),
+('Diseño Gráfico', 'Diseño publicitario y multimedia'),
+('Administración de Empresas', 'Gestión empresarial y finanzas');
+
 INSERT INTO tb_ciclo (nombre_ciclo) VALUES ('I'), ('II'), ('III'), ('IV'), ('V'), ('VI');
 
-INSERT INTO tb_usuario (username, password, nombres, apellidos, email, dni, id_rol) VALUES 
-('admin', 'admin123', 'Administrador', 'Sistema', 'admin@cibertec.edu.pe', '00000001', 1),
-('profesor1', 'profesor1', 'Juan', 'Perez Docente', 'juan.perez@cibertec.edu.pe', '10000001', 2),
-('profesor2', '$2a$10$X/xyz...', 'Maria', 'Lopez Docente', 'maria.lopez@cibertec.edu.pe', '10000002', 2),
-('alumno1', 'alumno1', 'Carlos', 'Estudiante Uno', 'carlos.uno@cibertec.edu.pe', '20000001', 3),
-('alumno2', '$2a$10$X/xyz...', 'Ana', 'Estudiante Dos', 'ana.dos@cibertec.edu.pe', '20000002', 3);
+INSERT INTO tb_usuario (username, password, nombres, apellidos, email, dni, id_rol, activo) VALUES 
+('admin', 'admin123', 'Administrador', 'Sistema', 'admin@cibertec.edu.pe', '00000001', 1, 1),
+('profesor1', 'profesor1', 'Juan', 'Perez Docente', 'juan.perez@cibertec.edu.pe', '10000001', 2, 1),
+('profesor2', 'profesor2', 'Maria', 'Lopez Docente', 'maria.lopez@cibertec.edu.pe', '10000002', 2, 1),
+('profesor3', 'profesor3', 'Carlos', 'Gomez Docente', 'carlos.gomez@cibertec.edu.pe', '10000003', 2, 1),
+('alumno1', 'alumno1', 'Carlos', 'Estudiante Uno', 'carlos.uno@cibertec.edu.pe', '20000001', 3, 1),
+('alumno2', 'alumno2', 'Ana', 'Estudiante Dos', 'ana.dos@cibertec.edu.pe', '20000002', 3, 1),
+('alumno3', 'alumno3', 'Luis', 'Ramirez Alumno', 'luis.ramirez@cibertec.edu.pe', '20000003', 3, 1),
+('alumno4', 'alumno4', 'Sofia', 'Vargas Alumno', 'sofia.vargas@cibertec.edu.pe', '20000004', 3, 1),
+('alumno5', 'alumno5', 'Diego', 'Torres Alumno', 'diego.torres@cibertec.edu.pe', '20000005', 3, 1),
+('alumno6', 'alumno6', 'Elena', 'Castillo Alumno', 'elena.castillo@cibertec.edu.pe', '20000006', 3, 1);
 
-INSERT INTO tb_curso (nombre_curso, creditos, id_carrera, id_ciclo, id_profesor) VALUES 
-('Lenguaje de Programación I', 4, 1, 1, 2), 
-('Base de Datos I', 3, 1, 1, 3);
+INSERT INTO tb_aula (descripcion, aforo_actual, aforo_maximo, activo) VALUES	
+('A001', 25, 25, 1),
+('A002', 25, 25, 1),
+('LAB01', 20, 20, 1),
+('LAB02', 20, 20, 1),
+('VIRTUAL', 100, 100, 1);
 
-INSERT INTO tb_aula( descripcion, aforo_actual, aforo_maximo) VALUES	
-('A001',25,25),
-('A002',25,25);
+INSERT INTO tb_curso (nombre_curso, creditos, id_carrera, id_ciclo, id_profesor, cupo_maximo, cupo_actual) VALUES 
+('Lenguaje de Programación I', 4, 1, 1, 2, 30, 28), 
+('Base de Datos I', 3, 1, 1, 3, 30, 29),
+('Matemática Computacional', 3, 1, 1, 4, 30, 30),
+('Algoritmos y Estructura de Datos', 4, 1, 2, 2, 30, 25),
+('Dibujo Artístico', 3, 2, 1, 3, 20, 18),
+('Administración General', 3, 3, 1, 4, 35, 32);
 
 INSERT INTO tb_horario (id_curso, dia_semana, hora_inicio, hora_fin, id_aula) VALUES 
-(1, 'LUNES', '08:00:00', '10:00:00', '1'),
-(1, 'MIERCOLES', '08:00:00', '10:00:00', '2');
-
-INSERT INTO tb_sesion_clase (id_curso, fecha, estado_sesion) VALUES 
-(1, '2025-12-17', 'FINALIZADA'), 
-(1, '2025-12-18', 'PROGRAMADA');
+(1, 'LUNES', '08:00:00', '10:00:00', 3),
+(1, 'MIERCOLES', '08:00:00', '10:00:00', 3),
+(2, 'MARTES', '10:00:00', '13:00:00', 4),
+(3, 'VIERNES', '08:00:00', '11:00:00', 1),
+(4, 'LUNES', '14:00:00', '18:00:00', 5),
+(5, 'JUEVES', '09:00:00', '12:00:00', 2),
+(6, 'SABADO', '08:00:00', '13:00:00', 5);
 
 INSERT INTO tb_matricula (id_alumno, periodo, id_carrera, id_ciclo) VALUES 
-(4, '2024-2', 1, 1), 
-(5, '2024-2', 1, 1); 
+(5, '2025-1', 1, 1), 
+(6, '2025-1', 1, 1), 
+(7, '2025-1', 1, 2), 
+(8, '2025-1', 2, 1), 
+(9, '2025-1', 3, 1), 
+(10, '2025-1', 1, 1);
 
 INSERT INTO tb_detalle_matricula (id_matricula, id_curso) VALUES 
-(1, 1), (1, 2), 
-(2, 1);    
+(1, 1), (1, 2), (1, 3), 
+(2, 1), (2, 2), 
+(3, 4), 
+(4, 5), 
+(5, 6), 
+(6, 1), (6, 3); 
 
 INSERT INTO tb_pago (id_matricula, concepto, monto, fecha_vencimiento, id_estado_pago) VALUES 
-(1, 'Matrícula 2024-2', 300.00, '2024-08-01', 2), 
-(1, 'Cuota 1', 550.00, '2024-09-01', 1);
+(1, 'Matrícula 2025-1', 300.00, '2025-01-15', 2), 
+(1, 'Cuota 1', 550.00, '2025-02-28', 1),
+(2, 'Matrícula 2025-1', 300.00, '2025-01-15', 2),
+(2, 'Cuota 1', 550.00, '2025-02-28', 2),
+(3, 'Matrícula 2025-1', 300.00, '2025-01-15', 3),
+(4, 'Matrícula 2025-1', 300.00, '2025-01-15', 2),
+(5, 'Matrícula 2025-1', 300.00, '2025-01-15', 1),
+(6, 'Matrícula 2025-1', 300.00, '2025-01-15', 2);
 
-INSERT INTO tb_nota (id_detalle_matricula) VALUES (1), (2), (3);
+INSERT INTO tb_sesion_clase (id_curso, fecha, tema_tratado, estado_sesion) VALUES 
+(1, '2025-03-10', 'Introducción a Java', 'FINALIZADA'), 
+(1, '2025-03-12', 'Variables y Tipos de Datos', 'FINALIZADA'),
+(1, '2025-03-17', 'Estructuras Condicionales', 'PROGRAMADA'),
+(2, '2025-03-11', 'Modelo Entidad Relación', 'FINALIZADA'),
+(3, '2025-03-14', 'Lógica Proposicional', 'FINALIZADA'),
+(4, '2025-03-10', 'Complejidad Algorítmica', 'PROGRAMADA'),
+(5, '2025-03-13', 'Técnicas de Boceto', 'FINALIZADA'),
+(6, '2025-03-15', 'Teoría Administrativa', 'PROGRAMADA');
 
+INSERT INTO tb_asistencia (id_sesion, id_alumno, id_estado) VALUES 
+(1, 5, 1), (1, 6, 1), (1, 10, 2), 
+(2, 5, 1), (2, 6, 3), (2, 10, 1), 
+(4, 5, 1), (4, 6, 1), 
+(5, 5, 1), (5, 10, 4), 
+(7, 8, 1); 
 
-SELECT * FROM tb_usuario;
-select * from tb_nota;
-select * from tb_carrera;
-select * from tb_curso;
-select * from tb_matricula;
-select * from tb_auditoria;
-select * from tb_horario;
-use bd_intranet;
-select * from tb_ia_historial;
-select * from tb_pago;
-select * from tb_sesion_clase;
-select * from tb_aula;
-
-update tb_usuario set activo = 1 where id_usuario = 6
+INSERT INTO tb_nota (id_detalle_matricula, nota1, nota2, nota3, examen_final) VALUES 
+(1, 15, 14, NULL, NULL), 
+(2, 16, 17, NULL, NULL), 
+(3, 12, 13, NULL, NULL), 
+(4, 18, 19, NULL, NULL), 
+(5, 14, 15, NULL, NULL), 
+(6, 11, NULL, NULL, NULL), 
+(7, 20, 19, NULL, NULL), 
+(8, NULL, NULL, NULL, NULL), 
+(9, 10, 12, NULL, NULL), 
+(10, 13, 14, NULL, NULL);
+commit

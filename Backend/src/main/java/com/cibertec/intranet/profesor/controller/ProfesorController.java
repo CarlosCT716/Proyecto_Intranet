@@ -67,4 +67,9 @@ public class ProfesorController {
         profesorService.finalizarSesion(idSesion);
         return ResponseEntity.ok().build();
     }
+
+  @PatchMapping("/sesiones/{idSesion}")
+    public ResponseEntity<SesionDTO> actualizarTema(@PathVariable Integer idSesion, @RequestBody SesionDTO dto) {
+        return ResponseEntity.ok(profesorService.actualizarTema(idSesion, dto));
+    }
 }

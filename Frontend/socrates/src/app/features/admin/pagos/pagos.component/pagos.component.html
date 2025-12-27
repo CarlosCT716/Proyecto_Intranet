@@ -20,46 +20,57 @@
     @if (isLoading) {
         <app-loading-spinner message="Cargando historial de pagos..."></app-loading-spinner>
     } @else {
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <table class="w-full text-sm text-left text-gray-500">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3">Alumno</th>
-                        <th class="px-6 py-3">Concepto</th>
-                        <th class="px-6 py-3">Monto</th>
-                        <th class="px-6 py-3">Vencimiento</th>
-                        <th class="px-6 py-3 text-center">Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (pago of pagosFiltrados; track pago.idPago) {
-                        <tr class="bg-white border-b hover:bg-gray-50 transition">
-                            <td class="px-6 py-4">
-                                <div class="font-medium text-gray-900">
-                                    {{ pago.matricula?.alumno?.apellidos }}, {{ pago.matricula?.alumno?.nombres }}
-                                </div>
-                                <div class="text-xs text-gray-400">DNI: {{ pago.matricula?.alumno?.dni }}</div>
-                            </td>
-                            <td class="px-6 py-4">{{ pago.concepto }}</td>
-                            <td class="px-6 py-4 font-bold text-[#0B4D6C]">S/ {{ pago.monto | number:'1.2-2' }}</td>
-                            <td class="px-6 py-4 text-xs">
-                                {{ pago.fechaVencimiento | date:'dd/MM/yyyy' }}
-                                <div *ngIf="pago.fechaPago" class="text-green-600">Pagado: {{ pago.fechaPago | date:'dd/MM' }}</div>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span [class]="pago.estadoPago.descripcion === 'Pagado' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
-                                      class="text-xs font-bold px-2.5 py-0.5 rounded border border-opacity-20 uppercase">
-                                    {{ pago.estadoPago.descripcion }}
-                                </span>
-                            </td>
-                        </tr>
-                    } @empty {
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
-                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">No se encontraron pagos.</td>
+                            <th class="px-6 py-3">Alumno</th>
+                            <th class="px-6 py-3">Concepto</th>
+                            <th class="px-6 py-3">Monto</th>
+                            <th class="px-6 py-3">Vencimiento</th>
+                            <th class="px-6 py-3 text-center">Estado</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @for (pago of pagosFiltrados | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; track pago.idPago) {
+                            <tr class="bg-white border-b hover:bg-gray-50 transition">
+                                <td class="px-6 py-4">
+                                    <div class="font-medium text-gray-900">
+                                        {{ pago.matricula?.alumno?.apellidos }}, {{ pago.matricula?.alumno?.nombres }}
+                                    </div>
+                                    <div class="text-xs text-gray-400">DNI: {{ pago.matricula?.alumno?.dni }}</div>
+                                </td>
+                                <td class="px-6 py-4">{{ pago.concepto }}</td>
+                                <td class="px-6 py-4 font-bold text-[#0B4D6C]">S/ {{ pago.monto | number:'1.2-2' }}</td>
+                                <td class="px-6 py-4 text-xs">
+                                    {{ pago.fechaVencimiento | date:'dd/MM/yyyy' }}
+                                    <div *ngIf="pago.fechaPago" class="text-green-600">Pagado: {{ pago.fechaPago | date:'dd/MM' }}</div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span [class]="pago.estadoPago.descripcion === 'Pagado' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
+                                          class="text-xs font-bold px-2.5 py-0.5 rounded border border-opacity-20 uppercase">
+                                        {{ pago.estadoPago.descripcion }}
+                                    </span>
+                                </td>
+                            </tr>
+                        } @empty {
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-500">No se encontraron pagos.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="p-4 bg-gray-50 border-t border-gray-200 flex justify-center">
+                <pagination-controls 
+                    (pageChange)="p = $event" 
+                    previousLabel="Anterior" 
+                    nextLabel="Siguiente"
+                    class="custom-pagination">
+                </pagination-controls>
+            </div>
         </div>
     }
 </div>

@@ -2,6 +2,7 @@ package com.cibertec.intranet.usuario.controller;
 
 import com.cibertec.intranet.usuario.dto.UsuarioCreateDTO;
 import com.cibertec.intranet.usuario.dto.UsuarioDTO;
+import com.cibertec.intranet.usuario.model.Usuario;
 import com.cibertec.intranet.usuario.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +41,9 @@ public class UsuarioController {
     public ResponseEntity<Void> cambiarEstado(@PathVariable Integer id) {
         usuarioService.cambiarEstado(id);
         return ResponseEntity.ok().build();
+    }
+       @GetMapping("/activos")
+    public ResponseEntity<List<Usuario>> listarUsuariosActivos() {
+        return ResponseEntity.ok(usuarioService.listarUsuariosActivos());
     }
 }

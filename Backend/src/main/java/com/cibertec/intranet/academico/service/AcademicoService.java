@@ -18,6 +18,10 @@ import com.cibertec.intranet.usuario.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.DayOfWeek;
+import java.time.temporal.TemporalAdjusters;
+import com.cibertec.intranet.profesor.model.Sesion; 
+import com.cibertec.intranet.profesor.repository.SesionRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,7 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.time.temporal.TemporalAdjusters;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,7 @@ public class AcademicoService {
     private final NotaRepository notaRepository;
     private final DetalleMatriculaRepository detalleMatriculaRepo;
     private final AsistenciaRepository asistenciaRepo;
+    private final SesionRepository sesionRepository;
 
     private static final Map<String, Integer> DIAS_SEMANA = Map.of(
             "LUNES", 1,
@@ -68,7 +72,7 @@ public class AcademicoService {
                     DashboardDTO.CursoResumenDTO dto = new DashboardDTO.CursoResumenDTO();
                     dto.setNombre(detalle.getCurso().getNombreCurso());
                     dto.setSiglas(generarSiglas(detalle.getCurso().getNombreCurso()));
-                    dto.setModalidad("Presencial"); // O lógica real si tienes campo modalidad
+                    dto.setModalidad("Presencial"); 
 
                     try {
                         BigDecimal prom = notaRepository.obtenerPromedioPorDetalle(detalle.getIdDetalle());
@@ -112,7 +116,6 @@ public class AcademicoService {
         DashboardDTO.EstadoCuentaDTO estadoCuenta = new DashboardDTO.EstadoCuentaDTO();
 
         if (!pagosPendientes.isEmpty()) {
-            // Tomamos el primero (el más antiguo o próximo a vencer dentro del rango visible)
             Pago pago = pagosPendientes.get(0);
             estadoCuenta.setTieneDeuda(true);
             estadoCuenta.setConcepto(pago.getConcepto());
@@ -129,6 +132,7 @@ public class AcademicoService {
 
         return dashboard;
     }
+
     public List<CursoMatriculadoDTO> listarCursosMatriculados(Integer idAlumno) {
         Matricula matricula = matriculaRepo.findTopByAlumnoIdUsuarioOrderByFechaMatriculaDesc(idAlumno)
                 .orElseThrow(() -> new RuntimeException("Sin matrícula activa"));
@@ -231,7 +235,7 @@ public class AcademicoService {
             dto.setIdCurso(h.getCurso().getIdCurso());
             dto.setNombreCurso(h.getCurso().getNombreCurso());
             dto.setSeccion("T" + h.getCurso().getCiclo().getIdCiclo() + "WN");
-            dto.setDia(h.getDiaSemana().toUpperCase()); // Asegurar mayúsculas
+            dto.setDia(h.getDiaSemana().toUpperCase()); 
             dto.setHoraInicio(h.getHoraInicio().toString());
             dto.setHoraFin(h.getHoraFin().toString());
             dto.setAula(h.getAula().getDescripcion());
@@ -252,6 +256,7 @@ public class AcademicoService {
 
     public List<Carrera> listarCarreras() { return carreraRepository.findAll(); }
 
+
     public Carrera obtenerCarrera(Integer id) {
         return carreraRepository.findById(id).orElseThrow(() -> new RuntimeException("Carrera no encontrada"));
     }
@@ -264,6 +269,8 @@ public class AcademicoService {
 
     public List<Ciclo> listarCiclos() { return cicloRepository.findAll(); }
 
+
+
     public Ciclo obtenerCiclo(Integer id) {
         return cicloRepository.findById(id).orElseThrow(() -> new RuntimeException("Ciclo no encontrado"));
     }
@@ -275,6 +282,8 @@ public class AcademicoService {
     }
 
     public List<Aula> listarAulas() { return aulaRepository.findAll(); }
+
+    public List<Aula> listarAulasActivas() { return aulaRepository.findByActivoTrue(); }
 
     public Aula obtenerAula(Integer id) {
         return aulaRepository.findById(id).orElseThrow(() -> new RuntimeException("Aula no encontrada"));
@@ -297,6 +306,12 @@ public class AcademicoService {
 
     public List<CursoDTO> listarCursos() {
         return cursoRepository.findAll().stream()
+                .map(this::convertirCursoADTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<CursoDTO> listarCursosActivos() {
+        return cursoRepository.findByActivoTrue().stream()
                 .map(this::convertirCursoADTO)
                 .collect(Collectors.toList());
     }
@@ -340,6 +355,12 @@ public class AcademicoService {
                 .collect(Collectors.toList());
     }
 
+    public List<HorarioDTO> listarHorariosActivos() {
+        return horarioRepository.findByActivoTrue().stream()
+                .map(this::convertirHorarioADTO)
+                .collect(Collectors.toList());
+    }
+
     public HorarioDTO obtenerHorario(Integer id) {
         Horario horario = horarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Horario no encontrado"));
         return convertirHorarioADTO(horario);
@@ -350,7 +371,79 @@ public class AcademicoService {
     public HorarioDTO crearHorario(HorarioCreateDTO dto) {
         Horario horario = new Horario();
         horario.setActivo(true);
-        return registrarDatosHorario(horario, dto);
+   
+        if (dto.getIdAula() == null) {
+            throw new RuntimeException("Debe seleccionar un aula.");
+        }
+        if (dto.getIdCurso() == null) {
+            throw new RuntimeException("Debe seleccionar un curso.");
+        }
+
+        Aula aula = aulaRepository.findById(dto.getIdAula())
+                .orElseThrow(() -> new RuntimeException("Aula no encontrada con ID: " + dto.getIdAula()));
+        horario.setAula(aula);
+
+        Curso curso = cursoRepository.findById(dto.getIdCurso())
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + dto.getIdCurso()));
+        horario.setCurso(curso);
+
+        horario.setDiaSemana(dto.getDiaSemana());
+        horario.setHoraInicio(dto.getHoraInicio());
+        horario.setHoraFin(dto.getHoraFin());
+
+        Horario horarioGuardado = horarioRepository.save(horario);
+
+        if (dto.getFechaInicio() != null) {
+            generarSesionesAutomaticas(horarioGuardado, dto.getFechaInicio());
+        }
+        
+        return convertirHorarioADTO(horarioGuardado);
+    }
+
+    private void generarSesionesAutomaticas(Horario horario, LocalDate fechaInicio) {
+        DayOfWeek diaObjetivo = mapearDiaSemana(horario.getDiaSemana());
+        LocalDate fechaCalculada = fechaInicio.with(TemporalAdjusters.nextOrSame(diaObjetivo));
+
+        List<Sesion> sesionesNuevas = new ArrayList<>();
+
+        long sesionesExistentes = sesionRepository.countByCurso_IdCurso(horario.getCurso().getIdCurso());
+
+        for (int i = 1; i <= 14; i++) {
+            boolean existe = sesionRepository.existsByCursoIdCursoAndFecha(horario.getCurso().getIdCurso(), fechaCalculada);
+            
+            if (!existe) {
+                Sesion sesion = new Sesion();
+                sesion.setCurso(horario.getCurso());
+                sesion.setFecha(fechaCalculada);
+                sesion.setEstadoSesion("PROGRAMADA");
+                
+                long numeroSesion = sesionesExistentes + i;
+                sesion.setTemaTratado("Sesión " + numeroSesion + ": Tema por definir");
+                
+                sesionesNuevas.add(sesion);
+            }
+
+            fechaCalculada = fechaCalculada.plusWeeks(1);
+        }
+
+        if (!sesionesNuevas.isEmpty()) {
+            sesionRepository.saveAll(sesionesNuevas);
+        }
+    }
+
+    private DayOfWeek mapearDiaSemana(String dia) {
+        switch (dia.toUpperCase()) {
+            case "LUNES": return DayOfWeek.MONDAY;
+            case "MARTES": return DayOfWeek.TUESDAY;
+            case "MIERCOLES": 
+            case "MIÉRCOLES": return DayOfWeek.WEDNESDAY;
+            case "JUEVES": return DayOfWeek.THURSDAY;
+            case "VIERNES": return DayOfWeek.FRIDAY;
+            case "SABADO":
+            case "SÁBADO": return DayOfWeek.SATURDAY;
+            case "DOMINGO": return DayOfWeek.SUNDAY;
+            default: throw new RuntimeException("Día de semana no válido: " + dia);
+        }
     }
 
     @Auditable(accion = "ACTUALIZACION", tabla = "tb_horario")
@@ -373,12 +466,30 @@ public class AcademicoService {
         curso.setCreditos(dto.getCreditos());
         curso.setCupoMaximo(dto.getCupoMaximo());
         curso.setCupoActual(dto.getCupoActual());
-        curso.setCarrera(carreraRepository.findById(dto.getIdCarrera()).orElseThrow(() -> new RuntimeException("Carrera no encontrada")));
-        curso.setCiclo(cicloRepository.findById(dto.getIdCiclo()).orElseThrow(() -> new RuntimeException("Ciclo no encontrado")));
-        curso.setProfesor(usuarioRepository.findById(dto.getIdProfesor()).orElseThrow(() -> new RuntimeException("Profesor no encontrado")));
+        
+        curso.setCarrera(carreraRepository.findById(dto.getIdCarrera())
+                .orElseThrow(() -> new RuntimeException("Carrera no encontrada")));
+        
+        curso.setCiclo(cicloRepository.findById(dto.getIdCiclo())
+                .orElseThrow(() -> new RuntimeException("Ciclo no encontrado")));
+        
+        curso.setProfesor(usuarioRepository.findById(dto.getIdProfesor())
+                .orElseThrow(() -> new RuntimeException("Profesor no encontrado")));
+
+        if (dto.getIdRequisito() != null && dto.getIdRequisito() > 0) {
+            if (curso.getIdCurso() != null && curso.getIdCurso().equals(dto.getIdRequisito())) {
+                throw new RuntimeException("Un curso no puede ser requisito de sí mismo.");
+            }
+            Curso requisito = cursoRepository.findById(dto.getIdRequisito())
+                    .orElseThrow(() -> new RuntimeException("Curso requisito no encontrado"));
+            curso.setCursoRequisito(requisito);
+        } else {
+            curso.setCursoRequisito(null);
+        }
+
         return convertirCursoADTO(cursoRepository.save(curso));
     }
-
+    
     private CursoDTO convertirCursoADTO(Curso c) {
         CursoDTO dto = new CursoDTO();
         dto.setIdCurso(c.getIdCurso());
@@ -387,6 +498,7 @@ public class AcademicoService {
         dto.setCupoMaximo(c.getCupoMaximo());
         dto.setCupoActual(c.getCupoActual());
         dto.setActivo(c.getActivo());
+        
         if(c.getCarrera() != null) {
             dto.setNombreCarrera(c.getCarrera().getNombreCarrera());
             dto.setIdCarrera(c.getCarrera().getIdCarrera());
@@ -406,8 +518,13 @@ public class AcademicoService {
         h.setDiaSemana(dto.getDiaSemana());
         h.setHoraInicio(dto.getHoraInicio());
         h.setHoraFin(dto.getHoraFin());
+        
+        if (dto.getIdAula() == null) throw new RuntimeException("Debe seleccionar un aula.");
+        if (dto.getIdCurso() == null) throw new RuntimeException("Debe seleccionar un curso.");
+
         h.setAula(aulaRepository.findById(dto.getIdAula()).orElseThrow(() -> new RuntimeException("Aula no encontrada")));
         h.setCurso(cursoRepository.findById(dto.getIdCurso()).orElseThrow(() -> new RuntimeException("Curso no encontrado")));
+        
         return convertirHorarioADTO(horarioRepository.save(h));
     }
 
@@ -418,6 +535,7 @@ public class AcademicoService {
         dto.setHoraInicio(h.getHoraInicio());
         dto.setHoraFin(h.getHoraFin());
         dto.setActivo(h.getActivo());
+        
         if(h.getAula() != null) {
             dto.setNombreAula(h.getAula().getDescripcion());
             dto.setIdAula(h.getAula().getIdAula());

@@ -6,11 +6,13 @@ import { AdminService } from '../../../../core/services/admin.service';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner.component';
 import { Usuario } from '../../../../core/models/admin.interface';
 import { delay } from 'rxjs';
+import Swal from 'sweetalert2';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-usuarios-list', 
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, LoadingSpinnerComponent],
+  imports: [CommonModule, RouterLink, FormsModule, LoadingSpinnerComponent, NgxPaginationModule],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css'
 })
@@ -23,6 +25,9 @@ export class UsuariosComponent implements OnInit {
   isLoading = true;
   searchTerm: string = '';
   tabActiva: 'TODOS' | 'ROLE_ALUMNO' | 'ROLE_PROFESOR' | 'ROLE_ADMIN' = 'TODOS';
+  
+  p: number = 1;
+  itemsPerPage: number = 10; 
 
   ngOnInit() {
     this.cargarUsuarios();
@@ -43,6 +48,7 @@ export class UsuariosComponent implements OnInit {
 
   cambiarTab(tab: any) {
     this.tabActiva = tab;
+    this.p = 1;
     this.filtrar();
   }
 
@@ -59,6 +65,7 @@ export class UsuariosComponent implements OnInit {
       u.username.toLowerCase().includes(term) ||
       u.dni.includes(term)
     );
+    this.p = 1;
   }
 
   getRoleBadgeClass(rol: string): string {
@@ -77,20 +84,50 @@ export class UsuariosComponent implements OnInit {
   toggleEstado(usuario: Usuario) {
     const accion = usuario.activo ? 'desactivar' : 'activar';
     
-    if (confirm(`¿Estás seguro de que deseas ${accion} al usuario "${usuario.username}"?`)) {
-      this.isLoading = true;
-      
-      this.adminService.cambiarEstadoUsuario(usuario.idUsuario).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.cargarUsuarios(); 
-        },
-        error: (err) => {
-          console.error(err);
-          this.isLoading = false;
-          alert('Ocurrió un error al cambiar el estado del usuario.');
-        }
-      });
-    }
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: `¿Deseas ${accion} al usuario "${usuario.username}"?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0B4D6C',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isLoading = true;
+        this.cdr.detectChanges();
+        
+        this.adminService.cambiarEstadoUsuario(usuario.idUsuario).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.cargarUsuarios(); 
+            
+            const Toast = Swal.mixin({
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true
+            });
+            Toast.fire({
+              icon: 'success',
+              title: `Usuario ${accion === 'activar' ? 'activado' : 'desactivado'} correctamente`
+            });
+          },
+          error: (err) => {
+            console.error(err);
+            this.isLoading = false;
+            this.cdr.detectChanges();
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ocurrió un error al cambiar el estado del usuario.',
+              confirmButtonColor: '#d33'
+            });
+          }
+        });
+      }
+    });
   }
 }

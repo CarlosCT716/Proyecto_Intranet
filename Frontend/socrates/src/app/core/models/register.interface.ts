@@ -14,6 +14,7 @@ export interface Curso {
   creditos: number;
   idCarrera: number; 
   idCiclo: number;  
+  activo: boolean;
 }
 
 export interface RegistroRequest {

@@ -18,61 +18,72 @@
     @if (isLoading) {
         <app-loading-spinner message="Cargando horarios..."></app-loading-spinner>
     } @else {
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <table class="w-full text-sm text-left text-gray-500">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3">Día</th>
-                        <th class="px-6 py-3">Horario</th>
-                        <th class="px-6 py-3">Curso</th>
-                        <th class="px-6 py-3">Aula</th>
-                        <th class="px-6 py-3 text-center w-32">Estado</th>
-                        <th class="px-6 py-3 text-right">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (item of horariosFiltrados; track item.idHorario) {
-                        <tr class="bg-white border-b hover:bg-gray-50">
-                            <td class="px-6 py-4 font-bold text-[#0B4D6C] uppercase">{{ item.diaSemana }}</td>
-                            <td class="px-6 py-4 font-mono text-xs">
-                                {{ item.horaInicio }} - {{ item.horaFin }}
-                            </td>
-                            <td class="px-6 py-4 font-medium text-gray-900">{{ item.nombreCurso }}</td>
-                            <td class="px-6 py-4">
-                                <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs border border-gray-300">
-                                    {{ item.nombreAula }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span [class]="item.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
-                                      class="px-2.5 py-0.5 rounded-full text-xs font-bold border border-opacity-20"
-                                      [class.border-green-600]="item.activo"
-                                      [class.border-red-600]="!item.activo">
-                                    {{ item.activo ? 'ACTIVO' : 'INACTIVO' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <button [routerLink]="['/admin/horarios/editar', item.idHorario]" class="text-blue-600 hover:text-blue-800 mr-3 transition" title="Editar">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button (click)="toggleEstado(item)" 
-                                        [title]="item.activo ? 'Desactivar' : 'Activar'"
-                                        class="mr-3 transition"
-                                        [class.text-red-500]="item.activo" 
-                                        [class.hover:text-red-700]="item.activo"
-                                        [class.text-green-500]="!item.activo"
-                                        [class.hover:text-green-700]="!item.activo">
-                                    <i class="fa-solid fa-power-off text-lg"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    } @empty {
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
-                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">No se encontraron horarios registrados.</td>
+                            <th class="px-6 py-3">Día</th>
+                            <th class="px-6 py-3">Horario</th>
+                            <th class="px-6 py-3">Curso</th>
+                            <th class="px-6 py-3">Aula</th>
+                            <th class="px-6 py-3 text-center w-32">Estado</th>
+                            <th class="px-6 py-3 text-right">Acciones</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @for (item of horariosFiltrados | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; track item.idHorario) {
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <td class="px-6 py-4 font-bold text-[#0B4D6C] uppercase">{{ item.diaSemana }}</td>
+                                <td class="px-6 py-4 font-mono text-xs">
+                                    {{ item.horaInicio }} - {{ item.horaFin }}
+                                </td>
+                                <td class="px-6 py-4 font-medium text-gray-900">{{ item.nombreCurso }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs border border-gray-300">
+                                        {{ item.nombreAula }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span [class]="item.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+                                          class="px-2.5 py-0.5 rounded-full text-xs font-bold border border-opacity-20"
+                                          [class.border-green-600]="item.activo"
+                                          [class.border-red-600]="!item.activo">
+                                        {{ item.activo ? 'ACTIVO' : 'INACTIVO' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <button [routerLink]="['/admin/horarios/editar', item.idHorario]" class="text-blue-600 hover:text-blue-800 mr-3 transition" title="Editar">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button (click)="toggleEstado(item)" 
+                                            [title]="item.activo ? 'Desactivar' : 'Activar'"
+                                            class="mr-3 transition"
+                                            [class.text-red-500]="item.activo" 
+                                            [class.hover:text-red-700]="item.activo"
+                                            [class.text-green-500]="!item.activo"
+                                            [class.hover:text-green-700]="!item.activo">
+                                        <i class="fa-solid fa-power-off text-lg"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        } @empty {
+                            <tr>
+                                <td colspan="6" class="px-6 py-8 text-center text-gray-500">No se encontraron horarios registrados.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="p-4 bg-gray-50 border-t border-gray-200 flex justify-center">
+                <pagination-controls 
+                    (pageChange)="p = $event" 
+                    previousLabel="Anterior" 
+                    nextLabel="Siguiente"
+                    class="custom-pagination">
+                </pagination-controls>
+            </div>
         </div>
     }
 </div>

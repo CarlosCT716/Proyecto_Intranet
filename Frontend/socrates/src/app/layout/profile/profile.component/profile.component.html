@@ -1,64 +1,109 @@
-<div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+<div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 min-h-[500px]">
+
+    @if (isLoading) {
+        <div class="h-[500px] flex flex-col items-center justify-center">
+            <app-loading-spinner message="Cargando información del perfil..."></app-loading-spinner>
+        </div>
+    } @else {
+        <div class="h-40 bg-linear-to-r from-[#0B4D6C] to-[#4fa3c7] relative">
+            <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        </div>
+
+        <div class="px-6 md:px-8 pb-8 relative">
+            <div class="flex flex-col md:flex-row items-center md:items-end -mt-16 mb-8 gap-6">
+                <div class="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-200 flex items-center justify-center overflow-hidden z-10 shrink-0">
+                    <img [src]="'https://ui-avatars.com/api/?name=' + (userData?.nombres || 'U') + '+' + (userData?.apellidos || 'U') + '&background=0B4D6C&color=fff&size=128'" 
+                         alt="Avatar" class="w-full h-full object-cover">
+                </div>
                 
-    <div class="h-40 bg-linear-to-r from-[#0B4D6C] to-[#4fa3c7] relative">
-        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-    </div>
+                <div class="text-center md:text-left flex-1 min-w-0">
+                    <h1 class="text-2xl md:text-3xl font-bold text-[#002940] leading-tight truncate">
+                        {{ userData?.nombres }} {{ userData?.apellidos }}
+                    </h1>
+                    <p class="text-[#0B4D6C] font-medium capitalize flex flex-wrap items-center justify-center md:justify-start gap-2 mt-1">
+                        {{ userData?.rolUsuario?.replace('ROLE_', '')?.toLowerCase() || 'Usuario' }}
+                        @if(userData?.activo) {
+                            <span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full border border-green-200">Activo</span>
+                        } @else {
+                            <span class="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full border border-red-200">Inactivo</span>
+                        }
+                    </p>
+                </div>
 
-    <div class="px-8 pb-6 relative">
-        <div class="flex flex-col md:flex-row items-center md:items-end -mt-16 mb-6 gap-6">
-            <div class="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-200 flex items-center justify-center overflow-hidden z-10">
-                <img src="https://ui-avatars.com/api/?name={{user?.nombres}}+{{user?.apellidos}}&background=0B4D6C&color=fff&size=128" alt="Avatar" class="w-full h-full object-cover">
+                <button class="mb-4 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-[#0B4D6C] hover:text-white transition text-sm font-semibold flex items-center gap-2 shadow-sm whitespace-nowrap">
+                    <i class="fa-solid fa-pen"></i> <span class="hidden sm:inline">Editar Datos</span>
+                </button>
             </div>
+
+            <div class="border-t border-gray-100 my-6"></div>
+
+            <h3 class="text-lg font-bold text-[#002940] mb-6 flex items-center gap-2">
+                <i class="fa-regular fa-address-card text-[#0B4D6C]"></i> Información Personal
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                
+                <div class="group">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-fingerprint text-[#0B4D6C] opacity-70"></i> ID Interno
+                    </p>
+                    <p class="text-base md:text-lg font-semibold text-gray-800 border-b border-gray-100 pb-1 group-hover:border-[#0B4D6C] transition-colors">
+                        {{ userData?.idUsuario }}
+                    </p>
+                </div>
+
+                <div class="group">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-id-card text-[#0B4D6C] opacity-70"></i> DNI
+                    </p>
+                    <p class="text-base md:text-lg font-semibold text-gray-800 border-b border-gray-100 pb-1 group-hover:border-[#0B4D6C] transition-colors">
+                        {{ userData?.dni || 'No registrado' }}
+                    </p>
+                </div>
+
+                <div class="group">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-phone text-[#0B4D6C] opacity-70"></i> Teléfono
+                    </p>
+                    <p class="text-base md:text-lg font-semibold text-gray-800 border-b border-gray-100 pb-1 group-hover:border-[#0B4D6C] transition-colors">
+                        {{ userData?.telefono || 'No registrado' }}
+                    </p>
+                </div>
+
+                <div class="group">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-envelope text-[#0B4D6C] opacity-70"></i> Correo Electrónico
+                    </p>
+                    <p class="text-base md:text-lg font-semibold text-gray-800 border-b border-gray-100 pb-1 group-hover:border-[#0B4D6C] transition-colors break-all">
+                        {{ userData?.email || 'No registrado' }}
+                    </p>
+                </div>
+
+                <div class="group sm:col-span-2 lg:col-span-2">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-[#0B4D6C] opacity-70"></i> Dirección
+                    </p>
+                    <p class="text-base md:text-lg font-semibold text-gray-800 border-b border-gray-100 pb-1 group-hover:border-[#0B4D6C] transition-colors">
+                        {{ userData?.direccion || 'No registrada' }}
+                    </p>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold text-[#002940] mb-4 flex items-center gap-2 mt-8">
+                <i class="fa-solid fa-share-nodes text-[#0B4D6C]"></i> Redes Sociales
+            </h3>
             
-            <div class="text-center md:text-left flex-1 ">
-                <h1 class="text-3xl font-bold text-[#002940] leading-tight">{{ user?.nombres }} {{ user?.apellidos }}</h1>
-                <p class="text-[#0B4D6C] font-medium capitalize">{{ user?.rol?.replace('ROLE_', '')?.toLowerCase() }}</p>
-            </div>
-
-            <button class="mb-4 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-[#0B4D6C] hover:text-white transition text-sm font-semibold flex items-center gap-2 shadow-sm">
-                <i class="fa-solid fa-pen"></i> Editar Datos
-            </button>
-        </div>
-
-        <div class="border-t border-gray-100 my-6"></div>
-
-        <h3 class="text-lg font-bold text-[#002940] mb-4 flex items-center gap-2">
-            <i class="fa-regular fa-address-card text-[#0B4D6C]"></i> Información General
-        </h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 mb-8">
-            <div>
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Usuario</p>
-                <p class="text-lg font-semibold text-gray-800 border-b border-gray-100 pb-1">{{ user?.username }}</p>
-            </div>
-            <div>
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">ID Interno</p>
-                <p class="text-lg font-semibold text-gray-800 border-b border-gray-100 pb-1">{{ user?.idUsuario }}</p>
-            </div>
-            <div>
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Carrera</p>
-                <p class="text-lg font-semibold text-gray-800 border-b border-gray-100 pb-1">{{ academicInfo.carrera }}</p>
-            </div>
-            <div>
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Correo Institucional</p>
-                <p class="text-lg font-semibold text-gray-800 border-b border-gray-100 pb-1 wrap-break-word">{{ academicInfo.email }}</p>
+            <div class="flex gap-4">
+                <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-[#0B4D6C] hover:text-white transition shadow-sm">
+                    <i class="fa-brands fa-github text-xl"></i>
+                </a>
+                <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition shadow-sm">
+                    <i class="fa-brands fa-facebook text-xl"></i>
+                </a>
+                <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-sky-500 hover:text-white transition shadow-sm">
+                    <i class="fa-brands fa-linkedin text-xl"></i>
+                </a>
             </div>
         </div>
-
-        <h3 class="text-lg font-bold text-[#002940] mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-share-nodes text-[#0B4D6C]"></i> Redes Sociales
-        </h3>
-        
-        <div class="flex gap-4">
-            <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-[#0B4D6C] hover:text-white transition shadow-sm">
-                <i class="fa-brands fa-github text-xl"></i>
-            </a>
-            <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition shadow-sm">
-                <i class="fa-brands fa-facebook text-xl"></i>
-            </a>
-            <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-sky-500 hover:text-white transition shadow-sm">
-                <i class="fa-brands fa-linkedin text-xl"></i>
-            </a>
-        </div>
-    </div>
+    }
 </div>

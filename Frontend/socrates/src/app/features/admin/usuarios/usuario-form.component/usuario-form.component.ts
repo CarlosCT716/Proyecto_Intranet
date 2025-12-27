@@ -5,6 +5,7 @@ import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AdminService } from '../../../../core/services/admin.service';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner.component';
 import { delay } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-usuario-form',
@@ -51,7 +52,6 @@ export class UsuarioFormComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           this.usuario = res;
-          // Mapeo seguro del ID de Rol
           if (res.rol && typeof res.rol === 'object') {
               this.usuario.idRol = res.rol.idRol;
           } else if (res.rol === 'ROLE_ADMIN') {
@@ -61,20 +61,35 @@ export class UsuarioFormComponent implements OnInit {
           } else {
               this.usuario.idRol = 3;
           }
-          this.usuario.password = ''; // Limpiar para que no se reenvíe el hash
+          this.usuario.password = ''; 
           this.isLoading = false;
           this.cdr.detectChanges();
         },
         error: () => {
           this.isLoading = false;
-          alert('Error al cargar usuario');
-          this.router.navigate(['/admin/usuarios']);
           this.cdr.detectChanges();
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al cargar usuario',
+            confirmButtonColor: '#d33'
+          }).then(() => {
+            this.router.navigate(['/admin/usuarios']);
+          });
         }
       });
   }
 
   guardar() {
+    Swal.fire({
+      title: this.isEditMode ? 'Actualizando...' : 'Guardando...',
+      text: 'Por favor espere',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     this.isLoading = true;
     this.cdr.detectChanges();
 
@@ -93,13 +108,24 @@ export class UsuarioFormComponent implements OnInit {
 
     request$.subscribe({
         next: () => {
-          alert(this.isEditMode ? 'Usuario actualizado' : 'Usuario creado');
-          this.router.navigate(['/admin/usuarios']);
+          Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: this.isEditMode ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente',
+            confirmButtonColor: '#0B4D6C'
+          }).then(() => {
+            this.router.navigate(['/admin/usuarios']);
+          });
         },
         error: () => { 
             this.isLoading = false; 
-            alert('Error al guardar'); 
             this.cdr.detectChanges();
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un problema al guardar el usuario',
+              confirmButtonColor: '#d33'
+            });
         }
     });
   }

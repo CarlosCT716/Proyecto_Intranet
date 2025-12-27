@@ -1,0 +1,65 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+    
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-[#002940]">Gestionar Temas de Sesión</h2>
+            <p class="text-sm text-gray-500">Edita directamente el tema y guarda los cambios.</p>
+        </div>
+        <a routerLink="/docente/sesiones" class="text-gray-500 hover:text-[#0B4D6C] font-bold flex items-center gap-2 cursor-pointer transition">
+            <i class="fa-solid fa-arrow-left"></i> Volver a Cursos
+        </a>
+    </div>
+
+    @if (isLoading) {
+        <app-loading-spinner message="Cargando sesiones..."></app-loading-spinner>
+    } @else {
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden fade-in">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 w-16 text-center">#</th>
+                        <th class="px-6 py-3 w-32">Fecha</th>
+                        <th class="px-6 py-3">Tema a Tratar (Editable)</th>
+                        <th class="px-6 py-3 w-32 text-center">Estado</th>
+                        <th class="px-6 py-3 w-24 text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (s of sesiones; track s.idSesion; let i = $index) {
+                        <tr class="bg-white border-b hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 font-mono text-xs text-gray-400 text-center">
+                                {{ i + 1 }}
+                            </td>
+
+                            <td class="px-6 py-4 font-bold text-[#0B4D6C]">
+                                {{ s.fecha | date:'dd/MM/yyyy' : 'UTC' }}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <textarea [(ngModel)]="s.temaTratado" 
+                                          rows="2"
+                                          class="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0B4D6C] focus:border-[#0B4D6C] outline-none transition resize-none bg-gray-50 focus:bg-white placeholder-gray-400"
+                                          placeholder="Escribe el tema aquí..."></textarea>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <span [class]="s.estado === 'FINALIZADA' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-blue-100 text-blue-800 border-blue-200'"
+                                      class="px-2.5 py-1 rounded-full text-xs font-bold border">
+                                    {{ s.estado }}
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <button (click)="guardarCambioFila(s)" 
+                                        class="text-white bg-[#0B4D6C] hover:bg-[#002940] p-2 rounded-lg transition shadow-sm tooltip-trigger"
+                                        title="Guardar Cambios">
+                                    <i class="fa-solid fa-floppy-disk"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

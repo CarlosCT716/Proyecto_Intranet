@@ -5,12 +5,14 @@ import { AdminService } from '../../../../core/services/admin.service';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner.component';
 import { Pago } from '../../../../core/models/admin.interface';
 import { delay } from 'rxjs';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-pagos-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
-  templateUrl: './pagos.component.html'
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, NgxPaginationModule],
+  templateUrl: './pagos.component.html',
+  styleUrl: './pagos.component.css'
 })
 export class PagosComponent implements OnInit {
   private adminService = inject(AdminService);
@@ -21,6 +23,8 @@ export class PagosComponent implements OnInit {
   isLoading = true;
   searchTerm: string = '';
   filtroEstado: string = 'TODOS'; 
+  p: number = 1;
+  itemsPerPage: number = 10;
 
   ngOnInit() {
     this.cargarData();
@@ -31,7 +35,6 @@ export class PagosComponent implements OnInit {
     this.adminService.listarPagos().pipe(delay(1000)).subscribe({
       next: (res) => {
         this.pagos = res;
-        console.log(this.pagos);
         this.filtrar();
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -55,7 +58,6 @@ export class PagosComponent implements OnInit {
 
       return coincideTexto && coincideEstado;
     });
+    this.p = 1;
   }
-
-
 }
